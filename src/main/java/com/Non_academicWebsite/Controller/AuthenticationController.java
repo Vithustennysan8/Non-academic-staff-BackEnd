@@ -6,9 +6,7 @@ import com.Non_academicWebsite.Response.AuthenticationResponse;
 import com.Non_academicWebsite.Service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,8 +17,8 @@ public class AuthenticationController {
 
 
     @PostMapping(value = "/signup")
-    public boolean register(@RequestBody RegisterDTO registerDTO) throws Exception {
-        return authenticationService.registerStaff(registerDTO);
+    public ResponseEntity<Boolean> register(@RequestBody RegisterDTO registerDTO) throws Exception {
+        return ResponseEntity.ok(authenticationService.registerStaff(registerDTO));
 
     }
 

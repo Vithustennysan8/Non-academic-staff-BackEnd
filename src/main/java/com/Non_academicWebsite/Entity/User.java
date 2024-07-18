@@ -46,6 +46,8 @@ public class User implements UserDetails {
     private Date updatedAt;
     @Enumerated(EnumType.STRING)
     private Role role;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Forum> forums;
     private String image_name;
     private String image_type;
     @Lob
