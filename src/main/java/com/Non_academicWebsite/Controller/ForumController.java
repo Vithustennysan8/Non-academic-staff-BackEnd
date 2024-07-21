@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/auth/forum")
+@RequestMapping(value = "api/auth/forum")
 public class ForumController {
 
     @Autowired

@@ -50,7 +50,7 @@ public class AuthenticationService {
                 .faculty(registerDTO.getFaculty())
                 .createdAt(new Date())
                 .updatedAt(new Date())
-                .role(Role.USER)
+                .role(registerDTO.getRole())
                 .build();
 
         userRepo.save(user);
