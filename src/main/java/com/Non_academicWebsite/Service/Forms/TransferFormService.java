@@ -1,9 +1,8 @@
-package com.Non_academicWebsite.Service;
+package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.DTO.TransferFromDTO;
-import com.Non_academicWebsite.Entity.ShortLeaveForm;
-import com.Non_academicWebsite.Entity.TransferForm;
-import com.Non_academicWebsite.Repository.TransferFormRepo;
+import com.Non_academicWebsite.DTO.Forms.TransferFromDTO;
+import com.Non_academicWebsite.Entity.Forms.TransferForm;
+import com.Non_academicWebsite.Repository.Forms.TransferFormRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

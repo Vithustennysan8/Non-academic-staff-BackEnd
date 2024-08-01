@@ -1,8 +1,8 @@
-package com.Non_academicWebsite.Service;
+package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.DTO.SubtituteFormDTO;
-import com.Non_academicWebsite.Entity.SubtituteForm;
-import com.Non_academicWebsite.Repository.SubtituteFormRepo;
+import com.Non_academicWebsite.DTO.Forms.SubtituteFormDTO;
+import com.Non_academicWebsite.Entity.Forms.SubtituteForm;
+import com.Non_academicWebsite.Repository.Forms.SubtituteFormRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

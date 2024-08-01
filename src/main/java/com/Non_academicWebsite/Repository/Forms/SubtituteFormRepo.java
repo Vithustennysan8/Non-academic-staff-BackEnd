@@ -1,12 +1,11 @@
-package com.Non_academicWebsite.Repository;
+package com.Non_academicWebsite.Repository.Forms;
 
-import com.Non_academicWebsite.Entity.ShortLeaveForm;
+import com.Non_academicWebsite.Entity.Forms.SubtituteForm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
 @EnableJpaRepositories
 @Repository
-public interface ShortLeaveFormRepo extends JpaRepository<ShortLeaveForm, Long> {
-
+public interface SubtituteFormRepo extends JpaRepository<SubtituteForm, Long> {
 }

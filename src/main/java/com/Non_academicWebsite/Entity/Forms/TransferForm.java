@@ -1,4 +1,4 @@
-package com.Non_academicWebsite.Entity;
+package com.Non_academicWebsite.Entity.Forms;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Entity
-public class FullLeaveForm {
+public class TransferForm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,18 +24,14 @@ public class FullLeaveForm {
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date job_start_date;
-    private int leave_days;
-    private String leave_type;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date start_date;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date end_date;
-    private String acting;
+    private String experience;
+    private String preference1;
+    private String preference2;
+    private String preference3;
     private String reason;
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] file_data;
     private String file_name;
     private String file_type;
-
 }

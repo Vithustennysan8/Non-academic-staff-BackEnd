@@ -1,4 +1,4 @@
-package com.Non_academicWebsite.DTO;
+package com.Non_academicWebsite.DTO.Forms;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

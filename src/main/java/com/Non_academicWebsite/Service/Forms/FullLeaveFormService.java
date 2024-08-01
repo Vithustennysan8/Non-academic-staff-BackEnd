@@ -1,8 +1,8 @@
-package com.Non_academicWebsite.Service;
+package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.DTO.FullLeaveFormDTO;
-import com.Non_academicWebsite.Entity.FullLeaveForm;
-import com.Non_academicWebsite.Repository.FullLeaveFormRepo;
+import com.Non_academicWebsite.DTO.Forms.FullLeaveFormDTO;
+import com.Non_academicWebsite.Entity.Forms.FullLeaveForm;
+import com.Non_academicWebsite.Repository.Forms.FullLeaveFormRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

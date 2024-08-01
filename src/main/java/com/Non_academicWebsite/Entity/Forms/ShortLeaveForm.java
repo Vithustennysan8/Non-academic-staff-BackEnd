@@ -1,4 +1,4 @@
-package com.Non_academicWebsite.Entity;
+package com.Non_academicWebsite.Entity.Forms;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

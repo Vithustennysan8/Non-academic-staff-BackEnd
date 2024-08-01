@@ -1,7 +1,7 @@
-package com.Non_academicWebsite.Controller;
+package com.Non_academicWebsite.Controller.Forms;
 
-import com.Non_academicWebsite.DTO.SubtituteFormDTO;
-import com.Non_academicWebsite.Service.SubtituteFormService;
+import com.Non_academicWebsite.DTO.Forms.SubtituteFormDTO;
+import com.Non_academicWebsite.Service.Forms.SubtituteFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

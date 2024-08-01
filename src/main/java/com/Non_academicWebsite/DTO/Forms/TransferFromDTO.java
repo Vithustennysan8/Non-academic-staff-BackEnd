@@ -1,6 +1,7 @@
-package com.Non_academicWebsite.Entity;
+package com.Non_academicWebsite.DTO.Forms;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,19 +14,16 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-public class SubtituteForm {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class TransferFromDTO {
     private String name;
     private String emp_id;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date start_date;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date end_date;
-    private String acting;
+    private Date job_start_date;
+    private String experience;
+    private String preference1;
+    private String preference2;
+    private String preference3;
     private String reason;
 }

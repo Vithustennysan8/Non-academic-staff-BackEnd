@@ -1,7 +1,7 @@
-package com.Non_academicWebsite.Controller;
+package com.Non_academicWebsite.Controller.Forms;
 
-import com.Non_academicWebsite.DTO.ShortLeaveFormDTO;
-import com.Non_academicWebsite.Service.ShortLeaveFormService;
+import com.Non_academicWebsite.DTO.Forms.ShortLeaveFormDTO;
+import com.Non_academicWebsite.Service.Forms.ShortLeaveFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
