@@ -3,13 +3,16 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Response.UserInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -26,9 +29,31 @@ public class StaffService {
         return userRepo.findAll();
     }
 
-    public User getUser(String token) {
+    public UserInfoResponse getUser(String token) {
         String email = jwtService.extractUserEmail(token);
-        return userRepo.findByEmail(email).orElseThrow();
+        User user = userRepo.findByEmail(email).orElseThrow();
+
+        String imageBase64 = Base64.getEncoder().encodeToString(user.getImage_data());
+        return UserInfoResponse.builder()
+                .first_name(user.getFirst_name())
+                .last_name(user.getLast_name())
+                .date_of_birth(user.getDate_of_birth())
+                .gender(user.getGender())
+                .email(user.getEmail())
+                .phone_no(user.getPhone_no())
+                .address(user.getAddress())
+                .city(user.getCity())
+                .postal_code(user.getPostal_code())
+                .ic_no(user.getIc_no())
+                .emp_id(user.getEmp_id())
+                .job_type(user.getJob_type())
+                .department(user.getDepartment())
+                .faculty(user.getFaculty())
+                .image_type(user.getImage_type())
+                .image_name(user.getImage_name())
+                .image_data(imageBase64)
+                .isLogin(true)
+                .build();
     }
 
     public void updateProfile(String header, RegisterDTO registerDTO) {

@@ -3,6 +3,7 @@ package com.Non_academicWebsite.Controller;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Response.UserInfoResponse;
 import com.Non_academicWebsite.Service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/info")
-    public ResponseEntity<User> getUser(@RequestHeader("Authorization") String header){
+    public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header){
         String token = header.substring(7);
         return ResponseEntity.ok( staffService.getUser(token));
     }

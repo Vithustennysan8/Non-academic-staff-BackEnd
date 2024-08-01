@@ -3,6 +3,7 @@ package com.Non_academicWebsite.Entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +21,11 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String first_name;
     private String last_name;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date date_of_birth;
     private String gender;
     @Column(unique = true, nullable = false)
@@ -51,6 +52,7 @@ public class User implements UserDetails {
     private String image_name;
     private String image_type;
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] image_data;
 
 

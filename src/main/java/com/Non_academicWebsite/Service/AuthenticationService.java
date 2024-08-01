@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
@@ -27,10 +28,12 @@ public class AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public Boolean registerStaff(RegisterDTO registerDTO) throws Exception {
+    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws Exception {
         if(userRepo.existsByEmail(registerDTO.getEmail())){
             return false;
         }
+
+        System.out.println(image);
 
         var user = User.builder()
                 .first_name(registerDTO.getFirst_name())
@@ -50,7 +53,11 @@ public class AuthenticationService {
                 .faculty(registerDTO.getFaculty())
                 .createdAt(new Date())
                 .updatedAt(new Date())
-                .role(registerDTO.getRole())
+                .image_type(image.getContentType())
+                .image_name(image.getOriginalFilename())
+                .image_data(image.getBytes())
+//                .role(registerDTO.getRole())
+                .role(Role.USER)
                 .build();
 
         userRepo.save(user);
@@ -68,7 +75,7 @@ public class AuthenticationService {
                 )
         );
 
-        var user = userRepo.findByEmail(loginDTO.getEmail())
+        User user = userRepo.findByEmail(loginDTO.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
 
