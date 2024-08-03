@@ -26,9 +26,9 @@ public class TransferFormService {
                 .preference2(transferFromDTO.getPreference2())
                 .preference3(transferFromDTO.getPreference3())
                 .reason(transferFromDTO.getReason())
-                .file_data(file.getBytes())
-                .file_name(file.getOriginalFilename())
-                .file_type(file.getContentType())
+                .file_data(file != null? file.getBytes(): null)
+                .file_name(file != null? file.getOriginalFilename(): null)
+                .file_type(file != null? file.getContentType(): null)
                 .build();
 
         transferFormRepo.save(form);

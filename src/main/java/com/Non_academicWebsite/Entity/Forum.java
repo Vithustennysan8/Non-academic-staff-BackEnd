@@ -19,6 +19,7 @@ public class Forum {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id", nullable = false)
     private Long userId;
+    private String userName;
     private Date createdAt;
     private Date updatedAt;
     private String subject;

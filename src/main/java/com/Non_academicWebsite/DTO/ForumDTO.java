@@ -18,6 +18,7 @@ public class ForumDTO {
     private Date createdAt;
     private Date updatedAt;
     private String subject;
+    private String userName;
     @Lob
     @Column(length = 512000)
     private String body;

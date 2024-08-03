@@ -32,6 +32,7 @@ public class FullLeaveForm {
     private Date end_date;
     private String acting;
     private String reason;
+    private boolean status;
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] file_data;

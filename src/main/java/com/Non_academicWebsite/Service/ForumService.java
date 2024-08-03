@@ -8,10 +8,11 @@ import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ForumService {
@@ -33,6 +34,7 @@ public class ForumService {
 
         var forum = Forum.builder()
                 .userId(user.getId())
+                .userName(user.getFirst_name().concat(" " + user.getLast_name()))
                 .subject(forumDTO.getSubject())
                 .body(forumDTO.getBody())
                 .createdAt(new Date())
@@ -43,6 +45,53 @@ public class ForumService {
     }
 
     public List<Forum> getForums() {
-        return forumRepo.findAll();
+        List<Forum> forums = forumRepo.findAll();
+        if(forums.isEmpty()){
+            return Collections.emptyList();
+        }
+        return forums;
+    }
+
+    public List<Forum> deleteForum(Long id, String header) {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+
+        User user = userRepo.findByEmail(email).orElseThrow();
+        if(forumRepo.existsById(id)){
+            Forum forum = forumRepo.findById(id).orElseThrow();
+            if(Objects.equals(forum.getUserId(), user.getId())){
+                forumRepo.deleteById(id);
+            }
+        }
+        List<Forum> forums = forumRepo.findAll();
+        if(forums.isEmpty()){
+            return Collections.emptyList();
+        }
+        return forums;
+    }
+
+    public List<Forum> updateForum(Long id, ForumDTO forumDTO, String header) {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+
+        User user = userRepo.findByEmail(email).orElseThrow();
+        if(forumRepo.existsById(id)){
+            Forum forum = forumRepo.findById(id).orElseThrow();
+            if(Objects.equals(forum.getUserId(), user.getId())){
+                forum.setUserName(user.getFirst_name().concat(" " + user.getLast_name()));
+                forum.setSubject(forumDTO.getSubject());
+                forum.setBody(forumDTO.getBody());
+                forum.setUpdatedAt(new Date());
+
+                forumRepo.save(forum);
+            }
+        }
+
+        List<Forum> forums = forumRepo.findAll();
+        if(forums.isEmpty()){
+            return Collections.emptyList();
+        }
+        return forums;
+
     }
 }

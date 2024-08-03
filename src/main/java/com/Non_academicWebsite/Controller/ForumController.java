@@ -28,4 +28,16 @@ public class ForumController {
     public ResponseEntity<List<Forum>> getForums(){
         return ResponseEntity.ok(forumService.getForums());
     }
+
+    @DeleteMapping(value = "delete/{id}")
+    public ResponseEntity<List<Forum>> deleteForum(@PathVariable("id") Long id,
+                                                   @RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(forumService.deleteForum(id, header));
+    }
+
+    @PutMapping(value = "update/{id}")
+    public ResponseEntity<List<Forum>> updateForum(@PathVariable("id") Long id, @RequestBody ForumDTO forumDTO,
+                                                   @RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(forumService.updateForum(id, forumDTO, header));
+    }
 }

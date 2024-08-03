@@ -33,9 +33,7 @@ public class AuthenticationService {
             return false;
         }
 
-        System.out.println(image);
-
-        var user = User.builder()
+        User user = User.builder()
                 .first_name(registerDTO.getFirst_name())
                 .last_name(registerDTO.getLast_name())
                 .date_of_birth(registerDTO.getDate_of_birth())
@@ -53,12 +51,13 @@ public class AuthenticationService {
                 .faculty(registerDTO.getFaculty())
                 .createdAt(new Date())
                 .updatedAt(new Date())
-                .image_type(image.getContentType())
-                .image_name(image.getOriginalFilename())
-                .image_data(image.getBytes())
+                .image_type(image != null? image.getContentType() : null)
+                .image_name(image != null? image.getOriginalFilename() : null)
+                .image_data(image != null? image.getBytes() : null)
 //                .role(registerDTO.getRole())
                 .role(Role.USER)
                 .build();
+
 
         userRepo.save(user);
         var jwtToken = jwtService.generateToken(user);

@@ -3,14 +3,12 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
-import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.Base64;
 import java.util.Date;
@@ -33,7 +31,10 @@ public class StaffService {
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElseThrow();
 
-        String imageBase64 = Base64.getEncoder().encodeToString(user.getImage_data());
+        String imageBase64 = null;
+        if (user.getImage_data() != null){
+            imageBase64 = Base64.getEncoder().encodeToString(user.getImage_data());
+        }
         return UserInfoResponse.builder()
                 .first_name(user.getFirst_name())
                 .last_name(user.getLast_name())

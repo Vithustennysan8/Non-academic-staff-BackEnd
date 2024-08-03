@@ -25,9 +25,9 @@ public class ShortLeaveFormService {
                 .leave_type(shortLeaveFormDTO.getLeave_type())
                 .leave_date(shortLeaveFormDTO.getLeave_date())
                 .reason(shortLeaveFormDTO.getReason())
-                .file_data(file.getBytes())
-                .file_name(file.getOriginalFilename())
-                .file_type(file.getContentType())
+                .file_data(file != null? file.getBytes(): null)
+                .file_name(file != null? file.getOriginalFilename(): null)
+                .file_type(file != null? file.getContentType(): null)
                 .build();
 
         shortLeaveFormRepo.save(form);
