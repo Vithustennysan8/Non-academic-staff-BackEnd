@@ -10,6 +10,6 @@ import java.util.List;
 @EnableJpaRepositories
 @Repository
 public interface FullLeaveFormRepo extends JpaRepository<FullLeaveForm, Long> {
-    List<FullLeaveForm> findByDepartmentAndStatus(String department, boolean status);
+    List<FullLeaveForm> findByUserIdStartingWith(String prefix);
 
 }

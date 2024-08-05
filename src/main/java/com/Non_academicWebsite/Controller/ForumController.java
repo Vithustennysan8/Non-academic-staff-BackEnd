@@ -25,8 +25,8 @@ public class ForumController {
     }
 
     @GetMapping(value = "/get")
-    public ResponseEntity<List<Forum>> getForums(){
-        return ResponseEntity.ok(forumService.getForums());
+    public ResponseEntity<List<Forum>> getForums(@RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(forumService.getForums(header));
     }
 
     @DeleteMapping(value = "delete/{id}")

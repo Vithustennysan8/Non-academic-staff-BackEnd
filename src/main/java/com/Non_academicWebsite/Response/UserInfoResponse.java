@@ -13,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class UserInfoResponse {
+    private String id;
     private String first_name;
     private String last_name;
     private Date date_of_birth;

@@ -1,9 +1,11 @@
 package com.Non_academicWebsite.Service.Forms;
 
+import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.Forms.FullLeaveFormDTO;
 import com.Non_academicWebsite.Entity.Forms.FullLeaveForm;
+import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.FullLeaveFormRepo;
-import jakarta.persistence.Tuple;
+import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,12 +18,20 @@ import java.util.List;
 public class FullLeaveFormService {
     @Autowired
     private FullLeaveFormRepo fullLeaveFormRepo;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private UserRepo userRepo;
 
-    public String submitForm(FullLeaveFormDTO fullLeaveFormDTO, MultipartFile file) throws IOException {
+    public String submitForm(FullLeaveFormDTO fullLeaveFormDTO, MultipartFile file, String header) throws IOException {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElseThrow();
 
         FullLeaveForm form = FullLeaveForm.builder()
                 .name(fullLeaveFormDTO.getName())
-                .emp_id(fullLeaveFormDTO.getEmp_id())
+                .empId(fullLeaveFormDTO.getEmpId())
+                .userId(user.getId())
                 .faculty(fullLeaveFormDTO.getFaculty())
                 .department(fullLeaveFormDTO.getDepartment())
                 .job_start_date(fullLeaveFormDTO.getJob_start_date())
@@ -41,8 +51,8 @@ public class FullLeaveFormService {
         return "Submitted Successfully";
     }
 
-    public List<FullLeaveForm> getForms(String department) {
-            List<FullLeaveForm> forms = fullLeaveFormRepo.findByDepartmentAndStatus(department, true);
+    public List<FullLeaveForm> getForms(String prefix) {
+            List<FullLeaveForm> forms = fullLeaveFormRepo.findByUserIdStartingWith(prefix);
             if (!forms.isEmpty()){
                 return forms;
             }

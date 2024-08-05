@@ -23,8 +23,14 @@ public class StaffService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public List<User> getUsers() {
-        return userRepo.findAll();
+    public List<User> getUsers(String header) {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElseThrow();
+
+        String id = user.getId();
+        String prefix = id.substring(0,id.length()-3);
+        return userRepo.findByIdStartingWith(prefix);
     }
 
     public UserInfoResponse getUser(String token) {
@@ -36,6 +42,7 @@ public class StaffService {
             imageBase64 = Base64.getEncoder().encodeToString(user.getImage_data());
         }
         return UserInfoResponse.builder()
+                .id(user.getId())
                 .first_name(user.getFirst_name())
                 .last_name(user.getLast_name())
                 .date_of_birth(user.getDate_of_birth())

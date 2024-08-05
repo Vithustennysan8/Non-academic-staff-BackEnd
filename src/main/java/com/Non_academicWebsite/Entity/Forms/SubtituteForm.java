@@ -20,6 +20,7 @@ public class SubtituteForm {
     private Long id;
     private String name;
     private String emp_id;
+    private String userId;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -28,4 +29,6 @@ public class SubtituteForm {
     private Date end_date;
     private String acting;
     private String reason;
+    private boolean status;
+
 }

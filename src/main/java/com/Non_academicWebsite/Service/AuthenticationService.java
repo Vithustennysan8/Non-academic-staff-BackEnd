@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.Entity.Role;
@@ -27,13 +28,18 @@ public class AuthenticationService {
     private JwtService jwtService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserIdGenerator userIdGenerator;
+
 
     public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws Exception {
         if(userRepo.existsByEmail(registerDTO.getEmail())){
             return false;
         }
+        String customId = userIdGenerator.generateCustomUserID(registerDTO.getFaculty(),registerDTO.getDepartment(),registerDTO.getJob_type());
 
         User user = User.builder()
+                .id(customId)
                 .first_name(registerDTO.getFirst_name())
                 .last_name(registerDTO.getLast_name())
                 .date_of_birth(registerDTO.getDate_of_birth())
@@ -51,8 +57,11 @@ public class AuthenticationService {
                 .faculty(registerDTO.getFaculty())
                 .createdAt(new Date())
                 .updatedAt(new Date())
+//                .image_type(image.getContentType())
                 .image_type(image != null? image.getContentType() : null)
+//                .image_name(image.getOriginalFilename())
                 .image_name(image != null? image.getOriginalFilename() : null)
+//                .image_data(image.getBytes())
                 .image_data(image != null? image.getBytes() : null)
 //                .role(registerDTO.getRole())
                 .role(Role.USER)

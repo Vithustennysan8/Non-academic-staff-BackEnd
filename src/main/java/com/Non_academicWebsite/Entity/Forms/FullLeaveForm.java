@@ -19,7 +19,8 @@ public class FullLeaveForm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String emp_id;
+    private String empId;
+    private String userId;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")

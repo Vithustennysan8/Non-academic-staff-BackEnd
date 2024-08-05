@@ -19,10 +19,8 @@ public class ForumService {
 
     @Autowired
     private ForumRepo forumRepo;
-
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private JwtService jwtService;
 
@@ -44,8 +42,15 @@ public class ForumService {
         return forumRepo.save(forum);
     }
 
-    public List<Forum> getForums() {
-        List<Forum> forums = forumRepo.findAll();
+    public List<Forum> getForums(String header) {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElseThrow();
+
+        String id = user.getId();
+        String prefix = id.substring(0,id.length()-3);
+
+        List<Forum> forums = forumRepo.findByUserIdStartingWith(prefix);
         if(forums.isEmpty()){
             return Collections.emptyList();
         }

@@ -18,7 +18,7 @@ public class Forum {
     private Long id;
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id", nullable = false)
-    private Long userId;
+    private String userId;
     private String userName;
     private Date createdAt;
     private Date updatedAt;

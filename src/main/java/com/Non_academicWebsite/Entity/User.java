@@ -21,8 +21,7 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String first_name;
     private String last_name;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -47,8 +46,6 @@ public class User implements UserDetails {
     private Date updatedAt;
     @Enumerated(EnumType.STRING)
     private Role role;
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Forum> forums;
     private String image_name;
     private String image_type;
     @Lob

@@ -16,7 +16,7 @@ import java.util.Date;
 @Builder
 public class FullLeaveFormDTO {
     private String name;
-    private String emp_id;
+    private String empId;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")

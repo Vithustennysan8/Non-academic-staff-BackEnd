@@ -20,6 +20,7 @@ public class TransferForm {
     private Long id;
     private String name;
     private String emp_id;
+    private String userId;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -29,9 +30,11 @@ public class TransferForm {
     private String preference2;
     private String preference3;
     private String reason;
+    private boolean status;
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] file_data;
     private String file_name;
     private String file_type;
+
 }

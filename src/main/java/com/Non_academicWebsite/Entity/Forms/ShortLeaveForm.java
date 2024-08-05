@@ -20,6 +20,7 @@ public class ShortLeaveForm {
     private Long id;
     private String name;
     private String emp_id;
+    private String userId;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -29,6 +30,7 @@ public class ShortLeaveForm {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date leave_date;
     private String reason;
+    private boolean status;
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] file_data;

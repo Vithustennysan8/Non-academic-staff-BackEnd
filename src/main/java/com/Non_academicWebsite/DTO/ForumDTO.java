@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForumDTO {
-    private Long userId;
+    private String userId;
     private Date createdAt;
     private Date updatedAt;
     private String subject;

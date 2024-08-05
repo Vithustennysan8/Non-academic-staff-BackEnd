@@ -19,8 +19,8 @@ public class UserController {
     private StaffService staffService;
 
     @GetMapping(value = "/staffs")
-    public ResponseEntity<List<User>> getUsers(){
-        return ResponseEntity.ok( staffService.getUsers());
+    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String header){
+        return ResponseEntity.ok( staffService.getUsers(header));
     }
 
     @GetMapping(value = "/info")

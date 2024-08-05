@@ -20,13 +20,14 @@ public class FullLeaveFormController {
 
     @PostMapping(value = "/send")
     public ResponseEntity<?> submitForm(@ModelAttribute FullLeaveFormDTO fullLeaveFormDTO,
-                                        @RequestParam(value = "files", required = false) MultipartFile file ) throws IOException {
+                                        @RequestParam(value = "files", required = false) MultipartFile file,
+                                        @RequestHeader("Authorization") String header) throws IOException {
 
-        return ResponseEntity.ok(fullLeaveFormService.submitForm(fullLeaveFormDTO,file));
+        return ResponseEntity.ok(fullLeaveFormService.submitForm(fullLeaveFormDTO,file,header));
     }
 
-    @GetMapping(value = "/get/{department}")
-    public ResponseEntity<List<FullLeaveForm>> getForms(@PathVariable("department") String department){
-        return ResponseEntity.ok(fullLeaveFormService.getForms(department));
+    @GetMapping(value = "/get/{prefix}")
+    public ResponseEntity<List<FullLeaveForm>> getForms(@PathVariable("prefix") String prefix){
+        return ResponseEntity.ok(fullLeaveFormService.getForms(prefix));
     }
 }
