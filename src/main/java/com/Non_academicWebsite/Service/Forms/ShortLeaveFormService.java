@@ -39,9 +39,9 @@ public class ShortLeaveFormService {
                 .leave_type(shortLeaveFormDTO.getLeave_type())
                 .leave_date(shortLeaveFormDTO.getLeave_date())
                 .reason(shortLeaveFormDTO.getReason())
-                .file_data(file != null? file.getBytes(): null)
-                .file_name(file != null? file.getOriginalFilename(): null)
-                .file_type(file != null? file.getContentType(): null)
+                .file_data(file != null ? file.getBytes() : null)
+                .file_name(file != null ? file.getOriginalFilename() : null)
+                .file_type(file != null ? file.getContentType() : null)
                 .status(true)
                 .build();
 
@@ -51,7 +51,7 @@ public class ShortLeaveFormService {
 
     public List<ShortLeaveForm> getForms(String prefix) {
         List<ShortLeaveForm> forms = shortLeaveFormRepo.findByUserIdStartingWith(prefix);
-        if (!forms.isEmpty()){
+        if (!forms.isEmpty()) {
             return forms;
         }
         return Collections.emptyList();

@@ -41,9 +41,9 @@ public class FullLeaveFormService {
                 .end_date(fullLeaveFormDTO.getEnd_date())
                 .acting(fullLeaveFormDTO.getActing())
                 .reason(fullLeaveFormDTO.getReason())
-                .file_data(file != null? file.getBytes(): null)
-                .file_name(file != null? file.getOriginalFilename(): null)
-                .file_type(file != null? file.getContentType(): null)
+                .file_data(file != null ? file.getBytes() : null)
+                .file_name(file != null ? file.getOriginalFilename() : null)
+                .file_type(file != null ? file.getContentType() : null)
                 .status(true)
                 .build();
 
@@ -52,10 +52,10 @@ public class FullLeaveFormService {
     }
 
     public List<FullLeaveForm> getForms(String prefix) {
-            List<FullLeaveForm> forms = fullLeaveFormRepo.findByUserIdStartingWith(prefix);
-            if (!forms.isEmpty()){
-                return forms;
-            }
+        List<FullLeaveForm> forms = fullLeaveFormRepo.findByUserIdStartingWith(prefix);
+        if (!forms.isEmpty()) {
+            return forms;
+        }
         return Collections.emptyList();
     }
 }

@@ -46,7 +46,7 @@ public class SubtituteFormService {
 
     public List<SubtituteForm> getForms(String prefix) {
         List<SubtituteForm> forms = subtituteFormRepo.findByUserIdStartingWith(prefix);
-        if (!forms.isEmpty()){
+        if (!forms.isEmpty()) {
             return forms;
         }
         return Collections.emptyList();

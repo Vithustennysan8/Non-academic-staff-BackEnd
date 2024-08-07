@@ -23,14 +23,19 @@ public class AuthenticationController {
 
     @PostMapping(value = "/signup")
     public ResponseEntity<?> register(@ModelAttribute RegisterDTO registerDTO,
-                                            @RequestParam(value = "image", required = false) MultipartFile image) throws Exception {
+                                      @RequestParam(value = "image", required = false) MultipartFile image) throws Exception {
 
         return ResponseEntity.ok(authenticationService.registerStaff(registerDTO, image));
 
     }
 
+    @GetMapping(value = "/verify")
+    public ResponseEntity<String> confirmUser(@RequestParam("token") String token) {
+        return ResponseEntity.ok(authenticationService.confirmUser(token));
+    }
+
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) {
         return ResponseEntity
                 .ok(authenticationService.login(loginDTO));
     }

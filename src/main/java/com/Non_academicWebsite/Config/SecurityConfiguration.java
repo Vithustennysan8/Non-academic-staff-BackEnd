@@ -26,23 +26,23 @@ public class SecurityConfiguration {
     private AuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("api/auth/**").permitAll();
 
                     auth.requestMatchers("api/admin/**").hasRole(ADMIN.name());
-                    auth.requestMatchers(HttpMethod.GET,"api/admin/**").hasAuthority(ADMIN_READ.name());
-                    auth.requestMatchers(HttpMethod.POST,"api/admin/**").hasAuthority(ADMIN_CREATE.name());
-                    auth.requestMatchers(HttpMethod.PUT,"api/admin/**").hasAuthority(ADMIN_UPDATE.name());
-                    auth.requestMatchers(HttpMethod.DELETE,"api/admin/**").hasAuthority(ADMIN_DELETE.name());
+                    auth.requestMatchers(HttpMethod.GET, "api/admin/**").hasAuthority(ADMIN_READ.name());
+                    auth.requestMatchers(HttpMethod.POST, "api/admin/**").hasAuthority(ADMIN_CREATE.name());
+                    auth.requestMatchers(HttpMethod.PUT, "api/admin/**").hasAuthority(ADMIN_UPDATE.name());
+                    auth.requestMatchers(HttpMethod.DELETE, "api/admin/**").hasAuthority(ADMIN_DELETE.name());
 
                     auth.requestMatchers("/api/management/**").hasAnyRole(ADMIN.name(), MANAGER.name());
-                    auth.requestMatchers(HttpMethod.GET,"/api/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name());
-                    auth.requestMatchers(HttpMethod.POST,"/api/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name());
-                    auth.requestMatchers(HttpMethod.PUT,"/api/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name());
-                    auth.requestMatchers(HttpMethod.DELETE,"/api/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name());
+                    auth.requestMatchers(HttpMethod.GET, "/api/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name());
+                    auth.requestMatchers(HttpMethod.POST, "/api/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name());
+                    auth.requestMatchers(HttpMethod.PUT, "/api/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name());
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name());
                     auth.anyRequest().authenticated();
                 });
         http

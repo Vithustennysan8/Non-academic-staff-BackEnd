@@ -31,7 +31,7 @@ public class ForumService {
         User user = userRepo.findByEmail(email).orElseThrow();
 
         var forum = Forum.builder()
-                .userId(user.getId())
+                .user(user)
                 .userName(user.getFirst_name().concat(" " + user.getLast_name()))
                 .subject(forumDTO.getSubject())
                 .body(forumDTO.getBody())
@@ -48,10 +48,10 @@ public class ForumService {
         User user = userRepo.findByEmail(email).orElseThrow();
 
         String id = user.getId();
-        String prefix = id.substring(0,id.length()-3);
+        String prefix = id.substring(0, id.length() - 3);
 
         List<Forum> forums = forumRepo.findByUserIdStartingWith(prefix);
-        if(forums.isEmpty()){
+        if (forums.isEmpty()) {
             return Collections.emptyList();
         }
         return forums;
@@ -62,14 +62,14 @@ public class ForumService {
         String email = jwtService.extractUserEmail(token);
 
         User user = userRepo.findByEmail(email).orElseThrow();
-        if(forumRepo.existsById(id)){
+        if (forumRepo.existsById(id)) {
             Forum forum = forumRepo.findById(id).orElseThrow();
-            if(Objects.equals(forum.getUserId(), user.getId())){
+            if (Objects.equals(forum.getUser().getId(), user.getId())) {
                 forumRepo.deleteById(id);
             }
         }
         List<Forum> forums = forumRepo.findAll();
-        if(forums.isEmpty()){
+        if (forums.isEmpty()) {
             return Collections.emptyList();
         }
         return forums;
@@ -80,9 +80,11 @@ public class ForumService {
         String email = jwtService.extractUserEmail(token);
 
         User user = userRepo.findByEmail(email).orElseThrow();
-        if(forumRepo.existsById(id)){
+        String userId = user.getId();
+        String prefix = userId.substring(0, userId.length() - 3);
+        if (forumRepo.existsById(id)) {
             Forum forum = forumRepo.findById(id).orElseThrow();
-            if(Objects.equals(forum.getUserId(), user.getId())){
+            if (Objects.equals(forum.getUser().getId(), user.getId())) {
                 forum.setUserName(user.getFirst_name().concat(" " + user.getLast_name()));
                 forum.setSubject(forumDTO.getSubject());
                 forum.setBody(forumDTO.getBody());
@@ -92,8 +94,8 @@ public class ForumService {
             }
         }
 
-        List<Forum> forums = forumRepo.findAll();
-        if(forums.isEmpty()){
+        List<Forum> forums = forumRepo.findByUserIdStartingWith(prefix);
+        if (forums.isEmpty()) {
             return Collections.emptyList();
         }
         return forums;

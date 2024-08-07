@@ -19,25 +19,25 @@ public class ForumController {
 
     @PostMapping(value = "/add")
     public ResponseEntity<?> addForum(@RequestHeader("Authorization") String header,
-                                           @RequestBody ForumDTO forumDTO){
+                                      @RequestBody ForumDTO forumDTO) {
 
         return ResponseEntity.ok(forumService.addForum(header, forumDTO));
     }
 
     @GetMapping(value = "/get")
-    public ResponseEntity<List<Forum>> getForums(@RequestHeader("Authorization") String header){
+    public ResponseEntity<List<Forum>> getForums(@RequestHeader("Authorization") String header) {
         return ResponseEntity.ok(forumService.getForums(header));
     }
 
     @DeleteMapping(value = "delete/{id}")
     public ResponseEntity<List<Forum>> deleteForum(@PathVariable("id") Long id,
-                                                   @RequestHeader("Authorization") String header){
+                                                   @RequestHeader("Authorization") String header) {
         return ResponseEntity.ok(forumService.deleteForum(id, header));
     }
 
     @PutMapping(value = "update/{id}")
     public ResponseEntity<List<Forum>> updateForum(@PathVariable("id") Long id, @RequestBody ForumDTO forumDTO,
-                                                   @RequestHeader("Authorization") String header){
+                                                   @RequestHeader("Authorization") String header) {
         return ResponseEntity.ok(forumService.updateForum(id, forumDTO, header));
     }
 }

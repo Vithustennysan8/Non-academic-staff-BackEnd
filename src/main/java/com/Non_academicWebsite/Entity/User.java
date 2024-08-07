@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String gender;
     @Column(unique = true, nullable = false)
     private String email;
+    private String app_password;
     private Long phone_no;
     @Column(nullable = false)
     private String password;
@@ -51,6 +52,7 @@ public class User implements UserDetails {
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] image_data;
+    private boolean verified;
 
 
     @Override

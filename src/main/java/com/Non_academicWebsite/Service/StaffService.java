@@ -4,8 +4,11 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Repository.ForumRepo;
+import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,10 @@ public class StaffService {
     private JwtService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
+    @Autowired
+    private ForumRepo forumRepo;
 
     public List<User> getUsers(String header) {
         String token = header.substring(7);
@@ -29,7 +36,7 @@ public class StaffService {
         User user = userRepo.findByEmail(email).orElseThrow();
 
         String id = user.getId();
-        String prefix = id.substring(0,id.length()-3);
+        String prefix = id.substring(0, id.length() - 7);
         return userRepo.findByIdStartingWith(prefix);
     }
 
@@ -38,7 +45,7 @@ public class StaffService {
         User user = userRepo.findByEmail(email).orElseThrow();
 
         String imageBase64 = null;
-        if (user.getImage_data() != null){
+        if (user.getImage_data() != null) {
             imageBase64 = Base64.getEncoder().encodeToString(user.getImage_data());
         }
         return UserInfoResponse.builder()
@@ -96,8 +103,8 @@ public class StaffService {
         String oldPassword = resetPasswordDTO.getOld_password();
         String newPassword = resetPasswordDTO.getNew_password();
 
-        if(passwordEncoder.matches(oldPassword,user.getPassword())){
-            if(!passwordEncoder.matches(newPassword, user.getPassword())){
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+            if (!passwordEncoder.matches(newPassword, user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 userRepo.save(user);
                 return "reset success";
@@ -108,6 +115,7 @@ public class StaffService {
     }
 
 
+    @Transactional
     public String deleteAccount(String header, SecurityDTO deleteAccountDTO) {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
@@ -115,10 +123,13 @@ public class StaffService {
         User user = userRepo.findByEmail(email).orElseThrow();
         String oldPassword = deleteAccountDTO.getPassword_for_delete();
 
-        if(passwordEncoder.matches(oldPassword,user.getPassword())){
-                userRepo.delete(user);
-                return "delete success";
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalStateException("Password not matched");
         }
-        return "delete rejected";
+
+        forumRepo.deleteByUserId(user.getId());
+        registerConfirmationTokenRepo.deleteByUserId(user.getId());
+        userRepo.delete(user);
+        return "delete success";
     }
 }

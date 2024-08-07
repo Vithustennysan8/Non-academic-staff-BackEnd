@@ -41,9 +41,9 @@ public class TransferFormService {
                 .preference2(transferFromDTO.getPreference2())
                 .preference3(transferFromDTO.getPreference3())
                 .reason(transferFromDTO.getReason())
-                .file_data(file != null? file.getBytes(): null)
-                .file_name(file != null? file.getOriginalFilename(): null)
-                .file_type(file != null? file.getContentType(): null)
+                .file_data(file != null ? file.getBytes() : null)
+                .file_name(file != null ? file.getOriginalFilename() : null)
+                .file_type(file != null ? file.getContentType() : null)
                 .status(true)
                 .build();
 
@@ -53,7 +53,7 @@ public class TransferFormService {
 
     public List<TransferForm> getForms(String prefix) {
         List<TransferForm> forms = transferFormRepo.findByUserIdStartingWith(prefix);
-        if (!forms.isEmpty()){
+        if (!forms.isEmpty()) {
             return forms;
         }
         return Collections.emptyList();

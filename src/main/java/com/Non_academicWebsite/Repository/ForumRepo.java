@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface ForumRepo extends JpaRepository<Forum, Long> {
     List<Forum> findByUserIdStartingWith(String prefix);
+
+    void deleteByUserId(String id);
 }

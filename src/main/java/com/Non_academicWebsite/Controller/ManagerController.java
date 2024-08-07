@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerController {
 
     @GetMapping(value = "/get")
-    public ResponseEntity<?> get(){
+    public ResponseEntity<?> get() {
         return ResponseEntity.ok("Manager::get");
     }
 

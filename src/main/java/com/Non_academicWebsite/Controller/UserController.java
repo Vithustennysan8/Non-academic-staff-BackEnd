@@ -19,33 +19,33 @@ public class UserController {
     private StaffService staffService;
 
     @GetMapping(value = "/staffs")
-    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String header){
-        return ResponseEntity.ok( staffService.getUsers(header));
+    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String header) {
+        return ResponseEntity.ok(staffService.getUsers(header));
     }
 
     @GetMapping(value = "/info")
-    public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header){
+    public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header) {
         String token = header.substring(7);
-        return ResponseEntity.ok( staffService.getUser(token));
+        return ResponseEntity.ok(staffService.getUser(token));
     }
 
     @PutMapping(value = "/update")
     public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String header,
-                              @RequestBody RegisterDTO registerDTO){
+                                           @RequestBody RegisterDTO registerDTO) {
         staffService.updateProfile(header, registerDTO);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/reset")
     public ResponseEntity<String> resetPassword(@RequestHeader("Authorization") String header,
-                                @RequestBody SecurityDTO resetPasswordDTO){
+                                                @RequestBody SecurityDTO resetPasswordDTO) {
         return ResponseEntity.ok(staffService.resetPassword(header, resetPasswordDTO));
     }
 
-    @DeleteMapping( value = "/delete")
+    @DeleteMapping(value = "/delete")
     public ResponseEntity<String> deleteAccount(@RequestHeader("Authorization") String header,
-                              @RequestBody SecurityDTO deleteAccountDTO){
-        return ResponseEntity.ok(staffService.deleteAccount(header,deleteAccountDTO));
+                                                @RequestBody SecurityDTO deleteAccountDTO) {
+        return ResponseEntity.ok(staffService.deleteAccount(header, deleteAccountDTO));
     }
 
 }
