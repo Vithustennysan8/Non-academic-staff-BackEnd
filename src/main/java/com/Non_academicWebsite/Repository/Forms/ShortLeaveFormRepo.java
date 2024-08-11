@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface ShortLeaveFormRepo extends JpaRepository<ShortLeaveForm, Long> {
     List<ShortLeaveForm> findByUserIdStartingWith(String prefix);
+    List<ShortLeaveForm> findByFacultyAndDepartment(String faculty, String department);
+    List<ShortLeaveForm> findByFaculty(String faculty);
 }

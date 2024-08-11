@@ -11,5 +11,8 @@ import java.util.List;
 @Repository
 public interface FullLeaveFormRepo extends JpaRepository<FullLeaveForm, Long> {
     List<FullLeaveForm> findByUserIdStartingWith(String prefix);
+    List<FullLeaveForm> findByFacultyAndDepartment(String faculty, String department);
+    List<FullLeaveForm> findByFaculty(String faculty);
+
 
 }

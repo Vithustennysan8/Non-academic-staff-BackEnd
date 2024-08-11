@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/manager")
+@RequestMapping(value = "/api/management")
 public class ManagerController {
 
     @GetMapping(value = "/get")

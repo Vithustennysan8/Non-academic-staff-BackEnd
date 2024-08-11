@@ -17,17 +17,21 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "22DBC2A936FD2BF2F4F37462B6ABC322N32N32N3J2NJ3J23JSN323END238324NDJ2S8SW";
+    private static final String SECRET_KEY = "MjJEQkMyQTkzNkZEMkJGMkY0RjM3NDYyQjZBQkMzMjJOMzJOMzJOM0oyTkozSjIzSlNOMzIzRU5EMjM4MzI0TkRKMlM4U1c";
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+        try{
+            return Jwts
+                    .builder()
+                    .setClaims(extraClaims)
+                    .setSubject(userDetails.getUsername())
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                    .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                    .compact();
+        }catch (Exception e){
+            throw new IllegalStateException("Invalid jwt token", e);
+        }
     }
 
     private Key getSignInKey() {

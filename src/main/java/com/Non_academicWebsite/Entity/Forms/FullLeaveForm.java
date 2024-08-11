@@ -19,13 +19,16 @@ public class FullLeaveForm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String empId;
+    private String emp_id;
     private String userId;
     private String faculty;
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date job_start_date;
-    private int leave_days;
+    private String experience;
+    private String preference1;
+    private String preference2;
+    private String preference3;
     private String leave_type;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date start_date;
@@ -39,5 +42,8 @@ public class FullLeaveForm {
     private byte[] file_data;
     private String file_name;
     private String file_type;
+    private boolean isRejected;
+    private boolean isApproved;
+    private String formType;
 
 }

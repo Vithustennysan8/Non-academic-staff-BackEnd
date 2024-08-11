@@ -12,4 +12,6 @@ import java.util.Optional;
 @Repository
 public interface SubtituteFormRepo extends JpaRepository<SubtituteForm, Long> {
     List<SubtituteForm> findByUserIdStartingWith(String prefix);
+    List<SubtituteForm> findByFacultyAndDepartment(String faculty, String department);
+    List<SubtituteForm> findByFaculty(String faculty);
 }

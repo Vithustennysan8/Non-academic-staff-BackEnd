@@ -17,7 +17,7 @@ import java.util.Date;
 public class RegisterDTO {
     private String first_name;
     private String last_name;
-    @DateTimeFormat( pattern = "dd-MM-yyyy")
+    @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date date_of_birth;
     private String gender;
     private String email;
@@ -26,7 +26,7 @@ public class RegisterDTO {
     private String password;
     private String address;
     private String city;
-    private Integer postal_code;
+    private String postal_code;
     private String ic_no;
     private String emp_id;
     private String job_type;

@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.Forms.ShortLeaveFormDTO;
+import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.ShortLeaveForm;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.ShortLeaveFormRepo;
@@ -37,7 +38,7 @@ public class ShortLeaveFormService {
                 .job_start_date(shortLeaveFormDTO.getJob_start_date())
                 .duration(shortLeaveFormDTO.getDuration())
                 .leave_type(shortLeaveFormDTO.getLeave_type())
-                .leave_date(shortLeaveFormDTO.getLeave_date())
+                .start_date(shortLeaveFormDTO.getStart_date())
                 .reason(shortLeaveFormDTO.getReason())
                 .file_data(file != null ? file.getBytes() : null)
                 .file_name(file != null ? file.getOriginalFilename() : null)
@@ -55,5 +56,12 @@ public class ShortLeaveFormService {
             return forms;
         }
         return Collections.emptyList();
+    }
+
+    public List<ShortLeaveForm> getShortLeaveForms(ReqFormsDTO reqFormsDTO) {
+        if(reqFormsDTO.getDepartment().isEmpty()){
+            return shortLeaveFormRepo.findByFaculty(reqFormsDTO.getFaculty());
+        }
+        return shortLeaveFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
     }
 }

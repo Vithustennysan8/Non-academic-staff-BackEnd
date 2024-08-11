@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface TransferFormRepo extends JpaRepository<TransferForm, Long> {
     List<TransferForm> findByUserIdStartingWith(String prefix);
+    List<TransferForm> findByFacultyAndDepartment(String faculty, String department);
+    List<TransferForm> findByFaculty(String faculty);
 }

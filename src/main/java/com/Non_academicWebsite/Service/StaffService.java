@@ -4,6 +4,7 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
@@ -12,7 +13,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +32,8 @@ public class StaffService {
     private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
     @Autowired
     private ForumRepo forumRepo;
+    @Autowired
+    private AttendanceRepo attendanceRepo;
 
     public List<User> getUsers(String header) {
         String token = header.substring(7);
@@ -68,10 +73,11 @@ public class StaffService {
                 .image_name(user.getImage_name())
                 .image_data(imageBase64)
                 .isLogin(true)
+                .role(user.getRole().toString())
                 .build();
     }
 
-    public void updateProfile(String header, RegisterDTO registerDTO) {
+    public User updateProfile(String header, RegisterDTO registerDTO, MultipartFile image) throws IOException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
@@ -80,19 +86,18 @@ public class StaffService {
         user.setLast_name(registerDTO.getLast_name());
         user.setDate_of_birth(registerDTO.getDate_of_birth());
         user.setGender(registerDTO.getGender());
-        user.setEmail(registerDTO.getEmail());
         user.setPhone_no(registerDTO.getPhone_no());
         user.setAddress(registerDTO.getAddress());
         user.setCity(registerDTO.getCity());
         user.setPostal_code(registerDTO.getPostal_code());
         user.setIc_no(registerDTO.getIc_no());
         user.setEmp_id(registerDTO.getEmp_id());
-        user.setJob_type(registerDTO.getJob_type());
-        user.setDepartment(registerDTO.getDepartment());
-        user.setFaculty(registerDTO.getFaculty());
+        user.setImage_name(image != null? image.getOriginalFilename() : user.getImage_name());
+        user.setImage_type(image != null? image.getContentType(): user.getImage_type());
+        user.setImage_data(image != null? image.getBytes(): user.getImage_data());
         user.setUpdatedAt(new Date());
 
-        userRepo.save(user);
+        return userRepo.save(user);
     }
 
     public String resetPassword(String header, SecurityDTO resetPasswordDTO) {
@@ -129,6 +134,7 @@ public class StaffService {
 
         forumRepo.deleteByUserId(user.getId());
         registerConfirmationTokenRepo.deleteByUserId(user.getId());
+        attendanceRepo.deleteByUserId(user.getId());
         userRepo.delete(user);
         return "delete success";
     }

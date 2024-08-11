@@ -21,8 +21,12 @@ public class FullLeaveFormDTO {
     private String department;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date job_start_date;
-    private int leave_days;
     private String leave_type;
+    private int duration;
+    private String experience;
+    private String preference1;
+    private String preference2;
+    private String preference3;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date start_date;
     @DateTimeFormat(pattern = "dd-MM-yyyy")

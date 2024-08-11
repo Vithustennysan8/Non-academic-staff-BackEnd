@@ -11,6 +11,5 @@ import java.util.Optional;
 @EnableJpaRepositories
 public interface RegisterConfirmationTokenRepo extends JpaRepository<RegisterConfirmationToken, Long> {
     Optional<RegisterConfirmationToken> findByToken(String token);
-
     void deleteByUserId(String userId);
 }

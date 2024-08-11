@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.Forms.TransferFromDTO;
+import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.TransferFormRepo;
@@ -58,4 +59,12 @@ public class TransferFormService {
         }
         return Collections.emptyList();
     }
+
+    public List<TransferForm> getTransferForms(ReqFormsDTO reqFormsDTO) {
+        if(reqFormsDTO.getDepartment().isEmpty()){
+            return transferFormRepo.findByFaculty(reqFormsDTO.getFaculty());
+        }
+        return transferFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
+    }
+
 }

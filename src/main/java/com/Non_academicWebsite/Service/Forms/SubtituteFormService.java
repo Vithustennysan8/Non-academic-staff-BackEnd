@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.Forms.SubtituteFormDTO;
+import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.SubtituteForm;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.SubtituteFormRepo;
@@ -50,5 +51,12 @@ public class SubtituteFormService {
             return forms;
         }
         return Collections.emptyList();
+    }
+
+    public List<SubtituteForm> getSubtituteForms(ReqFormsDTO reqFormsDTO) {
+        if(reqFormsDTO.getDepartment().isEmpty()){
+            return subtituteFormRepo.findByFaculty(reqFormsDTO.getFaculty());
+        }
+        return subtituteFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
     }
 }

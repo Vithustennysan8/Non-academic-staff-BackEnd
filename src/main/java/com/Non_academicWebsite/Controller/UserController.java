@@ -8,7 +8,9 @@ import com.Non_academicWebsite.Service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,6 +19,11 @@ import java.util.List;
 public class UserController {
     @Autowired
     private StaffService staffService;
+
+    @GetMapping("/get")
+    public String get() {
+        return "USER::get";
+    }
 
     @GetMapping(value = "/staffs")
     public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String header) {
@@ -31,9 +38,10 @@ public class UserController {
 
     @PutMapping(value = "/update")
     public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String header,
-                                           @RequestBody RegisterDTO registerDTO) {
-        staffService.updateProfile(header, registerDTO);
-        return ResponseEntity.ok().build();
+                                           @ModelAttribute RegisterDTO registerDTO,
+                                           @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+        User user = staffService.updateProfile(header, registerDTO, image);
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping(value = "/reset")

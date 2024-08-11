@@ -28,7 +28,7 @@ public class ShortLeaveForm {
     private int duration;
     private String leave_type;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date leave_date;
+    private Date start_date;
     private String reason;
     private boolean status;
     @Lob
