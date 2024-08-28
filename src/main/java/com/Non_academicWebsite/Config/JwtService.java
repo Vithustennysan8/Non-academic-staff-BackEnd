@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Config;
 
+import com.Non_academicWebsite.Entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,7 +9,11 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +23,13 @@ import java.util.function.Function;
 public class JwtService {
 
     private static final String SECRET_KEY = "MjJEQkMyQTkzNkZEMkJGMkY0RjM3NDYyQjZBQkMzMjJOMzJOMzJOM0oyTkozSjIzSlNOMzIzRU5EMjM4MzI0TkRKMlM4U1c";
+//    private String SECRET_KEY = "";
+
+//    public JwtService() throws NoSuchAlgorithmException {
+//        KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
+//        SecretKey secretKey = keyGenerator.generateKey();
+//        SECRET_KEY = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+//    }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         try{
@@ -39,7 +51,9 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Role role) {
+        HashMap<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         return generateToken(new HashMap<>(), userDetails);
     }
 

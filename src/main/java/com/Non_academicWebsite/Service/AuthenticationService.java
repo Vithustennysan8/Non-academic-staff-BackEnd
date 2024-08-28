@@ -68,8 +68,8 @@ public class AuthenticationService {
                 .image_type(image != null ? image.getContentType() : null)
                 .image_name(image != null ? image.getOriginalFilename() : null)
                 .image_data(image != null ? image.getBytes() : null)
-//                .role(registerDTO.getRole())
-                .role(Role.USER)
+                .role(registerDTO.getRole())
+//                .role(Role.USER)
                 .verified(false)
                 .build();
 
@@ -96,7 +96,7 @@ public class AuthenticationService {
         User user = userRepo.findByEmail(loginDTO.getEmail())
                 .orElseThrow();
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user, user.getRole());
 
         return AuthenticationResponse
                 .builder()

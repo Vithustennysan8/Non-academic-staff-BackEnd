@@ -53,10 +53,4 @@ public class SubtituteFormService {
         return Collections.emptyList();
     }
 
-    public List<SubtituteForm> getSubtituteForms(ReqFormsDTO reqFormsDTO) {
-        if(reqFormsDTO.getDepartment().isEmpty()){
-            return subtituteFormRepo.findByFaculty(reqFormsDTO.getFaculty());
-        }
-        return subtituteFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
-    }
 }

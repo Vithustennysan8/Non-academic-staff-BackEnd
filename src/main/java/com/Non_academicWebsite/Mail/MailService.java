@@ -17,8 +17,6 @@ import java.util.Properties;
 public class MailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
-//    @Autowired
-//    private JavaMailSender javaMailSender;
 
     @Async
     public void sendMail(String from, String password, String to, String url, String name, String department, String faculty) {

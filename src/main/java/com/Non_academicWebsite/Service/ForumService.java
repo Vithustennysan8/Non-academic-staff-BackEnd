@@ -3,6 +3,7 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.ForumDTO;
 import com.Non_academicWebsite.Entity.Forum;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
@@ -48,7 +49,7 @@ public class ForumService {
         User user = userRepo.findByEmail(email).orElseThrow();
 
         String id = user.getId();
-        String prefix = id.substring(0, id.length() - 3);
+        String prefix = id.substring(0, id.length() - 7);
 
         List<Forum> forums = forumRepo.findByUserIdStartingWith(prefix);
         if (forums.isEmpty()) {
@@ -64,7 +65,7 @@ public class ForumService {
         User user = userRepo.findByEmail(email).orElseThrow();
         if (forumRepo.existsById(id)) {
             Forum forum = forumRepo.findById(id).orElseThrow();
-            if (Objects.equals(forum.getUser().getId(), user.getId())) {
+            if (Objects.equals(forum.getUser().getId(), user.getId()) || user.getRole() == Role.ADMIN) {
                 forumRepo.deleteById(id);
             }
         }

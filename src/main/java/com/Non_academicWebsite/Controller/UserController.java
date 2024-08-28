@@ -21,8 +21,8 @@ public class UserController {
     private StaffService staffService;
 
     @GetMapping("/get")
-    public String get() {
-        return "USER::get";
+    public ResponseEntity<String> get() {
+        return ResponseEntity.ok("USER::get");
     }
 
     @GetMapping(value = "/staffs")

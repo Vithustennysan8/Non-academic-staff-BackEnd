@@ -57,11 +57,4 @@ public class ShortLeaveFormService {
         }
         return Collections.emptyList();
     }
-
-    public List<ShortLeaveForm> getShortLeaveForms(ReqFormsDTO reqFormsDTO) {
-        if(reqFormsDTO.getDepartment().isEmpty()){
-            return shortLeaveFormRepo.findByFaculty(reqFormsDTO.getFaculty());
-        }
-        return shortLeaveFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
-    }
 }
