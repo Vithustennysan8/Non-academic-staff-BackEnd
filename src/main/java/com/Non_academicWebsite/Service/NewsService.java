@@ -68,7 +68,7 @@ public class NewsService {
     public User extractUser(String Authorization){
         String token = Authorization.substring(7);
         String email = jwtService.extractUserEmail(token);
-        return userRepo.findByEmail(email).orElseThrow();
+        return userRepo.findByEmail(email).orElseThrow(()-> new NullPointerException("User is not found!"));
     }
 
     public List<News> delete(Integer id, String header) {

@@ -76,8 +76,9 @@ public class UserIdGenerator {
         departments.put("Prosthetic Dentistry", "PD");
         departments.put("Restorative Dentistry", "RD");
         departments.put("Oral and Maxillofacial Surgery", "OMS");
-        departments.put("Chemical and Process Engineering", "CE");
+        departments.put("Chemical and Process Engineering", "CPE");
         departments.put("Computer Engineering", "CO");
+        departments.put("Civil Engineering", "CE");
         departments.put("Electrical and Electronic Engineering", "EEE");
         departments.put("Engineering Mathematics", "EMATH");
         departments.put("Mechanical Engineering", "ME");
@@ -128,6 +129,7 @@ public class UserIdGenerator {
         departments.put("HR Section", "HS");
         departments.put("Student Affairs Section", "SAS");
 
+        positions.put("Head of the Department", "HD");
         positions.put("Technical Officer", "TO");
         positions.put("Management Assistant", "MA");
         positions.put("Book Keeper", "BK");

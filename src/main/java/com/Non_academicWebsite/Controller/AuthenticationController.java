@@ -29,11 +29,6 @@ public class AuthenticationController {
 
     }
 
-    @GetMapping(value = "/verify")
-    public ResponseEntity<String> confirmUser(@RequestParam("token") String token) {
-        return ResponseEntity.ok(authenticationService.confirmUser(token));
-    }
-
     @PostMapping(value = "/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) {
         return ResponseEntity

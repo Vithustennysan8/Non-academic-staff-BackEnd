@@ -1,7 +1,6 @@
 package com.Non_academicWebsite.Controller.Forms;
 
 import com.Non_academicWebsite.DTO.Forms.TransferFromDTO;
-import com.Non_academicWebsite.Entity.Forms.FullLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Service.Forms.TransferFormService;
 import org.springframework.beans.factory.annotation.Autowired;

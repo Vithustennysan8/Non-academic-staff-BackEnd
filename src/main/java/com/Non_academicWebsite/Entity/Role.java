@@ -20,19 +20,19 @@ public enum Role {
                     ADMIN_CREATE,
                     ADMIN_READ,
                     ADMIN_UPDATE,
-                    ADMIN_DELETE,
-                    MANAGER_CREATE,
-                    MANAGER_READ,
-                    MANAGER_UPDATE,
-                    MANAGER_DELETE
+                    ADMIN_DELETE
             )
     ),
-    MANAGER(
+    SUPER_ADMIN(
             Set.of(
-                    MANAGER_CREATE,
-                    MANAGER_READ,
-                    MANAGER_UPDATE,
-                    MANAGER_DELETE
+                    SUPER_ADMIN_CREATE,
+                    SUPER_ADMIN_READ,
+                    SUPER_ADMIN_UPDATE,
+                    SUPER_ADMIN_DELETE,
+                    ADMIN_DELETE,
+                    ADMIN_UPDATE,
+                    ADMIN_READ,
+                    ADMIN_CREATE
             )
     );
 

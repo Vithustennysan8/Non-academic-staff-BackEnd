@@ -18,6 +18,8 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String heading;
+    @Lob
+    @Column(length = 512000)
     private String body;
     private Date createdAt;
     private Date updatedAt;

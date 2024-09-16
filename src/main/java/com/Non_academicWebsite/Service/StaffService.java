@@ -4,7 +4,7 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.User;
-import com.Non_academicWebsite.Repository.AttendanceRepo;
+//import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
@@ -32,13 +32,14 @@ public class StaffService {
     private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
     @Autowired
     private ForumRepo forumRepo;
-    @Autowired
-    private AttendanceRepo attendanceRepo;
+//    @Autowired
+//    private AttendanceRepo attendanceRepo;
 
     public List<User> getUsers(String header) {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(()-> new NullPointerException("User is not found!"));
 
         String id = user.getId();
         String prefix = id.substring(0, id.length() - 7);
@@ -47,7 +48,7 @@ public class StaffService {
 
     public UserInfoResponse getUser(String token) {
         String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow();
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new NullPointerException("User is not found!"));
 
         String imageBase64 = null;
         if (user.getImage_data() != null) {
@@ -72,8 +73,10 @@ public class StaffService {
                 .image_type(user.getImage_type())
                 .image_name(user.getImage_name())
                 .image_data(imageBase64)
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .isLogin(true)
-                .role(user.getRole().toString())
+                .role(user.getRole() != null? user.getRole().toString(): "none")
                 .build();
     }
 
@@ -81,7 +84,8 @@ public class StaffService {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(registerDTO.getEmail()).orElseThrow();
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new NullPointerException("User is not found!"));
+
         user.setFirst_name(registerDTO.getFirst_name());
         user.setLast_name(registerDTO.getLast_name());
         user.setDate_of_birth(registerDTO.getDate_of_birth());
@@ -91,20 +95,20 @@ public class StaffService {
         user.setCity(registerDTO.getCity());
         user.setPostal_code(registerDTO.getPostal_code());
         user.setIc_no(registerDTO.getIc_no());
-        user.setEmp_id(registerDTO.getEmp_id());
         user.setImage_name(image != null? image.getOriginalFilename() : user.getImage_name());
         user.setImage_type(image != null? image.getContentType(): user.getImage_type());
         user.setImage_data(image != null? image.getBytes(): user.getImage_data());
         user.setUpdatedAt(new Date());
 
-        return userRepo.save(user);
+        userRepo.save(user);
+        return user;
     }
 
     public String resetPassword(String header, SecurityDTO resetPasswordDTO) {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(email).orElseThrow();
+        User user = userRepo.findByEmail(email).orElseThrow(()->new NullPointerException("User is not found!"));
         String oldPassword = resetPasswordDTO.getOld_password();
         String newPassword = resetPasswordDTO.getNew_password();
 
@@ -125,7 +129,7 @@ public class StaffService {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(email).orElseThrow();
+        User user = userRepo.findByEmail(email).orElseThrow(()->new NullPointerException("User is not found!"));
         String oldPassword = deleteAccountDTO.getPassword_for_delete();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
@@ -134,7 +138,7 @@ public class StaffService {
 
         forumRepo.deleteByUserId(user.getId());
         registerConfirmationTokenRepo.deleteByUserId(user.getId());
-        attendanceRepo.deleteByUserId(user.getId());
+//        attendanceRepo.deleteByUserId(user.getId());
         userRepo.delete(user);
         return "delete success";
     }

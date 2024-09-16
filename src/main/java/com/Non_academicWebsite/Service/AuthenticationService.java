@@ -4,7 +4,7 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
-import com.Non_academicWebsite.Entity.Role;
+import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.UserRepo;
@@ -17,8 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class AuthenticationService {
@@ -36,7 +37,6 @@ public class AuthenticationService {
     private RegisterConfirmationTokenService confirmationTokenService;
     @Autowired
     private MailService mailService;
-
 
     @Transactional
     public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws Exception {
@@ -105,13 +105,12 @@ public class AuthenticationService {
                 .build();
     }
 
-    public String confirmUser(String token) {
-        User user = confirmationTokenService.confirm(token);
+    public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header) {
+        User user = confirmationTokenService.confirm(confirmationToken);
         if (user != null) {
             user.setVerified(true);
             userRepo.save(user);
-            return "Verification is Confirmed, Go back to the website :)";
         }
-        return "No user Found";
+        return confirmationTokenService.getVerifyRequests(header);
     }
 }

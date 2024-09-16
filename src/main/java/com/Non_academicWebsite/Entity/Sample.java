@@ -15,6 +15,7 @@ public class Sample {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String formType = "Sample Form";
     private String name;
     private String reason;
     private String faculty;

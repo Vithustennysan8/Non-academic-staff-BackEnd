@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "\"user\"")
 public class User implements UserDetails {
 
     @Id
@@ -35,7 +36,7 @@ public class User implements UserDetails {
     private String password;
     private String address;
     private String city;
-    private String postal_code;
+    private Integer postal_code;
     private String ic_no;
     private String emp_id;
     private String job_type;
@@ -87,6 +88,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return verified;
     }
 }

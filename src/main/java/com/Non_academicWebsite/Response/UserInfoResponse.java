@@ -26,7 +26,7 @@ public class UserInfoResponse {
     private Long phone_no;
     private String address;
     private String city;
-    private String postal_code;
+    private Integer postal_code;
     private String ic_no;
     private String emp_id;
     private String job_type;

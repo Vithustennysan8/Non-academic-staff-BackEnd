@@ -17,15 +17,23 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+//@AutoConfigureTestDatabase
 @ActiveProfiles("test")
 public class UserRepoTest {
 
     @Autowired
     private UserRepo userRepo;
 
-    @Test void testSaveUser(){
+    @Test
+    public void testSaveUser(){
         User user = User.builder()
+                .id("EN_CO_MN_005")
+                .app_password(null)
+                .image_type( null)
+                .image_name(null)
+                .image_data(null)
+                .verified(false)
                 .first_name("John")
                 .last_name("Doe")
                 .date_of_birth(new Date())
@@ -62,14 +70,17 @@ public class UserRepoTest {
         assertEquals("male", user.getGender());
         assertEquals(1234567890L, user.getPhone_no());
         assertEquals("password", user.getPassword());
+        assertNull(user.getApp_password());
+        assertNull(user.getImage_data());
+        assertNull(user.getImage_type());
+        assertNull(user.getImage_name());
         assertNotNull(user.getCreatedAt());
         assertNotNull(user.getUpdatedAt());
 
 
         User savedUser = userRepo.save(user);
         assertNotNull(savedUser);
-
-
+        assertEquals(userRepo.findAll().size(), 1);
     }
 
     @Test
@@ -94,6 +105,12 @@ public class UserRepoTest {
                 .role(Role.USER)
                 .createdAt(null)
                 .updatedAt(null)
+                .id("EN_CO_MN_005")
+                .app_password(null)
+                .image_type( null)
+                .image_name(null)
+                .image_data(null)
+                .verified(false)
                 .build();
 
         // Assert that null or empty values are handled appropriately
@@ -113,6 +130,10 @@ public class UserRepoTest {
         assertEquals("", user.getDepartment());
         assertEquals("", user.getFaculty());
         assertEquals(Role.USER, user.getRole());
+        assertNull(user.getApp_password());
+        assertNull(user.getImage_data());
+        assertNull(user.getImage_type());
+        assertNull(user.getImage_name());
         assertNull(user.getCreatedAt());
         assertNull(user.getUpdatedAt());
     }
