@@ -54,6 +54,7 @@ public class User implements UserDetails {
     @Column(columnDefinition = "LONGBLOB")
     private byte[] image_data;
     private boolean verified;
+    private boolean rejected;
 
 
     @Override

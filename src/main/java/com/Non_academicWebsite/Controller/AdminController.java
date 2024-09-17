@@ -38,6 +38,11 @@ public class AdminController {
         return ResponseEntity.ok("ADMIN::get");
     }
 
+    @DeleteMapping(value = "/deleteUser/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable("id") String id,
+                                            @RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(adminService.deleteUserById(id, header));
+    }
     @GetMapping(value = "/verifyRequests")
     public ResponseEntity<List<RegisterConfirmationToken>> getVerifyRequests(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(confirmationTokenService.getVerifyRequests(header));
@@ -66,10 +71,9 @@ public class AdminController {
     }
 
     @GetMapping("/leaveForms/notify")
-    public ResponseEntity<?> notifyFormRequests(@RequestHeader("Authorization") String header){
+    public ResponseEntity<?> notifyLeaveFormRequests(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(adminService.getAllFormRequests(header));
     }
-
 
     @PutMapping(value = "/accept/{id}")
     public ResponseEntity<?> acceptNormalLeaveForm(@PathVariable("id") Integer formId,

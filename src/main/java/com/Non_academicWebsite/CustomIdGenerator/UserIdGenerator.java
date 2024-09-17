@@ -129,6 +129,7 @@ public class UserIdGenerator {
         departments.put("HR Section", "HS");
         departments.put("Student Affairs Section", "SAS");
 
+        positions.put("Dean", "DE");
         positions.put("Head of the Department", "HD");
         positions.put("Technical Officer", "TO");
         positions.put("Management Assistant", "MA");

@@ -45,7 +45,8 @@ public class AccidentLeaveFormService {
                 .user(user)
                 .formType("Accident Leave Form")
                 .approverOneStatus("pending")
-                .status("pending")
+                .approverTwoStatus("pending")
+                .status("Pending")
                 .createdAt(new Date())
                 .build();
 
@@ -65,6 +66,9 @@ public class AccidentLeaveFormService {
 
         if(reqFormsDTO.getDepartment() == null && reqFormsDTO.getFaculty() == null){
             return accidentLeaveFormRepo.findByUserIdStartingWith(prefix);
+        }
+        else if(reqFormsDTO.getFaculty() == null){
+            return accidentLeaveFormRepo.findByDepartment(user.getFaculty(), reqFormsDTO.getDepartment());
         }
         else if(reqFormsDTO.getDepartment() == null){
             return accidentLeaveFormRepo.findByFaculty(reqFormsDTO.getFaculty());
@@ -108,12 +112,12 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setApproverOne(approvalDTO.getUser());
                 accidentLeaveForm.setApproverOneDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setApproverOneReactedAt(new Date());
-            } else if (job.equals("Manager")) {
+            } else if (job.equals("Dean")) {
                 accidentLeaveForm.setApproverTwoStatus("Accepted");
                 accidentLeaveForm.setApproverTwo(approvalDTO.getUser());
                 accidentLeaveForm.setApproverTwoDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setApproverTwoReactedAt(new Date());
-                accidentLeaveForm.setStatus("accepted");
+                accidentLeaveForm.setStatus("Accepted");
             }
             return accidentLeaveFormRepo.save(accidentLeaveForm);
         }
@@ -131,13 +135,13 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setApproverOne(approvalDTO.getUser());
                 accidentLeaveForm.setApproverOneDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setApproverOneReactedAt(new Date());
-                accidentLeaveForm.setStatus("rejected");
-            }else if (job.equals("Manager")) {
+                accidentLeaveForm.setStatus("Rejected");
+            }else if (job.equals("Dean")) {
                 accidentLeaveForm.setApproverTwoStatus("Rejected");
                 accidentLeaveForm.setApproverTwo(approvalDTO.getUser());
                 accidentLeaveForm.setApproverTwoDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setApproverTwoReactedAt(new Date());
-                accidentLeaveForm.setStatus("rejected");
+                accidentLeaveForm.setStatus("Rejected");
             }
             return accidentLeaveFormRepo.save(accidentLeaveForm);
         }

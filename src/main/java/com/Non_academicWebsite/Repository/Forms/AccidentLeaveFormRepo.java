@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,8 @@ public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, 
     List<AccidentLeaveForm> findByFaculty(@Param("faculty") String faculty);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<AccidentLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
+
+    List<AccidentLeaveForm> findByUserIdStartingWithAndApproverOneStatus(String prefix, String accepted);
+    @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
+    List<AccidentLeaveForm> findByDepartment(String faculty, String department);
 }

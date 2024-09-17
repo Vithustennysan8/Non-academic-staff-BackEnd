@@ -50,7 +50,7 @@ public class NormalLeaveFormService {
                 .user(user)
                 .formType("Normal Leave Form")
                 .approverOneStatus("pending")
-                .status("pending")
+                .status("Pending")
                 .build();
 
         return normalLeaveFormRepo.save(normalLeaveForm);
@@ -69,6 +69,9 @@ public class NormalLeaveFormService {
 
         if(reqFormsDTO.getDepartment() == null && reqFormsDTO.getFaculty() == null){
             return normalLeaveFormRepo.findByUserIdStartingWith(prefix);
+        }
+        if(reqFormsDTO.getFaculty() == null){
+            return normalLeaveFormRepo.findByDepartment(user.getFaculty(), reqFormsDTO.getDepartment());
         }
         if(reqFormsDTO.getDepartment() == null){
             return normalLeaveFormRepo.findByFaculty(reqFormsDTO.getFaculty());
@@ -112,7 +115,7 @@ public class NormalLeaveFormService {
                 normalLeaveForm.setApproverOne(approvalDTO.getUser());
                 normalLeaveForm.setApproverOneDescription(approvalDTO.getDescription());
                 normalLeaveForm.setApproverOneReactedAt(new Date());
-                normalLeaveForm.setStatus("accepted");
+                normalLeaveForm.setStatus("Accepted");
             }
             return normalLeaveFormRepo.save(normalLeaveForm);
         }
@@ -130,7 +133,7 @@ public class NormalLeaveFormService {
                 normalLeaveForm.setApproverOne(approvalDTO.getUser());
                 normalLeaveForm.setApproverOneDescription(approvalDTO.getDescription());
                 normalLeaveForm.setApproverOneReactedAt(new Date());
-                normalLeaveForm.setStatus("rejected");
+                normalLeaveForm.setStatus("Rejected");
             }
             return normalLeaveFormRepo.save(normalLeaveForm);
         }

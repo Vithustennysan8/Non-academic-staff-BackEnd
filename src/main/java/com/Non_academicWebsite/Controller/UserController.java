@@ -56,4 +56,9 @@ public class UserController {
         return ResponseEntity.ok(staffService.deleteAccount(header, deleteAccountDTO));
     }
 
+    @GetMapping("/leaveForms")
+    public ResponseEntity<?> getAllLeaveForms(@RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(staffService.getLeaveForms(header));
+    }
+
 }

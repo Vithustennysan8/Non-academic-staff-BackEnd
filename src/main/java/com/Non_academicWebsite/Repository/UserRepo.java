@@ -20,7 +20,7 @@ public interface UserRepo extends JpaRepository<User, String> {
 
     Optional<User> findByDepartmentAndFacultyAndRole(String department, String faculty, Role admin);
 
-    List<User> findByIdStartingWith(String prefix);
+    List<User> findByIdStartingWithAndVerified(String prefix, boolean verified);
 
     Optional<User> findByRole(Role role);
 }

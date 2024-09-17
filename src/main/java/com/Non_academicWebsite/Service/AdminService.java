@@ -3,7 +3,10 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.*;
+import com.Non_academicWebsite.Repository.ForumRepo;
+import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,12 @@ public class AdminService {
     private AccidentLeaveFormRepo accidentLeaveFormRepo;
     @Autowired
     private TransferFormRepo transferFormRepo;
+    @Autowired
+    private RegisterConfirmationTokenService confirmationTokenService;
+    @Autowired
+    private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
+    @Autowired
+    private ForumRepo forumRepo;
 
     public List<Object> getAllFormRequests(String header) {
         String token = header.substring(7);
@@ -37,10 +46,28 @@ public class AdminService {
         String prefix = userid.substring(0, userid.length()-7);
 
         List<Object> forms = new ArrayList<>();
-        forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
-        forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
+        switch (user.getJob_type()) {
+            case "Head of the Department" -> {
+                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
+                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
+            }
+            case "Dean" -> {
+                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus(prefix, "Accepted"));
+                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus(prefix, "Accepted"));
+            }
+        }
 
         return forms;
 
+    }
+
+    @Transactional
+    public Object deleteUserById(String id, String header) {
+        if(userRepo.existsById(id)){
+            forumRepo.deleteByUserId(id);
+            registerConfirmationTokenRepo.deleteByUserId(id);
+            userRepo.deleteById(id);
+        }
+        return confirmationTokenService.getVerifyRequests(header);
     }
 }

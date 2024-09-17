@@ -9,6 +9,8 @@ import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
+import com.Non_academicWebsite.Service.Forms.AccidentLeaveFormService;
+import com.Non_academicWebsite.Service.Forms.NormalLeaveFormService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class StaffService {
@@ -32,6 +32,10 @@ public class StaffService {
     private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
     @Autowired
     private ForumRepo forumRepo;
+    @Autowired
+    private NormalLeaveFormService normalLeaveFormService;
+    @Autowired
+    private AccidentLeaveFormService accidentLeaveFormService;
 //    @Autowired
 //    private AttendanceRepo attendanceRepo;
 
@@ -43,7 +47,7 @@ public class StaffService {
 
         String id = user.getId();
         String prefix = id.substring(0, id.length() - 7);
-        return userRepo.findByIdStartingWith(prefix);
+        return userRepo.findByIdStartingWithAndVerified(prefix, true);
     }
 
     public UserInfoResponse getUser(String token) {
@@ -108,7 +112,7 @@ public class StaffService {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(email).orElseThrow(()->new NullPointerException("User is not found!"));
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new NullPointerException("User is not found!"));
         String oldPassword = resetPasswordDTO.getOld_password();
         String newPassword = resetPasswordDTO.getNew_password();
 
@@ -116,11 +120,11 @@ public class StaffService {
             if (!passwordEncoder.matches(newPassword, user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 userRepo.save(user);
-                return "reset success";
+                return "Reset success";
             }
-            return "can't be same password";
+            return "Can't be same password";
         }
-        return "reset rejected";
+        return "Reset rejected";
     }
 
 
@@ -141,5 +145,13 @@ public class StaffService {
 //        attendanceRepo.deleteByUserId(user.getId());
         userRepo.delete(user);
         return "delete success";
+    }
+
+    public List<Object> getLeaveForms(String header) {
+        List<Object> forms = new ArrayList<>();
+        forms.addAll(normalLeaveFormService.getFormsOfUser(header));
+        forms.addAll(accidentLeaveFormService.getFormsOfUser(header));
+
+        return forms;
     }
 }

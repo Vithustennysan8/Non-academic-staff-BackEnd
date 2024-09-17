@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.UserAlreadyExistsException;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +41,7 @@ public class AuthenticationService {
     private MailService mailService;
 
     @Transactional
-    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws Exception {
+    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException {
         if (userRepo.existsByEmail(registerDTO.getEmail())) {
             return false;
         }
