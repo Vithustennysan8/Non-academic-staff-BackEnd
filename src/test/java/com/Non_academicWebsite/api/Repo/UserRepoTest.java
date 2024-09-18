@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-//@AutoConfigureTestDatabase
 @ActiveProfiles("test")
 public class UserRepoTest {
 

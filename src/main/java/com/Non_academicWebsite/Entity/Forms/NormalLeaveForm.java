@@ -39,7 +39,6 @@ public class NormalLeaveForm {
     private String reason;
     private String arrangement;
     private String addressDuringTheLeave;
-    private String orderOfHead;
     private String approverOne;
     private String approverOneStatus;
     private String approverOneDescription;

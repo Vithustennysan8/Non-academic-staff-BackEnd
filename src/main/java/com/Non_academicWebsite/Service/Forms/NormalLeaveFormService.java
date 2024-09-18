@@ -27,7 +27,7 @@ public class NormalLeaveFormService {
     public NormalLeaveForm add(String header, NormalLeaveFormDTO normalLeaveFormDTO) {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new NullPointerException("User is not found!"));
 
         NormalLeaveForm normalLeaveForm = NormalLeaveForm.builder()
                 .upfNo(normalLeaveFormDTO.getUpfNo())
@@ -46,7 +46,6 @@ public class NormalLeaveFormService {
                 .reason(normalLeaveFormDTO.getReason())
                 .arrangement(normalLeaveFormDTO.getArrangement())
                 .addressDuringTheLeave(normalLeaveFormDTO.getAddressDuringTheLeave())
-                .orderOfHead(normalLeaveFormDTO.getOrderOfHead())
                 .user(user)
                 .formType("Normal Leave Form")
                 .approverOneStatus("pending")

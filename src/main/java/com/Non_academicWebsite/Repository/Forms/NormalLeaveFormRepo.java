@@ -14,12 +14,12 @@ import java.util.List;
 @EnableJpaRepositories
 public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Integer> {
     List<NormalLeaveForm> findByUserIdStartingWith(String prefix);
+    @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
+    List<NormalLeaveForm> findByDepartment(@Param("faculty") String faculty, @Param("department") String department);
     @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<NormalLeaveForm> findByFaculty(@Param("faculty") String faculty);
     @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<NormalLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
     List<NormalLeaveForm> findByUserId(String id);
     List<NormalLeaveForm> findByUserIdStartingWithAndApproverOneStatus(String prefix, String accepted);
-    @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
-    List<NormalLeaveForm> findByDepartment(String faculty, String department);
 }

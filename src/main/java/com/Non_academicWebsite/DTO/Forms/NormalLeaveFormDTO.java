@@ -31,5 +31,4 @@ public class NormalLeaveFormDTO {
     private String reason;
     private String arrangement;
     private String addressDuringTheLeave;
-    private String orderOfHead;
 }
