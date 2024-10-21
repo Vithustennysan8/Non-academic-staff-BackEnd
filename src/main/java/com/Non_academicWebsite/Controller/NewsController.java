@@ -15,15 +15,17 @@ public class NewsController {
     @Autowired
     private NewsService newsService;
 
+    // all users have an access
+    @GetMapping(value = "api/auth/news/get")
+    public ResponseEntity<List<News>> getNews(@RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(newsService.get(header));
+    }
+
+    // only admin can access
     @PostMapping(value = "api/admin/news/add")
     public ResponseEntity<List<News>> addNews(@RequestBody NewsDTO newsDTO,
                                               @RequestHeader("Authorization") String header){
         return ResponseEntity.ok(newsService.add(newsDTO, header));
-    }
-
-    @GetMapping(value = "api/auth/news/get")
-    public ResponseEntity<List<News>> getNews(@RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(newsService.get(header));
     }
 
     @PutMapping(value = "api/admin/news/update/{id}")

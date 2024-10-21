@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @EnableJpaRepositories
-public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Integer> {
+public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Long> {
     List<NormalLeaveForm> findByUserIdStartingWith(String prefix);
     @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<NormalLeaveForm> findByDepartment(@Param("faculty") String faculty, @Param("department") String department);
@@ -21,5 +21,9 @@ public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Inte
     @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<NormalLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
     List<NormalLeaveForm> findByUserId(String id);
-    List<NormalLeaveForm> findByUserIdStartingWithAndApproverOneStatus(String prefix, String accepted);
+    List<NormalLeaveForm> findByUserIdStartingWithAndHeadStatus(String prefix, String accepted);
+
+    boolean existsByUserId(String userId);
+
+    void deleteByUserId(String userId);
 }

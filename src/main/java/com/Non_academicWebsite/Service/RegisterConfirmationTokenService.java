@@ -44,17 +44,7 @@ public class RegisterConfirmationTokenService {
         return confirmationToken.getUser();
     }
 
-    public List<RegisterConfirmationToken> getVerifyRequests(String header) {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
-
-        if(user == null) {
-            return Collections.emptyList();
-        }
-        String userId = user.getId();
-        String prefix = userId.substring(0, userId.length() - 7);
-
+    public List<RegisterConfirmationToken> getVerifyRequests(String prefix) {
         return confirmationTokenRepo.findByUserIdPrefixAndVerificationStatus(prefix, false);
     }
 }

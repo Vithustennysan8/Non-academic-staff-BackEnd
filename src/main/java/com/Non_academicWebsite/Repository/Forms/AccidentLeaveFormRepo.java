@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 @EnableJpaRepositories
-public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, Integer> {
+public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, Long> {
     List<AccidentLeaveForm> findByUserId(String user);
     List<AccidentLeaveForm> findByUserIdStartingWith(String prefix);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
@@ -21,7 +21,17 @@ public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, 
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<AccidentLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
 
-    List<AccidentLeaveForm> findByUserIdStartingWithAndApproverOneStatus(String prefix, String accepted);
+    List<AccidentLeaveForm> findByUserIdStartingWithAndHeadStatus(String prefix, String accepted);
+    List<AccidentLeaveForm> findByUserIdStartingWithAndDeanStatus(String prefix, String accepted);
+    List<AccidentLeaveForm> findByUserIdStartingWithAndCmoStatus(String prefix, String accepted);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<AccidentLeaveForm> findByDepartment(@Param("faculty") String faculty,@Param("department") String department);
+
+    boolean existsByUserId(String userId);
+
+    void deleteByUserId(String userId);
+
+    List<AccidentLeaveForm> findByDeanStatus(String accepted);
+
+    List<AccidentLeaveForm> findByCmoStatus(String accepted);
 }

@@ -9,6 +9,8 @@ import java.util.HashMap;
 
 @Component
 public class UserIdGenerator {
+    // Generate user id based on the faculty, department, and position
+
     @Autowired
     private UserRepo userRepo;
 
@@ -130,6 +132,9 @@ public class UserIdGenerator {
         departments.put("Student Affairs Section", "SAS");
 
         positions.put("Dean", "DE");
+        positions.put("Chief Medical Officer", "CM");
+        positions.put("Non Academic Establishment Division", "NA");
+        positions.put("Registrar", "RE");
         positions.put("Head of the Department", "HD");
         positions.put("Technical Officer", "TO");
         positions.put("Management Assistant", "MA");

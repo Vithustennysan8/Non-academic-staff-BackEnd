@@ -11,41 +11,41 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Builder
-public class NormalLeaveForm {
+public class PaternalLeaveForm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String formType;
-    private String upfNo;
     private String designation;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date firstAppointmentDate;
-    private Integer casualLeaveLastYear;
-    private Integer vacationLeaveLastYear;
-    private Integer sickLeaveLastYear;
-    private Integer casualLeaveThisYear;
-    private Integer vacationLeaveThisYear;
-    private Integer sickLeaveThisYear;
+    private Date childBirthDate;
+    private String fileName;
+    private String fileType;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] file;
     @ManyToOne
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
-    private Integer noOfLeaveDays;
-    private String leaveType;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date leaveAppliedDate;
-    @Lob
-    @Column(length = 512000)
-    private String reason;
-    private String arrangement;
-    private String addressDuringTheLeave;
+    private Date requestedDate;
+    private Date createdAt;
+    private Date updatedAt;
     private String head;
     private String headStatus;
     private String headDescription;
     private Date headReactedAt;
+    private String dean;
+    private String deanStatus;
+    private String deanDescription;
+    private Date deanReactedAt;
+    private String nae;
+    private String naeStatus;
+    private String naeDescription;
+    private Date naeReactedAt;
     private String status;
-
 }

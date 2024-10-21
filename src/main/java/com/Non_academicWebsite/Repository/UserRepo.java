@@ -13,14 +13,9 @@ import java.util.Optional;
 @EnableJpaRepositories
 public interface UserRepo extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
-
     boolean existsByEmail(String email);
-
     Optional<User> findTopByIdStartingWithOrderByIdDesc(String prefix);
-
     Optional<User> findByDepartmentAndFacultyAndRole(String department, String faculty, Role admin);
-
     List<User> findByIdStartingWithAndVerified(String prefix, boolean verified);
-
     Optional<User> findByRole(Role role);
 }

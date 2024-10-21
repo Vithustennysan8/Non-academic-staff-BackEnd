@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 public class NormalLeaveFormDTO {
     private String upfNo;
     private String designation;
+    @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date firstAppointmentDate;
     private Integer casualLeaveLastYear;
     private Integer vacationLeaveLastYear;
@@ -25,6 +27,7 @@ public class NormalLeaveFormDTO {
     private Integer sickLeaveThisYear;
     private Integer noOfLeaveDays;
     private String leaveType;
+    @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date leaveAppliedDate;
     @Lob
     @Column(length = 512000)

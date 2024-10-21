@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthenticationService {
@@ -108,11 +109,25 @@ public class AuthenticationService {
     }
 
     public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header) {
-        User user = confirmationTokenService.confirm(confirmationToken);
-        if (user != null) {
-            user.setVerified(true);
-            userRepo.save(user);
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElse(null);
+
+        if(user == null) {
+            return Collections.emptyList();
         }
-        return confirmationTokenService.getVerifyRequests(header);
+        String userId = user.getId();
+        String prefix = userId.substring(0, userId.length() - 7);
+
+        User requestedUser = confirmationTokenService.confirm(confirmationToken);
+        if (requestedUser != null) {
+            if (Objects.equals(user.getJob_type(), "Head of the department") || Objects.equals(user.getJob_type(), "Dean")){
+                requestedUser.setVerified(true);
+                userRepo.save(requestedUser);
+            }else {
+                return Collections.emptyList();
+            }
+        }
+        return confirmationTokenService.getVerifyRequests(prefix);
     }
 }

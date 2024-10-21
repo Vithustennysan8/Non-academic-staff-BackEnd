@@ -33,4 +33,10 @@ public class NormalLeaveFormController {
     public ResponseEntity<List<NormalLeaveForm>> getFormsOFUser(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(normalLeaveFormService.getFormsOfUser(header));
     }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<String> deleteByUser(@PathVariable("id") Long id,
+                                               @RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(normalLeaveFormService.deleteByUser(id, header));
+    }
 }

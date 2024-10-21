@@ -3,14 +3,15 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
+import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
+import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
 import com.Non_academicWebsite.Entity.User;
 //import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
-import com.Non_academicWebsite.Service.Forms.AccidentLeaveFormService;
-import com.Non_academicWebsite.Service.Forms.NormalLeaveFormService;
+import com.Non_academicWebsite.Service.Forms.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,10 +37,16 @@ public class StaffService {
     private NormalLeaveFormService normalLeaveFormService;
     @Autowired
     private AccidentLeaveFormService accidentLeaveFormService;
+    @Autowired
+    private PaternalLeaveFormService paternalLeaveFormService;
+    @Autowired
+    private MaternityLeaveFormService maternityLeaveFormService;
+    @Autowired
+    private MedicalLeaveFormService medicalLeaveFormService;
 //    @Autowired
 //    private AttendanceRepo attendanceRepo;
 
-    public List<User> getUsers(String header) {
+    public List<User> getUsersByDepartment(String header) {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email)
@@ -142,15 +149,23 @@ public class StaffService {
 
         forumRepo.deleteByUserId(user.getId());
         registerConfirmationTokenRepo.deleteByUserId(user.getId());
+        normalLeaveFormService.deleteForm(user.getId());
+        accidentLeaveFormService.deleteForm(user.getId());
+        paternalLeaveFormService.deleteForm(user.getId());
+        maternityLeaveFormService.deleteForm(user.getId());
+        medicalLeaveFormService.deleteForm(user.getId());
 //        attendanceRepo.deleteByUserId(user.getId());
         userRepo.delete(user);
         return "delete success";
     }
 
-    public List<Object> getLeaveForms(String header) {
+    public List<Object> getAllAppliedLeaveForms(String header) {
         List<Object> forms = new ArrayList<>();
         forms.addAll(normalLeaveFormService.getFormsOfUser(header));
         forms.addAll(accidentLeaveFormService.getFormsOfUser(header));
+        forms.addAll(paternalLeaveFormService.getFormsOfUser(header));
+        forms.addAll(maternityLeaveFormService.getFormsOfUser(header));
+        forms.addAll(medicalLeaveFormService.getFormsOfUser(header));
 
         return forms;
     }

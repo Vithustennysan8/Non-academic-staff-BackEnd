@@ -6,7 +6,9 @@ import com.Non_academicWebsite.Service.Forms.AccidentLeaveFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,8 +21,9 @@ public class AccidentLeaveFormController {
 
     @PostMapping(value = "/add")
     public ResponseEntity<AccidentLeaveForm> addForm(@RequestHeader("Authorization") String header,
-                                                   @RequestBody AccidentLeaveFormDTO accidentLeaveFormDTO){
-        return ResponseEntity.ok(accidentLeaveFormService.add(header, accidentLeaveFormDTO));
+                                                     @ModelAttribute AccidentLeaveFormDTO accidentLeaveFormDTO,
+                                                     @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        return ResponseEntity.ok(accidentLeaveFormService.add(header, accidentLeaveFormDTO, file));
 
     }
 
@@ -32,5 +35,11 @@ public class AccidentLeaveFormController {
     @GetMapping(value = "/get")
     public ResponseEntity<List<AccidentLeaveForm>> getFormsOFUser(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(accidentLeaveFormService.getFormsOfUser(header));
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<String> deleteByUser(@PathVariable("id") Long id,
+                                               @RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(accidentLeaveFormService.deleteByUser(id, header));
     }
 }

@@ -26,8 +26,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/staffs")
-    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String header) {
-        return ResponseEntity.ok(staffService.getUsers(header));
+    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header) {
+        return ResponseEntity.ok(staffService.getUsersByDepartment(header));
     }
 
     @GetMapping(value = "/info")
@@ -57,8 +57,8 @@ public class UserController {
     }
 
     @GetMapping("/leaveForms")
-    public ResponseEntity<?> getAllLeaveForms(@RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(staffService.getLeaveForms(header));
+    public ResponseEntity<?> getAllAppliedLeaveForms(@RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(staffService.getAllAppliedLeaveForms(header));
     }
 
 }

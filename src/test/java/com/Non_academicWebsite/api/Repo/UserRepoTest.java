@@ -83,7 +83,7 @@ public class UserRepoTest {
     }
 
     @Test
-    public void testCreateUserEntity_NullEmptyValues() {
+    public void test_CreateUserEntity_NullEmptyValues() {
         // Create a User entity instance with null or empty values
         User user = User.builder()
                 .first_name(null)

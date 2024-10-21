@@ -4,6 +4,7 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
+import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class NormalLeaveFormService {
@@ -48,7 +50,7 @@ public class NormalLeaveFormService {
                 .addressDuringTheLeave(normalLeaveFormDTO.getAddressDuringTheLeave())
                 .user(user)
                 .formType("Normal Leave Form")
-                .approverOneStatus("pending")
+                .headStatus("pending")
                 .status("Pending")
                 .build();
 
@@ -103,40 +105,66 @@ public class NormalLeaveFormService {
         return normalLeaveFormRepo.findByUserId(user.getId());
     }
 
-    public Object acceptForm(Integer formId, ApprovalDTO approvalDTO) {
+    public Object acceptForm(Long formId, ApprovalDTO approvalDTO) {
         NormalLeaveForm normalLeaveForm = normalLeaveFormRepo.findById(formId).orElse(null);
         if(normalLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
-                normalLeaveForm.setApproverOneStatus("Accepted");
-                normalLeaveForm.setApproverOne(approvalDTO.getUser());
-                normalLeaveForm.setApproverOneDescription(approvalDTO.getDescription());
-                normalLeaveForm.setApproverOneReactedAt(new Date());
+                normalLeaveForm.setHeadStatus("Accepted");
+                normalLeaveForm.setHead(approvalDTO.getUser());
+                normalLeaveForm.setHeadDescription(approvalDTO.getDescription());
+                normalLeaveForm.setHeadReactedAt(new Date());
                 normalLeaveForm.setStatus("Accepted");
+                return normalLeaveFormRepo.save(normalLeaveForm);
             }
-            return normalLeaveFormRepo.save(normalLeaveForm);
         }
         return "Failed";
     }
 
-    public Object rejectForm(Integer formId, ApprovalDTO approvalDTO) {
+    public Object rejectForm(Long formId, ApprovalDTO approvalDTO) {
         NormalLeaveForm normalLeaveForm = normalLeaveFormRepo.findById(formId).orElse(null);
         if(normalLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
-                normalLeaveForm.setApproverOneStatus("Rejected");
-                normalLeaveForm.setApproverOne(approvalDTO.getUser());
-                normalLeaveForm.setApproverOneDescription(approvalDTO.getDescription());
-                normalLeaveForm.setApproverOneReactedAt(new Date());
+                normalLeaveForm.setHeadStatus("Rejected");
+                normalLeaveForm.setHead(approvalDTO.getUser());
+                normalLeaveForm.setHeadDescription(approvalDTO.getDescription());
+                normalLeaveForm.setHeadReactedAt(new Date());
                 normalLeaveForm.setStatus("Rejected");
+                return normalLeaveFormRepo.save(normalLeaveForm);
             }
-            return normalLeaveFormRepo.save(normalLeaveForm);
         }
         return "Failed";
+    }
+
+    public String deleteForm(String userId){
+        if(!normalLeaveFormRepo.existsByUserId(userId)){
+            return "Delete failed, User not found";
+        }
+        normalLeaveFormRepo.deleteByUserId(userId);
+        return "delete success";
+    }
+
+    public String deleteByUser(Long id, String header) {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElse(null);
+
+        NormalLeaveForm normalLeaveForm = normalLeaveFormRepo.findById(id).orElse(null);
+
+        if(user == null) {
+            throw new NullPointerException("User not found");
+        } else if (normalLeaveForm == null) {
+            throw new NullPointerException("Form not found");
+        }else if (Objects.equals(user.getId(), normalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "ADMIN")){
+            normalLeaveFormRepo.deleteById(id);
+            return "Form deleted Successfully";
+        }
+        return "Form deleted rejected";
     }
 
 }

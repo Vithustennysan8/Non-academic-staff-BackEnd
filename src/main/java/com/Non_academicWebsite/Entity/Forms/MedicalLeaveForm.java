@@ -11,37 +11,30 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @Entity
-public class AccidentLeaveForm {
+@Builder
+public class MedicalLeaveForm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String formType;
-    private String accidentOccurredDuring;
+    private String designation;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date dateAndTimeOfAccident;
-    private String placeOFAccident;
-    private String whilePerformingAnyDuty;
-    private String natureOfDanger;
-    private String whoInspectTheAccident;
-    private String whoInformedAfterAccident;
-    private String referralForTreatment;
+    private Date requestPeriodStart;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date dateAndTimeOfReport;
-    private String durationOfHospitalStay;
-    private String isPoliceComplaint;
-    private String expectAccidentCompensation;
-    @ManyToOne
-    @JoinColumn(nullable = false, name = "user_id")
-    private User user;
+    private Date requestPeriodEnd;
+    private String fileName;
+    private String fileType;
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] file;
-    private String fileType;
-    private String fileName;
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
+    private Date createdAt;
+    private Date updatedAt;
     private String head;
     private String headStatus;
     private String headDescription;
@@ -54,11 +47,13 @@ public class AccidentLeaveForm {
     private String cmoStatus;
     private String cmoDescription;
     private Date cmoReactedAt;
+    private String registrar;
+    private String registrarStatus;
+    private String registrarDescription;
+    private Date registrarReactedAt;
     private String nae;
     private String naeStatus;
     private String naeDescription;
     private Date naeReactedAt;
     private String status;
-    private Date createdAt;
-
 }

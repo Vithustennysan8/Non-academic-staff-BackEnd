@@ -25,6 +25,12 @@ public class AdminService {
     @Autowired
     private AccidentLeaveFormRepo accidentLeaveFormRepo;
     @Autowired
+    private PaternalLeaveFormRepo paternalLeaveFormRepo;
+    @Autowired
+    private MedicalLeaveFromRepo medicalLeaveFromRepo;
+    @Autowired
+    private MaternityLeaveFormRepo maternityLeaveFormRepo;
+    @Autowired
     private TransferFormRepo transferFormRepo;
     @Autowired
     private RegisterConfirmationTokenService confirmationTokenService;
@@ -50,10 +56,34 @@ public class AdminService {
             case "Head of the Department" -> {
                 forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
                 forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
+                forms.addAll(paternalLeaveFormRepo.findByUserIdStartingWith(prefix));
+                forms.addAll(medicalLeaveFromRepo.findByUserIdStartingWith(prefix));
+                forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWith(prefix));
             }
             case "Dean" -> {
-                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus(prefix, "Accepted"));
-                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus(prefix, "Accepted"));
+                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
+                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
+                forms.addAll(paternalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
+                forms.addAll(medicalLeaveFromRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
+                forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
+            }
+            case "Chief Medical Officer" -> {
+                forms.addAll(accidentLeaveFormRepo.findByDeanStatus("Accepted"));
+                forms.addAll(medicalLeaveFromRepo.findByDeanStatus("Accepted"));
+                forms.addAll(maternityLeaveFormRepo.findByDeanStatus("Accepted"));
+            }
+            case "Registrar" -> {
+                forms.addAll(medicalLeaveFromRepo.findByCmoStatus("Accepted"));
+                forms.addAll(maternityLeaveFormRepo.findByCmoStatus("Accepted"));
+            }
+            case "Non Academic Establishment Division" -> {
+                forms.addAll(paternalLeaveFormRepo.findByDeanStatus("Accepted"));
+                forms.addAll(accidentLeaveFormRepo.findByCmoStatus("Accepted"));
+                forms.addAll(medicalLeaveFromRepo.findByRegistrarStatus("Accepted"));
+                forms.addAll(maternityLeaveFormRepo.findByRegistrarStatus("Accepted"));
+            }
+            default -> {
+
             }
         }
 
@@ -63,6 +93,16 @@ public class AdminService {
 
     @Transactional
     public Object deleteUserById(String id, String header) {
+        String token = header.substring(7);
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElse(null);
+
+        if(user == null) {
+            return Collections.emptyList();
+        }
+        String userId = user.getId();
+        String prefix = userId.substring(0, userId.length() - 7);
+
         if(userRepo.existsById(id)){
             forumRepo.deleteByUserId(id);
             registerConfirmationTokenRepo.deleteByUserId(id);
