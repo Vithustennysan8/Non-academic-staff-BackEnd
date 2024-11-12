@@ -1,6 +1,8 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.MaternityLeaveFormDTO;
 import com.Non_academicWebsite.DTO.Forms.MedicalLeaveFormDTO;
@@ -8,6 +10,7 @@ import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.MaternityLeaveForm;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.MaternityLeaveFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +31,23 @@ public class MaternityLeaveFormService {
     private JwtService jwtService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private MailService mailService;
+    private final String url = "http://localhost:5173/notifications";
 
-    public MaternityLeaveForm add(String header, MaternityLeaveFormDTO medicalLeaveFormDTO, MultipartFile file) throws IOException {
+    public MaternityLeaveForm add(String header, MaternityLeaveFormDTO maternityDTO, MultipartFile file) throws IOException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElse(null);
 
         MaternityLeaveForm maternityLeaveForm = MaternityLeaveForm.builder()
-                .designation(medicalLeaveFormDTO.getDesignation())
-                .childBirthDate(medicalLeaveFormDTO.getChildBirthDate())
-                .file(file.getBytes())
-                .fileName(file.getOriginalFilename())
-                .fileType(file.getContentType())
+                .designation(maternityDTO.getDesignation())
+                .childBirthDate(maternityDTO.getChildBirthDate())
+                .file(file != null ? file.getBytes(): null)
+                .fileName(file != null ? file.getOriginalFilename(): null)
+                .fileType(file != null ? file.getContentType():null)
+                .leaveAt(maternityDTO.getLeaveAt())
+                .leaveDays(maternityDTO.getLeaveDays())
                 .user(user)
                 .formType("Maternity Leave Form")
                 .headStatus("pending")
@@ -107,6 +115,7 @@ public class MaternityLeaveFormService {
         MaternityLeaveForm maternityLeaveForm = maternityLeaveFormRepo.findById(formId).orElse(null);
         if(maternityLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             switch (job) {
@@ -144,6 +153,7 @@ public class MaternityLeaveFormService {
                     maternityLeaveForm.setNaeDescription(approvalDTO.getDescription());
                     maternityLeaveForm.setNaeReactedAt(new Date());
                     maternityLeaveForm.setStatus("Accepted");
+                    mailService.sendMail(maternityLeaveForm.getUser().getEmail(), url, maternityLeaveForm.getUser().getFirst_name(), maternityLeaveForm.getFormType() , "Accepted", approver.getFirst_name());
                     return maternityLeaveFormRepo.save(maternityLeaveForm);
                 }
             }
@@ -155,6 +165,7 @@ public class MaternityLeaveFormService {
         MaternityLeaveForm maternityLeaveForm = maternityLeaveFormRepo.findById(formId).orElse(null);
         if(maternityLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             switch (job) {
@@ -164,6 +175,7 @@ public class MaternityLeaveFormService {
                     maternityLeaveForm.setDeanDescription(approvalDTO.getDescription());
                     maternityLeaveForm.setHeadReactedAt(new Date());
                     maternityLeaveForm.setStatus("Rejected");
+                    mailService.sendMail(maternityLeaveForm.getUser().getEmail(), url, maternityLeaveForm.getUser().getFirst_name(), maternityLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                     return maternityLeaveFormRepo.save(maternityLeaveForm);
                 }
                 case "Dean" -> {
@@ -172,6 +184,7 @@ public class MaternityLeaveFormService {
                     maternityLeaveForm.setDeanDescription(approvalDTO.getDescription());
                     maternityLeaveForm.setDeanReactedAt(new Date());
                     maternityLeaveForm.setStatus("Rejected");
+                    mailService.sendMail(maternityLeaveForm.getUser().getEmail(), url, maternityLeaveForm.getUser().getFirst_name(), maternityLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                     return maternityLeaveFormRepo.save(maternityLeaveForm);
                 }
                 case "Chief Medical Officer" -> {
@@ -180,6 +193,7 @@ public class MaternityLeaveFormService {
                     maternityLeaveForm.setCmoDescription(approvalDTO.getDescription());
                     maternityLeaveForm.setCmoReactedAt(new Date());
                     maternityLeaveForm.setStatus("Rejected");
+                    mailService.sendMail(maternityLeaveForm.getUser().getEmail(), url, maternityLeaveForm.getUser().getFirst_name(), maternityLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                     return maternityLeaveFormRepo.save(maternityLeaveForm);
                 }
                 case "Registrar" -> {
@@ -188,6 +202,7 @@ public class MaternityLeaveFormService {
                     maternityLeaveForm.setRegistrarDescription(approvalDTO.getDescription());
                     maternityLeaveForm.setRegistrarReactedAt(new Date());
                     maternityLeaveForm.setStatus("Rejected");
+                    mailService.sendMail(maternityLeaveForm.getUser().getEmail(), url, maternityLeaveForm.getUser().getFirst_name(), maternityLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                     return maternityLeaveFormRepo.save(maternityLeaveForm);
                 }
                 case "Non Academic Establishment Division" -> {
@@ -196,6 +211,7 @@ public class MaternityLeaveFormService {
                     maternityLeaveForm.setNaeDescription(approvalDTO.getDescription());
                     maternityLeaveForm.setNaeReactedAt(new Date());
                     maternityLeaveForm.setStatus("Rejected");
+                    mailService.sendMail(maternityLeaveForm.getUser().getEmail(), url, maternityLeaveForm.getUser().getFirst_name(), maternityLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                     return maternityLeaveFormRepo.save(maternityLeaveForm);
                 }
             }
@@ -203,15 +219,15 @@ public class MaternityLeaveFormService {
         return "Failed";
     }
 
-    public String deleteForm(String userId){
+    public String deleteForm(String userId) {
         if(!maternityLeaveFormRepo.existsByUserId(userId)){
-            return "Delete failed, User not found";
+            return "there is no form for this user";
         }
         maternityLeaveFormRepo.deleteByUserId(userId);
         return "delete success";
     }
 
-    public String deleteByUser(Long id, String header) {
+    public String deleteByUser(Long id, String header) throws FormUnderProcessException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElse(null);
@@ -222,9 +238,12 @@ public class MaternityLeaveFormService {
             throw new NullPointerException("User not found");
         } else if (maternityLeaveForm == null) {
             throw new NullPointerException("Form not found");
-        }else if (Objects.equals(user.getId(), maternityLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "ADMIN")){
-            maternityLeaveFormRepo.deleteById(id);
-            return "Form deleted Successfully";
+        }else if (Objects.equals(user.getId(), maternityLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
+            if(maternityLeaveForm.getHeadStatus() == "pending"){
+                maternityLeaveFormRepo.deleteById(id);
+                return "Form deleted Successfully";
+            }
+            throw new FormUnderProcessException("Form is under process, Can't delete!!!");
         }
         return "Form deleted rejected";
     }

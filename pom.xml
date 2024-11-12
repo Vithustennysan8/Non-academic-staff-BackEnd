@@ -26,8 +26,12 @@
 		<tag/>
 		<url/>
 	</scm>
+<!--	<properties>-->
+<!--		<java.version>22</java.version>-->
+<!--	</properties>-->
 	<properties>
-		<java.version>22</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -91,11 +95,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>me.paulschwarz</groupId>-->
-<!--			<artifactId>spring-dotenv</artifactId>-->
-<!--			<version>4.0.0</version>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.3</version>
+		</dependency>
+
+
 
 	</dependencies>
 

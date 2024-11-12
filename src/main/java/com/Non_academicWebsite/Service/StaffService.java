@@ -1,10 +1,13 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
+import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.User;
 //import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
@@ -43,23 +46,26 @@ public class StaffService {
     private MaternityLeaveFormService maternityLeaveFormService;
     @Autowired
     private MedicalLeaveFormService medicalLeaveFormService;
-//    @Autowired
-//    private AttendanceRepo attendanceRepo;
+    @Autowired
+    private TransferFormService transferFormService;
+    @Autowired
+    private OtpConfirmationService otpConfirmationService;
 
-    public List<User> getUsersByDepartment(String header) {
+
+    public List<User> getUsersByDepartment(String header) throws UserNotFoundException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email)
-                .orElseThrow(()-> new NullPointerException("User is not found!"));
+                .orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
 
         String id = user.getId();
         String prefix = id.substring(0, id.length() - 7);
         return userRepo.findByIdStartingWithAndVerified(prefix, true);
     }
 
-    public UserInfoResponse getUser(String token) {
+    public UserInfoResponse getUser(String token) throws UserNotFoundException {
         String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new NullPointerException("User is not found!"));
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
 
         String imageBase64 = null;
         if (user.getImage_data() != null) {
@@ -91,11 +97,11 @@ public class StaffService {
                 .build();
     }
 
-    public User updateProfile(String header, RegisterDTO registerDTO, MultipartFile image) throws IOException {
+    public User updateProfile(String header, RegisterDTO registerDTO, MultipartFile image) throws IOException, UserNotFoundException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new NullPointerException("User is not found!"));
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
 
         user.setFirst_name(registerDTO.getFirst_name());
         user.setLast_name(registerDTO.getLast_name());
@@ -115,11 +121,11 @@ public class StaffService {
         return user;
     }
 
-    public String resetPassword(String header, SecurityDTO resetPasswordDTO) {
+    public String resetPassword(String header, SecurityDTO resetPasswordDTO) throws UserNotFoundException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new NullPointerException("User is not found!"));
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
         String oldPassword = resetPasswordDTO.getOld_password();
         String newPassword = resetPasswordDTO.getNew_password();
 
@@ -136,11 +142,11 @@ public class StaffService {
 
 
     @Transactional
-    public String deleteAccount(String header, SecurityDTO deleteAccountDTO) {
+    public String deleteAccount(String header, SecurityDTO deleteAccountDTO) throws UserNotFoundException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepo.findByEmail(email).orElseThrow(()->new NullPointerException("User is not found!"));
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
         String oldPassword = deleteAccountDTO.getPassword_for_delete();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
@@ -154,7 +160,6 @@ public class StaffService {
         paternalLeaveFormService.deleteForm(user.getId());
         maternityLeaveFormService.deleteForm(user.getId());
         medicalLeaveFormService.deleteForm(user.getId());
-//        attendanceRepo.deleteByUserId(user.getId());
         userRepo.delete(user);
         return "delete success";
     }
@@ -168,5 +173,51 @@ public class StaffService {
         forms.addAll(medicalLeaveFormService.getFormsOfUser(header));
 
         return forms;
+    }
+
+    public List<TransferForm> getAllTransferForms(String header) {
+        return transferFormService.getFormsOfUser(header);
+    }
+
+    public String sendOTP(String email) throws UserNotFoundException {
+        if (!userRepo.existsByEmail(email)) {
+            throw new IllegalStateException("Email not matched");
+        }
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        user.setVerified(false);
+        userRepo.save(user);
+        otpConfirmationService.sendOtp(user, email);
+        return "success";
+    }
+
+    public String confirmOTP(Integer otp) throws UserNotFoundException {
+        String userEmail = otpConfirmationService.getUserEmail(otp);
+        if(userEmail == null){
+            throw new UserNotFoundException("User not found with this OTP");
+        }
+        User user = userRepo.findByEmail(userEmail).
+                orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+
+        String status = otpConfirmationService.confirmOtp(otp);
+        if(status == "OTP confirmed successfully"){
+            user.setVerified(true);
+            userRepo.save(user);
+            return "success";
+        }
+        return "OTP not confirmed";
+    }
+
+    public String resetForForgotPassword(ForgotPasswordDTO forgotPasswordDTO) throws UserNotFoundException {
+        String email = forgotPasswordDTO.getEmail();
+
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        String newPassword = forgotPasswordDTO.getNewPassword();
+
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            return "Can't be same password";
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+        return "Reset success";
     }
 }

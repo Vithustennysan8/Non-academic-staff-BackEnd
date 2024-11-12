@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Entity
-public class AccidentLeaveForm {
+public class AccidentLeaveForm implements Forms {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +23,9 @@ public class AccidentLeaveForm {
     private String accidentOccurredDuring;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date dateAndTimeOfAccident;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date leaveAt;
+    private int leaveDays;
     private String placeOFAccident;
     private String whilePerformingAnyDuty;
     private String natureOfDanger;
@@ -61,4 +64,27 @@ public class AccidentLeaveForm {
     private String status;
     private Date createdAt;
 
+    @Override
+    public String getStatus() {
+        return status;
+    }
+
+    @Override
+    public User getUser() {
+        return user;
+    }
+
+    @Override
+    public String getFormType() {
+        return formType;
+    }
+    @Override
+    public Date getLeaveAt(){
+        return leaveAt;
+    }
+
+    @Override
+    public int getLeaveDays(){
+        return leaveDays;
+    }
 }

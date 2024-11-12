@@ -27,9 +27,7 @@ public class AccidentLeaveFormDTO {
     private String durationOfHospitalStay;
     private String isPoliceComplaint;
     private String expectAccidentCompensation;
-    private byte[] file;
-    private String fileType;
-    private String fileName;
-    private String status;
-    private Date createdAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date leaveAt;
+    private int leaveDays;
 }

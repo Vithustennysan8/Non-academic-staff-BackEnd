@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Builder
-public class PaternalLeaveForm {
+public class PaternalLeaveForm implements Forms{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +33,9 @@ public class PaternalLeaveForm {
     private User user;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date requestedDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date leaveAt;
+    private int leaveDays;
     private Date createdAt;
     private Date updatedAt;
     private String head;
@@ -48,4 +51,28 @@ public class PaternalLeaveForm {
     private String naeDescription;
     private Date naeReactedAt;
     private String status;
+
+    @Override
+    public String getStatus() {
+        return status;
+    }
+
+    @Override
+    public User getUser() {
+        return user;
+    }
+
+    @Override
+    public String getFormType() {
+        return formType;
+    }
+    @Override
+    public Date getLeaveAt(){
+        return leaveAt;
+    }
+
+    @Override
+    public int getLeaveDays(){
+        return leaveDays;
+    }
 }

@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ForumDTO;
 import com.Non_academicWebsite.Entity.Forum;
 import com.Non_academicWebsite.Service.ForumService;
@@ -19,25 +20,25 @@ public class ForumController {
 
     @PostMapping(value = "/add")
     public ResponseEntity<?> addForum(@RequestHeader("Authorization") String header,
-                                      @RequestBody ForumDTO forumDTO) {
+                                      @RequestBody ForumDTO forumDTO) throws UserNotFoundException {
 
         return ResponseEntity.ok(forumService.addForum(header, forumDTO));
     }
 
     @GetMapping(value = "/get")
-    public ResponseEntity<List<Forum>> getForums(@RequestHeader("Authorization") String header) {
+    public ResponseEntity<List<Forum>> getForums(@RequestHeader("Authorization") String header) throws UserNotFoundException {
         return ResponseEntity.ok(forumService.getForums(header));
     }
 
     @DeleteMapping(value = "delete/{id}")
     public ResponseEntity<List<Forum>> deleteForum(@PathVariable("id") Long id,
-                                                   @RequestHeader("Authorization") String header) {
+                                                   @RequestHeader("Authorization") String header) throws Exception {
         return ResponseEntity.ok(forumService.deleteForum(id, header));
     }
 
     @PutMapping(value = "update/{id}")
     public ResponseEntity<List<Forum>> updateForum(@PathVariable("id") Long id, @RequestBody ForumDTO forumDTO,
-                                                   @RequestHeader("Authorization") String header) {
+                                                   @RequestHeader("Authorization") String header) throws Exception {
         return ResponseEntity.ok(forumService.updateForum(id, forumDTO, header));
     }
 }

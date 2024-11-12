@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Builder
-public class NormalLeaveForm {
+public class NormalLeaveForm implements Forms{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,10 +35,11 @@ public class NormalLeaveForm {
     private User user;
     private Integer noOfLeaveDays;
     private String leaveType;
-    @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date leaveAppliedDate;
     @Lob
     @Column(length = 512000)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date leaveAt;
+    private int leaveDays;
     private String reason;
     private String arrangement;
     private String addressDuringTheLeave;
@@ -47,5 +48,30 @@ public class NormalLeaveForm {
     private String headDescription;
     private Date headReactedAt;
     private String status;
+    private Date createdAt;
+    private Date updatedAt;
 
+    @Override
+    public String getStatus() {
+        return status;
+    }
+
+    @Override
+    public User getUser() {
+        return user;
+    }
+
+    @Override
+    public String getFormType() {
+        return formType;
+    }
+    @Override
+    public Date getLeaveAt(){
+        return leaveAt;
+    }
+
+    @Override
+    public int getLeaveDays(){
+        return leaveDays;
+    }
 }

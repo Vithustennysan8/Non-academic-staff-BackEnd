@@ -18,4 +18,7 @@ public class PaternalLeaveFormDTO {
     private Date childBirthDate;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date requestedDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date leaveAt;
+    private int leaveDays;
 }

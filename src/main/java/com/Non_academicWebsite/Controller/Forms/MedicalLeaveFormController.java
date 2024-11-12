@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller.Forms;
 
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
 import com.Non_academicWebsite.DTO.Forms.MedicalLeaveFormDTO;
 import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Service.Forms.MedicalLeaveFormService;
@@ -38,7 +39,7 @@ public class MedicalLeaveFormController {
 
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<String> deleteByUser(@PathVariable("id") Long id,
-                                               @RequestHeader("Authorization") String header){
+                                               @RequestHeader("Authorization") String header) throws FormUnderProcessException {
         return ResponseEntity.ok(medicalLeaveFormService.deleteByUser(id, header));
     }
 }

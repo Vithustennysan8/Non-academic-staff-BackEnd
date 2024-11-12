@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller.Forms;
 
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
 import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Service.Forms.NormalLeaveFormService;
@@ -36,7 +37,7 @@ public class NormalLeaveFormController {
 
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<String> deleteByUser(@PathVariable("id") Long id,
-                                               @RequestHeader("Authorization") String header){
+                                               @RequestHeader("Authorization") String header) throws FormUnderProcessException {
         return ResponseEntity.ok(normalLeaveFormService.deleteByUser(id, header));
     }
 }

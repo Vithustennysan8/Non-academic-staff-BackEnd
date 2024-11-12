@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.UserAlreadyExistsException;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
@@ -42,9 +43,9 @@ public class AuthenticationService {
     private MailService mailService;
 
     @Transactional
-    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException {
+    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, UserAlreadyExistsException {
         if (userRepo.existsByEmail(registerDTO.getEmail())) {
-            return false;
+            throw new UserAlreadyExistsException("User Already found with "+registerDTO.getEmail()+" emailId!!!");
         }
         String customId = userIdGenerator.generateCustomUserID(registerDTO.getFaculty(), registerDTO.getDepartment(), registerDTO.getJob_type());
 
@@ -82,22 +83,26 @@ public class AuthenticationService {
         System.out.println(confirmationToken);
 
         String url = "http://localhost:8080/api/auth/verify?token=" + confirmationToken;
-//        mailService.sendMail("vithustennysan20@gmail.com", user.getApp_password(), "vithustennysan21@gmail.com", url, user.getFirst_name(), user.getDepartment(), user.getFaculty());
+//        mailService.sendMail("vithustennysan21@gmail.com", url, user.getFirst_name(), user.getDepartment(), user.getFaculty());
 
         return true;
     }
 
 
-    public AuthenticationResponse login(LoginDTO loginDTO) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getEmail(),
-                        loginDTO.getPassword()
-                )
-        );
+    public AuthenticationResponse login(LoginDTO loginDTO) throws UserNotFoundException {
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getEmail(),
+                            loginDTO.getPassword()
+                    )
+            );
+        }catch (Exception ex){
+            throw new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!");
+        }
 
         User user = userRepo.findByEmail(loginDTO.getEmail())
-                .orElseThrow();
+                .orElseThrow(()-> new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!"));
 
         var jwtToken = jwtService.generateToken(user, user.getRole());
 
@@ -108,7 +113,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header) {
+    public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header) throws UserNotFoundException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElse(null);
@@ -116,18 +121,17 @@ public class AuthenticationService {
         if(user == null) {
             return Collections.emptyList();
         }
-        String userId = user.getId();
-        String prefix = userId.substring(0, userId.length() - 7);
 
-        User requestedUser = confirmationTokenService.confirm(confirmationToken);
+        User requestedUser = confirmationTokenService.confirm(confirmationToken) ;
         if (requestedUser != null) {
-            if (Objects.equals(user.getJob_type(), "Head of the department") || Objects.equals(user.getJob_type(), "Dean")){
+            if (Objects.equals(user.getJob_type(), "Head of the Department") || Objects.equals(user.getJob_type(), "Dean")){
                 requestedUser.setVerified(true);
                 userRepo.save(requestedUser);
+                mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser, user.getFirst_name()+" "+user.getLast_name());
             }else {
                 return Collections.emptyList();
             }
         }
-        return confirmationTokenService.getVerifyRequests(prefix);
+        return confirmationTokenService.getVerifyRequests(header);
     }
 }

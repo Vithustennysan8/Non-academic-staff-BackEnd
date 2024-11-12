@@ -46,7 +46,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("Jaffna")
-                .DateAndTimeOfAccident(new Date())
+                .dateAndTimeOfAccident(new Date())
                 .placeOFAccident("Jaffna")
                 .whilePerformingAnyDuty("Exam Duty")
                 .natureOfDanger("Accident")
@@ -61,14 +61,14 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
-                .approverOneReactedAt(new Date())
-                .approverTwo("EN_CO_HD_002")
-                .approverTwoStatus("Pending")
-                .approverTwoDescription("Pending")
-                .approverTwoReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
+                .headReactedAt(new Date())
+                .dean("EN_CO_HD_002")
+                .deanStatus("Pending")
+                .deanDescription("Pending")
+                .deanReactedAt(new Date())
                 .status("Pending")
                 .createdAt(new Date())
                 .build();
@@ -95,14 +95,14 @@ class AccidentLeaveFormRepoTest {
         assertNull(accidentLeaveForm.getFile());
         assertEquals("", accidentLeaveForm.getFileType());
         assertEquals("", accidentLeaveForm.getFileName());
-        assertEquals("EN_CO_HD_001", accidentLeaveForm.getApproverOne());
-        assertEquals("Pending", accidentLeaveForm.getApproverOneStatus());
-        assertEquals("Pending", accidentLeaveForm.getApproverOneDescription());
-        assertNotNull(accidentLeaveForm.getApproverOneReactedAt());
-        assertEquals("EN_CO_HD_002", accidentLeaveForm.getApproverTwo());
-        assertEquals("Pending", accidentLeaveForm.getApproverTwoStatus());
-        assertEquals("Pending", accidentLeaveForm.getApproverTwoDescription());
-        assertNotNull(accidentLeaveForm.getApproverTwoReactedAt());
+        assertEquals("EN_CO_HD_001", accidentLeaveForm.getHead());
+        assertEquals("Pending", accidentLeaveForm.getHeadStatus());
+        assertEquals("Pending", accidentLeaveForm.getHeadDescription());
+        assertNotNull(accidentLeaveForm.getHeadReactedAt());
+        assertEquals("EN_CO_HD_002", accidentLeaveForm.getDean());
+        assertEquals("Pending", accidentLeaveForm.getDeanStatus());
+        assertEquals("Pending", accidentLeaveForm.getDeanDescription());
+        assertNotNull(accidentLeaveForm.getDeanReactedAt());
         assertEquals("Pending", accidentLeaveForm.getStatus());
         assertNotNull(accidentLeaveForm.getCreatedAt());
 
@@ -127,7 +127,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("")
-                .DateAndTimeOfAccident(null)
+                .dateAndTimeOfAccident(null)
                 .placeOFAccident(null)
                 .whilePerformingAnyDuty("")
                 .natureOfDanger(null)
@@ -143,15 +143,15 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne(null)
-                .approverOneStatus(null)
-                .approverOneDescription("")
-                .approverOneReactedAt(null)
+                .head(null)
+                .headStatus(null)
+                .headDescription("")
+                .headReactedAt(null)
 
-                .approverTwo(null)
-                .approverTwoStatus(null)
-                .approverTwoDescription("")
-                .approverTwoReactedAt(null)
+                .dean(null)
+                .deanStatus(null)
+                .deanDescription("")
+                .deanReactedAt(null)
                 .status("Pending")
                 .createdAt(null)
                 .build();
@@ -180,15 +180,15 @@ class AccidentLeaveFormRepoTest {
         assertNull(accidentLeaveForm.getFile());
         assertEquals("", accidentLeaveForm.getFileType());
         assertEquals("", accidentLeaveForm.getFileName());
-        assertNull(accidentLeaveForm.getApproverOne());
-        assertNull(accidentLeaveForm.getApproverOneStatus());
-        assertEquals("", accidentLeaveForm.getApproverOneDescription());
-        assertNull(accidentLeaveForm.getApproverOneReactedAt());
+        assertNull(accidentLeaveForm.getHead());
+        assertNull(accidentLeaveForm.getHeadStatus());
+        assertEquals("", accidentLeaveForm.getHeadDescription());
+        assertNull(accidentLeaveForm.getHeadReactedAt());
 
-        assertNull(accidentLeaveForm.getApproverTwo());
-        assertNull(accidentLeaveForm.getApproverTwoStatus());
-        assertEquals("", accidentLeaveForm.getApproverTwoDescription());
-        assertNull(accidentLeaveForm.getApproverTwoReactedAt());
+        assertNull(accidentLeaveForm.getDean());
+        assertNull(accidentLeaveForm.getDeanStatus());
+        assertEquals("", accidentLeaveForm.getDeanDescription());
+        assertNull(accidentLeaveForm.getDeanReactedAt());
         assertEquals("Pending", accidentLeaveForm.getStatus());
         assertNull(accidentLeaveForm.getCreatedAt());
 
@@ -202,7 +202,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("Jaffna")
-                .DateAndTimeOfAccident(new Date())
+                .dateAndTimeOfAccident(new Date())
 
                 .placeOFAccident("Jaffna")
                 .whilePerformingAnyDuty("Exam Duty")
@@ -219,15 +219,15 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
 
-                .approverOneReactedAt(new Date())
-                .approverTwo("EN_CO_HD_002")
-                .approverTwoStatus("Pending")
-                .approverTwoDescription("Pending")
-                .approverTwoReactedAt(new Date())
+                .headReactedAt(new Date())
+                .dean("EN_CO_HD_002")
+                .deanStatus("Pending")
+                .deanDescription("Pending")
+                .deanReactedAt(new Date())
                 .status("Pending")
 
                 .createdAt(new Date())
@@ -255,7 +255,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("Jaffna")
-                .DateAndTimeOfAccident(new Date())
+                .dateAndTimeOfAccident(new Date())
                 .placeOFAccident("Jaffna")
                 .whilePerformingAnyDuty("Exam Duty")
                 .natureOfDanger("Accident")
@@ -270,14 +270,14 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
-                .approverOneReactedAt(new Date())
-                .approverTwo("EN_CO_HD_002")
-                .approverTwoStatus("Pending")
-                .approverTwoDescription("Pending")
-                .approverTwoReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
+                .headReactedAt(new Date())
+                .dean("EN_CO_HD_002")
+                .deanStatus("Pending")
+                .deanDescription("Pending")
+                .deanReactedAt(new Date())
                 .status("Pending")
                 .createdAt(new Date())
                 .build();
@@ -308,7 +308,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("Jaffna")
-                .DateAndTimeOfAccident(new Date())
+                .dateAndTimeOfAccident(new Date())
                 .placeOFAccident("Jaffna")
                 .whilePerformingAnyDuty("Exam Duty")
                 .natureOfDanger("Accident")
@@ -323,14 +323,14 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
-                .approverOneReactedAt(new Date())
-                .approverTwo("EN_CO_HD_002")
-                .approverTwoStatus("Pending")
-                .approverTwoDescription("Pending")
-                .approverTwoReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
+                .headReactedAt(new Date())
+                .dean("EN_CO_HD_002")
+                .deanStatus("Pending")
+                .deanDescription("Pending")
+                .deanReactedAt(new Date())
                 .status("Pending")
                 .createdAt(new Date())
                 .build();
@@ -362,7 +362,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("Jaffna")
-                .DateAndTimeOfAccident(new Date())
+                .dateAndTimeOfAccident(new Date())
                 .placeOFAccident("Jaffna")
                 .whilePerformingAnyDuty("Exam Duty")
                 .natureOfDanger("Accident")
@@ -377,14 +377,14 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Accepted")
-                .approverOneDescription("Okay")
-                .approverOneReactedAt(new Date())
-                .approverTwo("EN_CO_HD_002")
-                .approverTwoStatus("Pending")
-                .approverTwoDescription("Pending")
-                .approverTwoReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Accepted")
+                .headDescription("Okay")
+                .headReactedAt(new Date())
+                .dean("EN_CO_HD_002")
+                .deanStatus("Pending")
+                .deanDescription("Pending")
+                .deanReactedAt(new Date())
                 .status("Pending")
                 .createdAt(new Date())
                 .build();
@@ -393,7 +393,7 @@ class AccidentLeaveFormRepoTest {
         accidentLeaveFormRepo.save(accidentLeaveForm);
 
         // Test the findByUserIdStartingWithAndApproverOneStatus method with accepted status
-        List<AccidentLeaveForm> accidentLeaveForms = accidentLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus("EN_CO_TO", "Accepted");
+        List<AccidentLeaveForm> accidentLeaveForms = accidentLeaveFormRepo.findByUserIdStartingWithAndHeadStatus("EN_CO_TO", "Accepted");
         assertNotEquals(0, accidentLeaveForms.size());
         assertEquals(1, accidentLeaveForms.size());
 
@@ -416,7 +416,7 @@ class AccidentLeaveFormRepoTest {
         AccidentLeaveForm accidentLeaveForm = AccidentLeaveForm.builder()
                 .formType("Accident Leave Form")
                 .accidentOccurredDuring("Jaffna")
-                .DateAndTimeOfAccident(new Date())
+                .dateAndTimeOfAccident(new Date())
                 .placeOFAccident("Jaffna")
                 .whilePerformingAnyDuty("Exam Duty")
                 .natureOfDanger("Accident")
@@ -431,14 +431,14 @@ class AccidentLeaveFormRepoTest {
                 .file(null)
                 .fileType("")
                 .fileName("")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Rejected")
-                .approverOneDescription("Okay")
-                .approverOneReactedAt(new Date())
-                .approverTwo("EN_CO_HD_002")
-                .approverTwoStatus("Pending")
-                .approverTwoDescription("Rejected")
-                .approverTwoReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Rejected")
+                .headDescription("Okay")
+                .headReactedAt(new Date())
+                .dean("EN_CO_HD_002")
+                .deanStatus("Pending")
+                .deanDescription("Rejected")
+                .deanReactedAt(new Date())
                 .status("Pending")
                 .createdAt(new Date())
                 .build();
@@ -447,7 +447,7 @@ class AccidentLeaveFormRepoTest {
         accidentLeaveFormRepo.save(accidentLeaveForm);
 
         // Test the findByUserIdStartingWithAndApproverOneStatus method with accepted status
-        List<AccidentLeaveForm> accidentLeaveForms = accidentLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus("EN_CO_TO", "Accepted");
+        List<AccidentLeaveForm> accidentLeaveForms = accidentLeaveFormRepo.findByUserIdStartingWithAndHeadStatus("EN_CO_TO", "Accepted");
         assertEquals(0, accidentLeaveForms.size());
 
     }

@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 @EnableJpaRepositories
 public interface RegisterConfirmationTokenRepo extends JpaRepository<RegisterConfirmationToken, Long> {
-    Optional<RegisterConfirmationToken> findByToken(String token);
+    RegisterConfirmationToken findByToken(String token);
     void deleteByUserId(String userId);
     @Query("SELECT c FROM RegisterConfirmationToken c JOIN c.user u WHERE u.id Like :id% AND u.verified = :status")
     List<RegisterConfirmationToken> findByUserIdPrefixAndVerificationStatus(@Param("id") String prefix, @Param("status") Boolean verify);

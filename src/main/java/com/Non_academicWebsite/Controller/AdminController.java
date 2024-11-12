@@ -1,10 +1,12 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.MaternityLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
+import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
 import com.Non_academicWebsite.Service.AdminService;
 import com.Non_academicWebsite.Service.AuthenticationService;
@@ -48,20 +50,21 @@ public class AdminController {
     // Admin can delete a user by ID
     @DeleteMapping(value = "/deleteUser/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable("id") String id,
-                                            @RequestHeader("Authorization") String header){
+                                            @RequestHeader("Authorization") String header) throws UserNotFoundException {
         return ResponseEntity.ok(adminService.deleteUserById(id, header));
     }
 
     // used to retrieve the all registered user for verification
-    @GetMapping(value = "/verifyRequests")
+    @GetMapping(value = "/verifyRegisterRequests")
     public ResponseEntity<List<RegisterConfirmationToken>> getVerifyRequests(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(confirmationTokenService.getVerifyRequests(header));
     }
 
+
     // used to verify the newly registered user
     @PutMapping(value = "/verify/{token}")
     public ResponseEntity<List<RegisterConfirmationToken>> confirmUser(@PathVariable("token") String token,
-                                              @RequestHeader("Authorization") String header) {
+                                              @RequestHeader("Authorization") String header) throws UserNotFoundException {
         return ResponseEntity.ok(authenticationService.confirmUser(token, header));
     }
 
@@ -99,14 +102,25 @@ public class AdminController {
 
     // used to retrieve the all TransferForm
     @PostMapping(value = "/req/transferForm")
-    public ResponseEntity<?> getReqTransferForm(@RequestBody ReqFormsDTO reqFormsDTO){
-        return ResponseEntity.ok(transferFormService.getTransferForms(reqFormsDTO));
+    public ResponseEntity<?> getReqTransferForm(@RequestBody ReqFormsDTO reqFormsDTO,
+                                                 @RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(transferFormService.getTransferForms(reqFormsDTO, header));
     }
 
     // used to retrieve the all LeaveRequests
     @GetMapping("/leaveForms/notify")
-    public ResponseEntity<?> notifyAllLeaveFormRequests(@RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(adminService.getAllFormRequests(header));
+    public ResponseEntity<?> notifyAllLeaveFormRequests(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+        return ResponseEntity.ok(adminService.getAllLeaveFormRequests(header));
+    }
+
+    @GetMapping("/transferForms/notify")
+    public ResponseEntity<List<TransferForm>> notifyAllTransferFormRequests(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+        return ResponseEntity.ok(adminService.getAllTransferFormRequests(header));
+    }
+
+    @GetMapping(value = "leaveForms/getAllForms")
+    public ResponseEntity<?> getAllLeaveForm(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+        return ResponseEntity.ok(adminService.getAllLeaveForms(header));
     }
 
     // used to accept the leave form
@@ -119,6 +133,7 @@ public class AdminController {
             case "Paternal Leave Form" -> ResponseEntity.ok(paternalLeaveFormService.acceptForm(formId, approvalDTO));
             case "Maternity Leave Form" -> ResponseEntity.ok(maternityLeaveFormService.acceptForm(formId, approvalDTO));
             case "Medical Leave Form" -> ResponseEntity.ok(medicalLeaveFormService.acceptForm(formId, approvalDTO));
+            case "Transfer Form" -> ResponseEntity.ok(transferFormService.acceptForm(formId, approvalDTO));
             default -> ResponseEntity.ok("Failed");
         };
     }
@@ -133,6 +148,7 @@ public class AdminController {
             case "Paternal Leave Form" -> ResponseEntity.ok(paternalLeaveFormService.rejectForm(formId, approvalDTO));
             case "Maternity Leave Form" -> ResponseEntity.ok(maternityLeaveFormService.rejectForm(formId, approvalDTO));
             case "Medical Leave Form" -> ResponseEntity.ok(medicalLeaveFormService.rejectForm(formId, approvalDTO));
+            case "Transfer Form" -> ResponseEntity.ok(transferFormService.rejectForm(formId, approvalDTO));
             default -> ResponseEntity.ok("Failed");
         };
     }

@@ -18,4 +18,7 @@ public class MedicalLeaveFormDTO {
     private Date requestPeriodStart;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
     private Date requestPeriodEnd;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date leaveAt;
+    private int leaveDays;
 }

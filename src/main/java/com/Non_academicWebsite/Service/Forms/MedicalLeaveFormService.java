@@ -1,12 +1,15 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.MedicalLeaveFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.MaternityLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.MedicalLeaveFromRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class MedicalLeaveFormService {
     private JwtService jwtService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private MailService mailService;
+    private final String url = "http://localhost:5173/notifications";
 
     public MedicalLeaveForm add(String header, MedicalLeaveFormDTO medicalLeaveFormDTO, MultipartFile file) throws IOException {
         String token = header.substring(7);
@@ -40,6 +46,8 @@ public class MedicalLeaveFormService {
                 .file(file != null ? file.getBytes(): null)
                 .fileName(file != null ? file.getOriginalFilename(): null)
                 .fileType(file != null ? file.getContentType(): null)
+                .leaveAt(medicalLeaveFormDTO.getRequestPeriodStart())
+                .leaveDays(medicalLeaveFormDTO.getLeaveDays())
                 .user(user)
                 .formType("Medical Leave Form")
                 .headStatus("pending")
@@ -108,6 +116,7 @@ public class MedicalLeaveFormService {
         MedicalLeaveForm medicalLeaveForm = medicalLeaveFromRepo.findById(formId).orElse(null);
         if(medicalLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
@@ -140,6 +149,7 @@ public class MedicalLeaveFormService {
                 medicalLeaveForm.setNaeDescription(approvalDTO.getDescription());
                 medicalLeaveForm.setNaeReactedAt(new Date());
                 medicalLeaveForm.setStatus("Accepted");
+                mailService.sendMail(medicalLeaveForm.getUser().getEmail(), url, medicalLeaveForm.getUser().getFirst_name(), medicalLeaveForm.getFormType(), "Accepted", approver.getFirst_name());
                 return medicalLeaveFromRepo.save(medicalLeaveForm);
             }
         }
@@ -150,6 +160,7 @@ public class MedicalLeaveFormService {
         MedicalLeaveForm medicalLeaveForm = medicalLeaveFromRepo.findById(formId).orElse(null);
         if(medicalLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
@@ -158,6 +169,7 @@ public class MedicalLeaveFormService {
                 medicalLeaveForm.setDeanDescription(approvalDTO.getDescription());
                 medicalLeaveForm.setHeadReactedAt(new Date());
                 medicalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(medicalLeaveForm.getUser().getEmail(), url, medicalLeaveForm.getUser().getFirst_name(), medicalLeaveForm.getFormType(), "Rejected", approver.getFirst_name());
                 return medicalLeaveFromRepo.save(medicalLeaveForm);
             }else if (job.equals("Dean")) {
                 medicalLeaveForm.setDeanStatus("Rejected");
@@ -165,6 +177,7 @@ public class MedicalLeaveFormService {
                 medicalLeaveForm.setDeanDescription(approvalDTO.getDescription());
                 medicalLeaveForm.setDeanReactedAt(new Date());
                 medicalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(medicalLeaveForm.getUser().getEmail(), url, medicalLeaveForm.getUser().getFirst_name(), medicalLeaveForm.getFormType(), "Rejected", approver.getFirst_name());
                 return medicalLeaveFromRepo.save(medicalLeaveForm);
             }else if (job.equals("Chief Medical Officer")) {
                 medicalLeaveForm.setCmoStatus("Rejected");
@@ -172,6 +185,7 @@ public class MedicalLeaveFormService {
                 medicalLeaveForm.setCmoDescription(approvalDTO.getDescription());
                 medicalLeaveForm.setCmoReactedAt(new Date());
                 medicalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(medicalLeaveForm.getUser().getEmail(), url, medicalLeaveForm.getUser().getFirst_name(), medicalLeaveForm.getFormType(), "Rejected", approver.getFirst_name());
                 return medicalLeaveFromRepo.save(medicalLeaveForm);
             }else if (job.equals("Registrar")) {
                 medicalLeaveForm.setRegistrarStatus("Rejected");
@@ -179,6 +193,7 @@ public class MedicalLeaveFormService {
                 medicalLeaveForm.setRegistrarDescription(approvalDTO.getDescription());
                 medicalLeaveForm.setRegistrarReactedAt(new Date());
                 medicalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(medicalLeaveForm.getUser().getEmail(), url, medicalLeaveForm.getUser().getFirst_name(), medicalLeaveForm.getFormType(), "Rejected", approver.getFirst_name());
                 return medicalLeaveFromRepo.save(medicalLeaveForm);
             }else if (job.equals("Non Academic Establishment Division")) {
                 medicalLeaveForm.setNaeStatus("Rejected");
@@ -186,21 +201,22 @@ public class MedicalLeaveFormService {
                 medicalLeaveForm.setNaeDescription(approvalDTO.getDescription());
                 medicalLeaveForm.setNaeReactedAt(new Date());
                 medicalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(medicalLeaveForm.getUser().getEmail(), url, medicalLeaveForm.getUser().getFirst_name(), medicalLeaveForm.getFormType(), "Rejected", approver.getFirst_name());
                 return medicalLeaveFromRepo.save(medicalLeaveForm);
             }
         }
         return "Failed";
     }
 
-    public String deleteForm(String userId){
+    public String deleteForm(String userId) {
         if(!medicalLeaveFromRepo.existsByUserId(userId)){
-            return "Delete failed, User not found";
+            return "There is no user with this userId";
         }
         medicalLeaveFromRepo.deleteByUserId(userId);
         return "delete success";
     }
 
-    public String deleteByUser(Long id, String header) {
+    public String deleteByUser(Long id, String header) throws FormUnderProcessException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElse(null);
@@ -211,9 +227,12 @@ public class MedicalLeaveFormService {
             throw new NullPointerException("User not found");
         } else if (medicalLeaveForm == null) {
             throw new NullPointerException("Form not found");
-        }else if (Objects.equals(user.getId(), medicalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "ADMIN")){
-            medicalLeaveFromRepo.deleteById(id);
-            return "Form deleted Successfully";
+        }else if (Objects.equals(user.getId(), medicalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
+            if(medicalLeaveForm.getHeadStatus() == "pending"){
+                medicalLeaveFromRepo.deleteById(id);
+                return "Form deleted Successfully";
+            }
+            throw new FormUnderProcessException("Form is under process, Can't delete!!!");
         }
         return "Form deleted rejected";
     }

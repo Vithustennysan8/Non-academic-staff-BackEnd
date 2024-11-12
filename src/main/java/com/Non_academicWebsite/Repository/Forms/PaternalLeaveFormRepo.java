@@ -1,6 +1,8 @@
 package com.Non_academicWebsite.Repository.Forms;
 
+import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
+import com.Non_academicWebsite.Entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -15,6 +17,8 @@ import java.util.List;
 public interface PaternalLeaveFormRepo extends JpaRepository<PaternalLeaveForm, Long> {
     List<PaternalLeaveForm> findByUserId(String user);
     List<PaternalLeaveForm> findByUserIdStartingWith(String prefix);
+    @Query("SELECT n FROM PaternalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.role = :role")
+    List<PaternalLeaveForm> findByFacultyAndRole(@Param("faculty") String faculty, @Param("role") Role role);
     @Query("SELECT n FROM PaternalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<PaternalLeaveForm> findByFaculty(@Param("faculty") String faculty);
     @Query("SELECT n FROM PaternalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
@@ -24,10 +28,8 @@ public interface PaternalLeaveFormRepo extends JpaRepository<PaternalLeaveForm, 
     List<PaternalLeaveForm> findByUserIdStartingWithAndDeanStatus(String prefix, String accepted);
     @Query("SELECT n FROM PaternalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<PaternalLeaveForm> findByDepartment(@Param("faculty") String faculty,@Param("department") String department);
+    void deleteByUserId(String userId);
+    List<PaternalLeaveForm> findByDeanStatus(String accepted);
 
     boolean existsByUserId(String userId);
-
-    void deleteByUserId(String userId);
-
-    List<PaternalLeaveForm> findByDeanStatus(String accepted);
 }

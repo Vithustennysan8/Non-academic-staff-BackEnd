@@ -1,11 +1,14 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.AccidentLeaveFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.AccidentLeaveFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,10 @@ public class AccidentLeaveFormService {
     private JwtService jwtService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private MailService mailService;
+    private final String url = "http://localhost:5173/notifications";
+
 
     public AccidentLeaveForm add(String header, AccidentLeaveFormDTO accidentLeaveFormDTO, MultipartFile file) throws IOException {
         String token = header.substring(7);
@@ -48,6 +55,8 @@ public class AccidentLeaveFormService {
                 .file(file != null ? file.getBytes(): null)
                 .fileName(file != null ? file.getOriginalFilename(): null)
                 .fileType(file != null ? file.getContentType():null)
+                .leaveAt(accidentLeaveFormDTO.getLeaveAt())
+                .leaveDays(accidentLeaveFormDTO.getLeaveDays())
                 .user(user)
                 .formType("Accident Leave Form")
                 .headStatus("pending")
@@ -111,6 +120,7 @@ public class AccidentLeaveFormService {
         AccidentLeaveForm accidentLeaveForm = accidentLeaveFormRepo.findById(formId).orElse(null);
         if(accidentLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
@@ -137,6 +147,7 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setNaeDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setNaeReactedAt(new Date());
                 accidentLeaveForm.setStatus("Accepted");
+                mailService.sendMail(accidentLeaveForm.getUser().getEmail(), url, accidentLeaveForm.getUser().getFirst_name(), accidentLeaveForm.getFormType() , "Accepted", approver.getFirst_name());
                 return accidentLeaveFormRepo.save(accidentLeaveForm);
             }
         }
@@ -147,6 +158,7 @@ public class AccidentLeaveFormService {
         AccidentLeaveForm accidentLeaveForm = accidentLeaveFormRepo.findById(formId).orElse(null);
         if(accidentLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
@@ -155,6 +167,7 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setDeanDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setHeadReactedAt(new Date());
                 accidentLeaveForm.setStatus("Rejected");
+                mailService.sendMail(accidentLeaveForm.getUser().getEmail(), url, accidentLeaveForm.getUser().getFirst_name(), accidentLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return accidentLeaveFormRepo.save(accidentLeaveForm);
             }else if (job.equals("Dean")) {
                 accidentLeaveForm.setDeanStatus("Rejected");
@@ -162,6 +175,7 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setDeanDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setDeanReactedAt(new Date());
                 accidentLeaveForm.setStatus("Rejected");
+                mailService.sendMail(accidentLeaveForm.getUser().getEmail(), url, accidentLeaveForm.getUser().getFirst_name(), accidentLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return accidentLeaveFormRepo.save(accidentLeaveForm);
             }else if (job.equals("Chief Medical Officer")) {
                 accidentLeaveForm.setCmoStatus("Rejected");
@@ -169,6 +183,7 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setCmoDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setCmoReactedAt(new Date());
                 accidentLeaveForm.setStatus("Rejected");
+                mailService.sendMail(accidentLeaveForm.getUser().getEmail(), url, accidentLeaveForm.getUser().getFirst_name(), accidentLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return accidentLeaveFormRepo.save(accidentLeaveForm);
             }else if (job.equals("Non Academic Establishment Division")) {
                 accidentLeaveForm.setNaeStatus("Rejected");
@@ -176,21 +191,22 @@ public class AccidentLeaveFormService {
                 accidentLeaveForm.setNaeDescription(approvalDTO.getDescription());
                 accidentLeaveForm.setNaeReactedAt(new Date());
                 accidentLeaveForm.setStatus("Rejected");
+                mailService.sendMail(accidentLeaveForm.getUser().getEmail(), url, accidentLeaveForm.getUser().getFirst_name(), accidentLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return accidentLeaveFormRepo.save(accidentLeaveForm);
             }
         }
         return "Failed";
     }
 
-    public String deleteForm(String userId){
+    public String deleteForm(String userId) {
         if(!accidentLeaveFormRepo.existsByUserId(userId)){
-            return "Delete failed, User not found";
+            return "there is no form for this user";
         }
         accidentLeaveFormRepo.deleteByUserId(userId);
         return "delete success";
     }
 
-    public String deleteByUser(Long id, String header) {
+    public String deleteByUser(Long id, String header) throws FormUnderProcessException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElse(null);
@@ -201,9 +217,12 @@ public class AccidentLeaveFormService {
             throw new NullPointerException("User not found");
         } else if (accidentLeaveForm == null) {
             throw new NullPointerException("Form not found");
-        }else if (Objects.equals(user.getId(), accidentLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "ADMIN")){
-            accidentLeaveFormRepo.deleteById(id);
-            return "Form deleted Successfully";
+        }else if (Objects.equals(user.getId(), accidentLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
+            if(accidentLeaveForm.getHeadStatus() == "pending"){
+                accidentLeaveFormRepo.deleteById(id);
+                return "Form deleted Successfully";
+            }
+            throw new FormUnderProcessException("Form is under process, Can't delete!!!");
         }
         return "Form deleted rejected";
     }

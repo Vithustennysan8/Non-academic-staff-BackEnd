@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Repository.Forms;
 
 import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
+import com.Non_academicWebsite.Entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,6 +17,8 @@ import java.util.List;
 public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, Long> {
     List<AccidentLeaveForm> findByUserId(String user);
     List<AccidentLeaveForm> findByUserIdStartingWith(String prefix);
+    @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.role = :role")
+    List<AccidentLeaveForm> findByFacultyAndRole(@Param("faculty") String faculty, @Param("role") Role role);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<AccidentLeaveForm> findByFaculty(@Param("faculty") String faculty);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
@@ -26,12 +29,9 @@ public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, 
     List<AccidentLeaveForm> findByUserIdStartingWithAndCmoStatus(String prefix, String accepted);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<AccidentLeaveForm> findByDepartment(@Param("faculty") String faculty,@Param("department") String department);
+    void deleteByUserId(String userId);
+    List<AccidentLeaveForm> findByDeanStatus(String accepted);
+    List<AccidentLeaveForm> findByCmoStatus(String accepted);
 
     boolean existsByUserId(String userId);
-
-    void deleteByUserId(String userId);
-
-    List<AccidentLeaveForm> findByDeanStatus(String accepted);
-
-    List<AccidentLeaveForm> findByCmoStatus(String accepted);
 }

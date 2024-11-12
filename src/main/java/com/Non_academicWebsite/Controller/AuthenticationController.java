@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.Response.AuthenticationResponse;
@@ -30,7 +31,7 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) throws UserNotFoundException {
         return ResponseEntity
                 .ok(authenticationService.login(loginDTO));
     }

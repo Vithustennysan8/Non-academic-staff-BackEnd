@@ -61,14 +61,14 @@ class NormalLeaveFormRepoTest {
                 .user(user)
                 .noOfLeaveDays(2)
                 .leaveType("casual")
-                .leaveAppliedDate(new Date())
+                .leaveAt(new Date())
                 .reason("Wedding")
                 .arrangement("Substitute officer")
                 .addressDuringTheLeave("Jaffna")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
-                .approverOneReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
+                .headReactedAt(new Date())
                 .status("Pending")
                 .build();
 
@@ -89,14 +89,14 @@ class NormalLeaveFormRepoTest {
         assertEquals(60, normalLeaveForm.getSickLeaveThisYear());
         assertEquals(2, normalLeaveForm.getNoOfLeaveDays());
         assertEquals("casual", normalLeaveForm.getLeaveType());
-        assertNotNull(normalLeaveForm.getLeaveAppliedDate());
+        assertNotNull(normalLeaveForm.getLeaveAt());
         assertEquals("Wedding", normalLeaveForm.getReason());
         assertEquals("Substitute officer", normalLeaveForm.getArrangement());
         assertEquals("Jaffna", normalLeaveForm.getAddressDuringTheLeave());
-        assertEquals("EN_CO_HD_001", normalLeaveForm.getApproverOne());
-        assertEquals("Pending", normalLeaveForm.getApproverOneStatus());
-        assertEquals("Pending", normalLeaveForm.getApproverOneDescription());
-        assertNotNull(normalLeaveForm.getApproverOneReactedAt());
+        assertEquals("EN_CO_HD_001", normalLeaveForm.getHead());
+        assertEquals("Pending", normalLeaveForm.getHeadStatus());
+        assertEquals("Pending", normalLeaveForm.getHeadDescription());
+        assertNotNull(normalLeaveForm.getHeadReactedAt());
         assertEquals("Pending", normalLeaveForm.getStatus());
         assertNotNull(normalLeaveForm);
 
@@ -130,14 +130,14 @@ class NormalLeaveFormRepoTest {
                 .user(user)
                 .noOfLeaveDays(2)
                 .leaveType("")
-                .leaveAppliedDate(new Date())
+                .leaveAt(new Date())
                 .reason("Wedding")
                 .arrangement(null)
                 .addressDuringTheLeave("")
-                .approverOne(null)
-                .approverOneStatus(null)
-                .approverOneDescription("")
-                .approverOneReactedAt(null)
+                .head(null)
+                .headStatus(null)
+                .headDescription("")
+                .headReactedAt(null)
                 .status("Pending")
                 .build();
 
@@ -158,14 +158,14 @@ class NormalLeaveFormRepoTest {
         assertEquals(0, normalLeaveForm.getSickLeaveThisYear());
         assertEquals(2, normalLeaveForm.getNoOfLeaveDays());
         assertEquals("", normalLeaveForm.getLeaveType());
-        assertNotNull(normalLeaveForm.getLeaveAppliedDate());
+        assertNotNull(normalLeaveForm.getLeaveAt());
         assertEquals("Wedding", normalLeaveForm.getReason());
         assertNull(normalLeaveForm.getArrangement());
         assertEquals("", normalLeaveForm.getAddressDuringTheLeave());
-        assertNull(normalLeaveForm.getApproverOne());
-        assertNull(normalLeaveForm.getApproverOneStatus());
-        assertEquals("", normalLeaveForm.getApproverOneDescription());
-        assertNull(normalLeaveForm.getApproverOneReactedAt());
+        assertNull(normalLeaveForm.getHead());
+        assertNull(normalLeaveForm.getHeadStatus());
+        assertEquals("", normalLeaveForm.getHeadDescription());
+        assertNull(normalLeaveForm.getHeadReactedAt());
         assertEquals("Pending", normalLeaveForm.getStatus());
         assertNotNull(normalLeaveForm);
         }
@@ -186,14 +186,14 @@ class NormalLeaveFormRepoTest {
                 .sickLeaveThisYear(60)
                 .noOfLeaveDays(2)
                 .leaveType("casual")
-                .leaveAppliedDate(new Date())
+                .leaveAt(new Date())
                 .reason("Wedding")
                 .arrangement("Substitute officer")
                 .addressDuringTheLeave("Jaffna")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
-                .approverOneReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
+                .headReactedAt(new Date())
                 .status("Pending")
                 .build();
 
@@ -231,14 +231,14 @@ class NormalLeaveFormRepoTest {
                 .user(user)
                 .noOfLeaveDays(2)
                 .leaveType("casual")
-                .leaveAppliedDate(new Date())
+                .leaveAt(new Date())
                 .reason("Wedding")
                 .arrangement("Substitute officer")
                 .addressDuringTheLeave("Jaffna")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("Pending")
-                .approverOneReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("Pending")
+                .headReactedAt(new Date())
                 .status("Pending")
                 .build();
 
@@ -289,14 +289,14 @@ class NormalLeaveFormRepoTest {
                 .user(user)
                 .noOfLeaveDays(2)
                 .leaveType("casual")
-                .leaveAppliedDate(new Date())
+                .leaveAt(new Date())
                 .reason("Wedding")
                 .arrangement("Substitute officer")
                 .addressDuringTheLeave("Jaffna")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Accepted")
-                .approverOneDescription("Okay, get well soon.")
-                .approverOneReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Accepted")
+                .headDescription("Okay, get well soon.")
+                .headReactedAt(new Date())
                 .status("Accepted")
                 .build();
 
@@ -304,7 +304,7 @@ class NormalLeaveFormRepoTest {
         normalLeaveFormRepo.save(normalLeaveForm);
 
         // Test the findByUserIdStartingWithAndApproverOneStatus method with accepted status
-        List<NormalLeaveForm> normalLeaveForms = normalLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus("EN_CO_TO", "Accepted");
+        List<NormalLeaveForm> normalLeaveForms = normalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus("EN_CO_TO", "Accepted");
         assertNotEquals(0, normalLeaveForms.size());
         assertEquals(1, normalLeaveForms.size());
     }
@@ -338,14 +338,14 @@ class NormalLeaveFormRepoTest {
                 .user(user)
                 .noOfLeaveDays(2)
                 .leaveType("casual")
-                .leaveAppliedDate(new Date())
+                .leaveAt(new Date())
                 .reason("Wedding")
                 .arrangement("Substitute officer")
                 .addressDuringTheLeave("Jaffna")
-                .approverOne("EN_CO_HD_001")
-                .approverOneStatus("Pending")
-                .approverOneDescription("")
-                .approverOneReactedAt(new Date())
+                .head("EN_CO_HD_001")
+                .headStatus("Pending")
+                .headDescription("")
+                .headReactedAt(new Date())
                 .status("Pending")
                 .build();
 
@@ -353,7 +353,7 @@ class NormalLeaveFormRepoTest {
         normalLeaveFormRepo.save(normalLeaveForm);
 
         // Test the findByUserIdStartingWithAndApproverOneStatus method with accepted status
-        List<NormalLeaveForm> normalLeaveForms = normalLeaveFormRepo.findByUserIdStartingWithAndApproverOneStatus("EN_CO_TO", "Accepted");
+        List<NormalLeaveForm> normalLeaveForms = normalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus("EN_CO_TO", "Accepted");
         assertEquals(0, normalLeaveForms.size());
     }
 

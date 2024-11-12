@@ -1,12 +1,15 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.PaternalLeaveFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.PaternalLeaveFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class PaternalLeaveFormService {
     private JwtService jwtService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private MailService mailService;
+    private final String url = "http://localhost:5173/notifications";
 
     public PaternalLeaveForm add(String header, PaternalLeaveFormDTO paternalLeaveFormDTO, MultipartFile file) throws IOException {
         String token = header.substring(7);
@@ -37,9 +43,11 @@ public class PaternalLeaveFormService {
                 .childBirthDate(paternalLeaveFormDTO.getChildBirthDate())
                 .designation(paternalLeaveFormDTO.getDesignation())
                 .requestedDate(paternalLeaveFormDTO.getRequestedDate())
-                .file(file.getBytes())
-                .fileName(file.getOriginalFilename())
-                .fileType(file.getContentType())
+                .file(file != null ? file.getBytes(): null)
+                .fileName(file != null ? file.getOriginalFilename(): null)
+                .fileType(file != null ? file.getContentType():null)
+                .leaveAt(paternalLeaveFormDTO.getRequestedDate())
+                .leaveDays(paternalLeaveFormDTO.getLeaveDays())
                 .user(user)
                 .formType("Paternal Leave Form")
                 .headStatus("pending")
@@ -105,6 +113,7 @@ public class PaternalLeaveFormService {
         PaternalLeaveForm paternalLeaveForm = paternalLeaveFormRepo.findById(formId).orElse(null);
         if(paternalLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
@@ -125,6 +134,7 @@ public class PaternalLeaveFormService {
                 paternalLeaveForm.setNaeDescription(approvalDTO.getDescription());
                 paternalLeaveForm.setNaeReactedAt(new Date());
                 paternalLeaveForm.setStatus("Accepted");
+                mailService.sendMail(paternalLeaveForm.getUser().getEmail(), url, paternalLeaveForm.getUser().getFirst_name(), paternalLeaveForm.getFormType() , "Accepted", approver.getFirst_name());
                 return paternalLeaveFormRepo.save(paternalLeaveForm);
             }
         }
@@ -135,6 +145,7 @@ public class PaternalLeaveFormService {
         PaternalLeaveForm paternalLeaveForm = paternalLeaveFormRepo.findById(formId).orElse(null);
         if(paternalLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
+            User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             String job = user.getJob_type();
 
             if (job.equals("Head of the Department")) {
@@ -143,6 +154,7 @@ public class PaternalLeaveFormService {
                 paternalLeaveForm.setDeanDescription(approvalDTO.getDescription());
                 paternalLeaveForm.setHeadReactedAt(new Date());
                 paternalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(paternalLeaveForm.getUser().getEmail(), url, paternalLeaveForm.getUser().getFirst_name(), paternalLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return paternalLeaveFormRepo.save(paternalLeaveForm);
             }else if (job.equals("Dean")) {
                 paternalLeaveForm.setDeanStatus("Rejected");
@@ -150,6 +162,7 @@ public class PaternalLeaveFormService {
                 paternalLeaveForm.setDeanDescription(approvalDTO.getDescription());
                 paternalLeaveForm.setDeanReactedAt(new Date());
                 paternalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(paternalLeaveForm.getUser().getEmail(), url, paternalLeaveForm.getUser().getFirst_name(), paternalLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return paternalLeaveFormRepo.save(paternalLeaveForm);
             }else if (job.equals("Non Academic Establishment Division")) {
                 paternalLeaveForm.setNaeStatus("Rejected");
@@ -157,21 +170,22 @@ public class PaternalLeaveFormService {
                 paternalLeaveForm.setNaeDescription(approvalDTO.getDescription());
                 paternalLeaveForm.setNaeReactedAt(new Date());
                 paternalLeaveForm.setStatus("Rejected");
+                mailService.sendMail(paternalLeaveForm.getUser().getEmail(), url, paternalLeaveForm.getUser().getFirst_name(), paternalLeaveForm.getFormType() , "Rejected", approver.getFirst_name());
                 return paternalLeaveFormRepo.save(paternalLeaveForm);
             }
         }
         return "Failed";
     }
 
-    public Object deleteForm(String userId){
+    public Object deleteForm(String userId) {
         if(!paternalLeaveFormRepo.existsByUserId(userId)){
-            return "Delete failed, User not found";
+            return "there is no form with this userId";
         }
         paternalLeaveFormRepo.deleteByUserId(userId);
         return "delete success";
     }
 
-    public String deleteByUser(Long id, String header) {
+    public String deleteByUser(Long id, String header) throws FormUnderProcessException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElse(null);
@@ -182,9 +196,12 @@ public class PaternalLeaveFormService {
             throw new NullPointerException("User not found");
         } else if (paternalLeaveForm == null) {
             throw new NullPointerException("Form not found");
-        }else if (Objects.equals(user.getId(), paternalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "ADMIN")){
-            paternalLeaveFormRepo.deleteById(id);
-            return "Form deleted Successfully";
+        }else if (Objects.equals(user.getId(), paternalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
+            if(paternalLeaveForm.getHeadStatus() == "pending"){
+                paternalLeaveFormRepo.deleteById(id);
+                return "Form deleted Successfully";
+            }
+            throw new FormUnderProcessException("Form is under process, Can't delete!!!");
         }
         return "Form deleted rejected";
     }

@@ -1,7 +1,9 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
@@ -36,15 +38,22 @@ public class RegisterConfirmationTokenService {
         return token;
     }
 
-    public User confirm(String token) {
-        RegisterConfirmationToken confirmationToken = confirmationTokenRepo.findByToken(token)
-                .orElseThrow(()-> new NullPointerException("User is not found!"));
+    public User confirm(String token) throws UserNotFoundException {
+        RegisterConfirmationToken confirmationToken = confirmationTokenRepo.findByToken(token);
+//        assert confirmationToken != null;
         confirmationToken.setConfirmedAt(new Date(System.currentTimeMillis()));
         confirmationTokenRepo.save(confirmationToken);
         return confirmationToken.getUser();
     }
 
-    public List<RegisterConfirmationToken> getVerifyRequests(String prefix) {
+    public List<RegisterConfirmationToken> getVerifyRequests(String header) {
+        String token = header.substring(7); // The part of the header after "Bearer "
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElse(null);
+        if(user == null || user.getRole()!= Role.ADMIN) {
+            return Collections.emptyList();
+        }
+        String prefix = user.getId().substring(0, user.getId().length() - 7);
         return confirmationTokenRepo.findByUserIdPrefixAndVerificationStatus(prefix, false);
     }
 }
