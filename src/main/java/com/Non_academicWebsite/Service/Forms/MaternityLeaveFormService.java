@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MaternityLeaveFormService {
@@ -116,7 +113,7 @@ public class MaternityLeaveFormService {
         if(maternityLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             switch (job) {
                 case "Head of the Department" -> {
@@ -166,7 +163,7 @@ public class MaternityLeaveFormService {
         if(maternityLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             switch (job) {
                 case "Head of the Department" -> {
@@ -239,7 +236,7 @@ public class MaternityLeaveFormService {
         } else if (maternityLeaveForm == null) {
             throw new NullPointerException("Form not found");
         }else if (Objects.equals(user.getId(), maternityLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
-            if(maternityLeaveForm.getHeadStatus() == "pending"){
+            if(Objects.equals(maternityLeaveForm.getHeadStatus(), "pending")){
                 maternityLeaveFormRepo.deleteById(id);
                 return "Form deleted Successfully";
             }
@@ -248,4 +245,7 @@ public class MaternityLeaveFormService {
         return "Form deleted rejected";
     }
 
+    public Collection<MaternityLeaveForm> getFormsOfUserById(String id) {
+        return maternityLeaveFormRepo.findByUserId(id);
+    }
 }

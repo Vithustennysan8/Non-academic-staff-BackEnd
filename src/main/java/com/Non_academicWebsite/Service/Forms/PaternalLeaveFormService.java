@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class PaternalLeaveFormService {
@@ -114,7 +111,7 @@ public class PaternalLeaveFormService {
         if(paternalLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 paternalLeaveForm.setHeadStatus("Accepted");
@@ -146,7 +143,7 @@ public class PaternalLeaveFormService {
         if(paternalLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 paternalLeaveForm.setHeadStatus("Rejected");
@@ -197,7 +194,7 @@ public class PaternalLeaveFormService {
         } else if (paternalLeaveForm == null) {
             throw new NullPointerException("Form not found");
         }else if (Objects.equals(user.getId(), paternalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
-            if(paternalLeaveForm.getHeadStatus() == "pending"){
+            if(Objects.equals(paternalLeaveForm.getHeadStatus(), "pending")){
                 paternalLeaveFormRepo.deleteById(id);
                 return "Form deleted Successfully";
             }
@@ -206,4 +203,7 @@ public class PaternalLeaveFormService {
         return "Form deleted rejected";
     }
 
+    public Collection<PaternalLeaveForm> getFormsOfUserById(String id) {
+        return paternalLeaveFormRepo.findByUserId(id);
+    }
 }

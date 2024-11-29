@@ -117,7 +117,7 @@ public class TransferFormService {
         if(transferForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             switch (job) {
                 case "Head of the Department" -> {
@@ -171,7 +171,7 @@ public class TransferFormService {
         if(transferForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             switch (job) {
                 case "Head of the Department" -> {
@@ -244,7 +244,7 @@ public class TransferFormService {
         } else if (transferForm == null) {
             throw new NullPointerException("Form not found");
         }else if (Objects.equals(user.getId(), transferForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
-            if(transferForm.getHeadStatus() == "pending"){
+            if(Objects.equals(transferForm.getHeadStatus(), "pending")){
                 transferFormRepo.deleteById(id);
                 return "Form deleted Successfully";
             }

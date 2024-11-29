@@ -1,6 +1,5 @@
 package com.Non_academicWebsite.Repository.Forms;
 
-import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +21,8 @@ public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Long
     List<NormalLeaveForm> findByDepartment(@Param("faculty") String faculty, @Param("department") String department);
     @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<NormalLeaveForm> findByFaculty(@Param("faculty") String faculty);
+    @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND n.status = :status")
+    List<NormalLeaveForm> findByFacultyAndHeadStatus(@Param("faculty") String faculty, @Param("status") String status);
     @Query("SELECT n FROM NormalLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<NormalLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
     List<NormalLeaveForm> findByUserId(String id);
@@ -29,4 +30,5 @@ public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Long
     void deleteByUserId(String userId);
 
     boolean existsByUserId(String userId);
+
 }

@@ -1,7 +1,6 @@
 package com.Non_academicWebsite.Repository.Forms;
 
 import com.Non_academicWebsite.Entity.Forms.MaternityLeaveForm;
-import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +20,8 @@ public interface MaternityLeaveFormRepo extends JpaRepository<MaternityLeaveForm
     List<MaternityLeaveForm> findByFacultyAndRole(@Param("faculty") String faculty, @Param("role") Role role);
     @Query("SELECT n FROM MaternityLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<MaternityLeaveForm> findByFaculty(@Param("faculty") String faculty);
+    @Query("SELECT n FROM MaternityLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND n.headStatus = :status")
+    List<MaternityLeaveForm> findByFacultyAndHeadStatus(@Param("faculty") String faculty, @Param("status") String status);
     @Query("SELECT n FROM MaternityLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<MaternityLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
 
@@ -34,6 +35,13 @@ public interface MaternityLeaveFormRepo extends JpaRepository<MaternityLeaveForm
     List<MaternityLeaveForm> findByDeanStatus(String accepted);
     List<MaternityLeaveForm> findByCmoStatus(String accepted);
     List<MaternityLeaveForm> findByRegistrarStatus(String accepted);
-
     boolean existsByUserId(String userId);
+    @Query("SELECT n FROM MaternityLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND n.headStatus = :headStatus AND " +
+            "n.deanStatus = :deanStatus")
+    List<MaternityLeaveForm> findByFacultyAndHeadStatusAndDeanStatus(@Param("faculty") String faculty, @Param("headStatus")
+    String accepted, @Param("deanStatus") String pending);
+    List<MaternityLeaveForm> findByDeanStatusAndCmoStatus(String accepted, String pending);
+    List<MaternityLeaveForm> findByCmoStatusAndRegistrarStatus(String accepted, String pending);
+
+    List<MaternityLeaveForm> findByRegistrarStatusAndNaeStatus(String accepted, String pending);
 }

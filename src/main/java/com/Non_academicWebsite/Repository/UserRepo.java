@@ -17,5 +17,6 @@ public interface UserRepo extends JpaRepository<User, String> {
     Optional<User> findTopByIdStartingWithOrderByIdDesc(String prefix);
     Optional<User> findByDepartmentAndFacultyAndRole(String department, String faculty, Role admin);
     List<User> findByIdStartingWithAndVerified(String prefix, boolean verified);
+    List<User> findByFacultyAndJobType(String faculty, String jobType);
     Optional<User> findByRole(Role role);
 }

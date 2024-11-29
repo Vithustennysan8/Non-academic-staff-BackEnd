@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MedicalLeaveFormService {
@@ -117,7 +114,7 @@ public class MedicalLeaveFormService {
         if(medicalLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 medicalLeaveForm.setHeadStatus("Accepted");
@@ -161,7 +158,7 @@ public class MedicalLeaveFormService {
         if(medicalLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 medicalLeaveForm.setHeadStatus("Rejected");
@@ -228,7 +225,7 @@ public class MedicalLeaveFormService {
         } else if (medicalLeaveForm == null) {
             throw new NullPointerException("Form not found");
         }else if (Objects.equals(user.getId(), medicalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
-            if(medicalLeaveForm.getHeadStatus() == "pending"){
+            if(Objects.equals(medicalLeaveForm.getHeadStatus(), "pending")){
                 medicalLeaveFromRepo.deleteById(id);
                 return "Form deleted Successfully";
             }
@@ -237,4 +234,7 @@ public class MedicalLeaveFormService {
         return "Form deleted rejected";
     }
 
+    public Collection<MedicalLeaveForm> getFormsOfUserById(String id) {
+        return medicalLeaveFromRepo.findByUserId(id);
+    }
 }

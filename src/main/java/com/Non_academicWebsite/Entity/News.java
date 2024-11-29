@@ -26,4 +26,10 @@ public class News {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    private String filename;
+    private String filetype;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] fileData;
+
 }

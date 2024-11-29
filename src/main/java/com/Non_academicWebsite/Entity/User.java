@@ -39,7 +39,7 @@ public class User implements UserDetails {
     private Integer postal_code;
     private String ic_no;
     private String emp_id;
-    private String job_type;
+    private String jobType;
     private String department;
     private String faculty;
     @JsonFormat(pattern = "dd-MM-yyyy")
@@ -89,6 +89,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return verified;
+        return true;
     }
 }

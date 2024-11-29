@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AccidentLeaveFormService {
@@ -61,6 +58,8 @@ public class AccidentLeaveFormService {
                 .formType("Accident Leave Form")
                 .headStatus("pending")
                 .deanStatus("pending")
+                .cmoStatus("pending")
+                .naeStatus("pending")
                 .status("Pending")
                 .createdAt(new Date())
                 .build();
@@ -121,7 +120,7 @@ public class AccidentLeaveFormService {
         if(accidentLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 accidentLeaveForm.setHeadStatus("Accepted");
@@ -159,7 +158,7 @@ public class AccidentLeaveFormService {
         if(accidentLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 accidentLeaveForm.setHeadStatus("Rejected");
@@ -218,12 +217,16 @@ public class AccidentLeaveFormService {
         } else if (accidentLeaveForm == null) {
             throw new NullPointerException("Form not found");
         }else if (Objects.equals(user.getId(), accidentLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
-            if(accidentLeaveForm.getHeadStatus() == "pending"){
+            if(Objects.equals(accidentLeaveForm.getHeadStatus(), "pending")){
                 accidentLeaveFormRepo.deleteById(id);
                 return "Form deleted Successfully";
             }
             throw new FormUnderProcessException("Form is under process, Can't delete!!!");
         }
         return "Form deleted rejected";
+    }
+
+    public Collection<AccidentLeaveForm> getFormsOfUserById(String id) {
+        return accidentLeaveFormRepo.findByUserId(id);
     }
 }

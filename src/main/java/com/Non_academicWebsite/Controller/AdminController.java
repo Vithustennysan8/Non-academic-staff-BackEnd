@@ -113,7 +113,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllLeaveFormRequests(header));
     }
 
-    @GetMapping("/transferForms/notify")
+    @GetMapping("/leaveForms/notification")
+    public ResponseEntity<?> pendingNotificationLeaveFormRequestsByApprover(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+        return ResponseEntity.ok(adminService.getPendingLeaveFormRequestsByApprover(header));
+    }
+
+    @GetMapping("/transferForms/notification")
     public ResponseEntity<List<TransferForm>> notifyAllTransferFormRequests(@RequestHeader("Authorization") String header) throws UserNotFoundException {
         return ResponseEntity.ok(adminService.getAllTransferFormRequests(header));
     }

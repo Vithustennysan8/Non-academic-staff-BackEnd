@@ -15,10 +15,7 @@ import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class NormalLeaveFormService {
@@ -121,7 +118,7 @@ public class NormalLeaveFormService {
         if(normalLeaveForm != null){
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 normalLeaveForm.setHeadStatus("Accepted");
@@ -141,7 +138,7 @@ public class NormalLeaveFormService {
         if(normalLeaveForm != null) {
             User user = userRepo.findById(approvalDTO.getUser()).orElseThrow();
             User approver = userRepo.findById(approvalDTO.getUser()).orElseThrow();
-            String job = user.getJob_type();
+            String job = user.getJobType();
 
             if (job.equals("Head of the Department")) {
                 normalLeaveForm.setHeadStatus("Rejected");
@@ -176,7 +173,7 @@ public class NormalLeaveFormService {
         } else if (normalLeaveForm == null) {
             throw new NullPointerException("Form not found");
         }else if (Objects.equals(user.getId(), normalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
-            if(normalLeaveForm.getHeadStatus() == "pending"){
+            if(Objects.equals(normalLeaveForm.getHeadStatus(), "pending")){
                 normalLeaveFormRepo.deleteById(id);
                 return "Form deleted Successfully";
             }
@@ -185,4 +182,7 @@ public class NormalLeaveFormService {
         return "Form deleted rejected";
     }
 
+    public Collection<NormalLeaveForm> getFormsOfUserById(String id) {
+        return normalLeaveFormRepo.findByUserId(id);
+    }
 }

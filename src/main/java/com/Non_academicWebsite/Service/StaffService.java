@@ -8,6 +8,7 @@ import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 //import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
@@ -60,7 +61,12 @@ public class StaffService {
 
         String id = user.getId();
         String prefix = id.substring(0, id.length() - 7);
-        return userRepo.findByIdStartingWithAndVerified(prefix, true);
+        List<User> users = new ArrayList<>();
+        if(user.getRole() == Role.USER){
+            users.addAll(userRepo.findByFacultyAndJobType(user.getFaculty(), "Dean"));
+        }
+        users.addAll(userRepo.findByIdStartingWithAndVerified(prefix, true));
+        return users;
     }
 
     public UserInfoResponse getUser(String token) throws UserNotFoundException {
@@ -84,7 +90,7 @@ public class StaffService {
                 .postal_code(user.getPostal_code())
                 .ic_no(user.getIc_no())
                 .emp_id(user.getEmp_id())
-                .job_type(user.getJob_type())
+                .job_type(user.getJobType())
                 .department(user.getDepartment())
                 .faculty(user.getFaculty())
                 .image_type(user.getImage_type())
@@ -219,5 +225,18 @@ public class StaffService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
         return "Reset success";
+    }
+
+    public List<Object> getAllAppliedLeaveFormsById(String id) throws UserNotFoundException {
+        if (!userRepo.existsById(id)) {
+            throw new UserNotFoundException("User not found");
+        }
+        List<Object> forms = new ArrayList<>();
+        forms.addAll(normalLeaveFormService.getFormsOfUserById(id));
+        forms.addAll(accidentLeaveFormService.getFormsOfUserById(id));
+        forms.addAll(paternalLeaveFormService.getFormsOfUserById(id));
+        forms.addAll(maternityLeaveFormService.getFormsOfUserById(id));
+        forms.addAll(medicalLeaveFormService.getFormsOfUserById(id));
+        return forms;
     }
 }

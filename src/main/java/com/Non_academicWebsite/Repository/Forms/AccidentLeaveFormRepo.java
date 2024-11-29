@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -21,6 +20,8 @@ public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, 
     List<AccidentLeaveForm> findByFacultyAndRole(@Param("faculty") String faculty, @Param("role") Role role);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<AccidentLeaveForm> findByFaculty(@Param("faculty") String faculty);
+    @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND n.headStatus = :status")
+    List<AccidentLeaveForm> findByFacultyAndHeadStatus(@Param("faculty") String faculty, @Param("status") String status);
     @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<AccidentLeaveForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
 
@@ -34,4 +35,12 @@ public interface AccidentLeaveFormRepo extends JpaRepository<AccidentLeaveForm, 
     List<AccidentLeaveForm> findByCmoStatus(String accepted);
 
     boolean existsByUserId(String userId);
+
+    @Query("SELECT n FROM AccidentLeaveForm n JOIN n.user u WHERE u.faculty = :faculty AND n.headStatus = :headStatus AND " +
+            "n.deanStatus = :deanStatus")
+    List<AccidentLeaveForm> findByFacultyAndHeadStatusAndDeanStatus(@Param("faculty") String faculty,@Param("headStatus")
+    String accepted,@Param("deanStatus") String pending);
+    List<AccidentLeaveForm> findByDeanStatusAndCmoStatus(String accepted, String pending);
+
+    List<AccidentLeaveForm> findByCmoStatusAndNaeStatus(String accepted, String pending);
 }

@@ -64,7 +64,7 @@ public class AuthenticationService {
                 .postal_code(registerDTO.getPostal_code())
                 .ic_no(registerDTO.getIc_no())
                 .emp_id(registerDTO.getEmp_id())
-                .job_type(registerDTO.getJob_type())
+                .jobType(registerDTO.getJob_type())
                 .department(registerDTO.getDepartment())
                 .faculty(registerDTO.getFaculty())
                 .createdAt(new Date())
@@ -124,7 +124,7 @@ public class AuthenticationService {
 
         User requestedUser = confirmationTokenService.confirm(confirmationToken) ;
         if (requestedUser != null) {
-            if (Objects.equals(user.getJob_type(), "Head of the Department") || Objects.equals(user.getJob_type(), "Dean")){
+            if (Objects.equals(user.getJobType(), "Head of the Department") || Objects.equals(user.getJobType(), "Dean")){
                 requestedUser.setVerified(true);
                 userRepo.save(requestedUser);
                 mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser, user.getFirst_name()+" "+user.getLast_name());

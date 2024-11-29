@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.Entity.Forms.Forms;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
@@ -9,14 +10,13 @@ import com.Non_academicWebsite.Repository.Forms.*;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AdminService {
@@ -42,17 +42,16 @@ public class AdminService {
     private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
     @Autowired
     private ForumRepo forumRepo;
+    @Autowired
+    private ExtractUserService extractUserService;
+
 
     public List<Object> getAllLeaveFormRequests(String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
-
-        String userid = user.getId();
-        String prefix = userid.substring(0, userid.length()-7);
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        String prefix = extractUserService.getTheIdPrefixByUser(user);
 
         List<Object> forms = new ArrayList<>();
-        switch (user.getJob_type()) {
+        switch (user.getJobType()) {
             case "Head of the Department" -> {
                 forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
                 forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
@@ -61,11 +60,10 @@ public class AdminService {
                 forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWith(prefix));
             }
             case "Dean" -> {
-                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
-                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
-                forms.addAll(paternalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
-                forms.addAll(medicalLeaveFromRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
-                forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted"));
+                forms.addAll(accidentLeaveFormRepo.findByFacultyAndHeadStatus(user.getFaculty(), "Accepted"));
+                forms.addAll(paternalLeaveFormRepo.findByFacultyAndHeadStatus(user.getFaculty(), "Accepted"));
+                forms.addAll(medicalLeaveFromRepo.findByFacultyAndHeadStatus(user.getFaculty(), "Accepted"));
+                forms.addAll(maternityLeaveFormRepo.findByFacultyAndHeadStatus(user.getFaculty(), "Accepted"));
             }
             case "Chief Medical Officer" -> {
                 forms.addAll(accidentLeaveFormRepo.findByDeanStatus("Accepted"));
@@ -90,28 +88,24 @@ public class AdminService {
     }
 
     public List<TransferForm> getAllTransferFormRequests(String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        String prefix = extractUserService.getTheIdPrefixByUser(user);
 
-        String userid = user.getId();
-        String prefix = userid.substring(0, userid.length()-7);
-
-        switch (user.getJob_type()) {
+        switch (user.getJobType()) {
             case "Head of the Department" -> {
-                return transferFormRepo.findByUserIdStartingWith(prefix);
+                return transferFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending");
             }
             case "Dean" -> {
-                return transferFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "Accepted");
+                return transferFormRepo.findByFacultyAndHeadStatusAndDeanStatus(user.getFaculty(), "Accepted", "pending");
             }
             case "Registrar" -> {
-                return transferFormRepo.findByDeanStatus("Accepted");
+                return transferFormRepo.findByDeanStatusAndRegistrarStatus("Accepted", "pending");
             }
             case "Non Academic Establishment Division" -> {
-                return transferFormRepo.findByRegistrarStatus("Accepted");
+                return transferFormRepo.findByRegistrarStatusAndNaeStatus("Accepted", "pending");
             }
             case "RegistrarApproval" -> {
-                return transferFormRepo.findByNaeStatus("Accepted");
+                return transferFormRepo.findByNaeStatusAndRegistrarApprovalStatus("Accepted", "pending");
             }
             default -> {
                 return Collections.emptyList();
@@ -121,9 +115,7 @@ public class AdminService {
 
     @Transactional
     public Object deleteUserById(String id, String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(userRepo.existsById(id)){
             forumRepo.deleteByUserId(id);
@@ -133,16 +125,12 @@ public class AdminService {
         return confirmationTokenService.getVerifyRequests(header);
     }
 
-    public List<Object> getAllLeaveForms(String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+    public List<Forms> getAllLeaveForms(String header) throws UserNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        String prefix = extractUserService.getTheIdPrefixByUser(user);
 
-        String userId = user.getId();
-        String prefix = userId.substring(0, userId.length() - 7);
-
-        List<Object> forms = new ArrayList<>();
-        switch (user.getJob_type()) {
+        List<Forms> forms = new ArrayList<>();
+        switch (user.getJobType()) {
             case "Head of the Department" -> {
                 forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
                 forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
@@ -151,11 +139,11 @@ public class AdminService {
                 forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWith(prefix));
             }
             case "Dean" -> {
-                forms.addAll(accidentLeaveFormRepo.findByFacultyAndRole(user.getFaculty(), Role.ADMIN));
-                forms.addAll(normalLeaveFormRepo.findByFacultyAndRole(user.getFaculty(), Role.ADMIN));
-                forms.addAll(paternalLeaveFormRepo.findByFacultyAndRole(user.getFaculty(), Role.ADMIN));
-                forms.addAll(medicalLeaveFromRepo.findByFacultyAndRole(user.getFaculty(), Role.ADMIN));
-                forms.addAll(maternityLeaveFormRepo.findByFacultyAndRole(user.getFaculty(), Role.ADMIN));
+                forms.addAll(accidentLeaveFormRepo.findByFaculty(user.getFaculty()));
+                forms.addAll(normalLeaveFormRepo.findByFaculty(user.getFaculty()));
+                forms.addAll(paternalLeaveFormRepo.findByFaculty(user.getFaculty()));
+                forms.addAll(medicalLeaveFromRepo.findByFaculty(user.getFaculty()));
+                forms.addAll(maternityLeaveFormRepo.findByFaculty(user.getFaculty()));
             }
             case "Chief Medical Officer" -> {
                 forms.addAll(accidentLeaveFormRepo.findAll());
@@ -178,4 +166,73 @@ public class AdminService {
         }
         return forms;
     }
+
+//    public List<Object> getFormsSummaryForDean(String header) throws UserNotFoundException {
+//        List<Forms> results = getAllLeaveForms(header);
+//
+//        Map<String, Object> info = new HashMap<>();
+//        results.stream().forEach(result -> {
+//            String department = result.getUser().getDepartment();
+//            String formType = result.getFormType();
+//            String year = result.getLeaveAt().toString().substring(0,4);
+//            String month = result.getLeaveAt().toString().substring(5,7);
+//
+//            if(info.containsKey(department)){
+//                Object deatil = info.get(department);
+////                if(deatil.year == year && deatil.month == month){
+//
+//                }
+//            }
+//        });
+//
+//
+//        return null;
+//    }
+
+    public List<Object> getPendingLeaveFormRequestsByApprover(String header) throws UserNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        String prefix = extractUserService.getTheIdPrefixByUser(user);
+
+
+        List<Object> forms = new ArrayList<>();
+        switch (user.getJobType()) {
+            case "Head of the Department" -> {
+                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending"));
+                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending"));
+                forms.addAll(paternalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending"));
+                forms.addAll(medicalLeaveFromRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending"));
+                forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending"));
+            }
+            case "Dean" -> {
+                forms.addAll(accidentLeaveFormRepo.findByFacultyAndHeadStatusAndDeanStatus(user.getFaculty(),
+                        "Accepted", "pending"));
+                forms.addAll(paternalLeaveFormRepo.findByFacultyAndHeadStatusAndDeanStatus(user.getFaculty(),
+                        "Accepted", "pending"));
+                forms.addAll(medicalLeaveFromRepo.findByFacultyAndHeadStatusAndDeanStatus(user.getFaculty(),
+                        "Accepted", "pending"));
+                forms.addAll(maternityLeaveFormRepo.findByFacultyAndHeadStatusAndDeanStatus(user.getFaculty(),
+                        "Accepted", "pending"));
+            }
+            case "Chief Medical Officer" -> {
+                forms.addAll(accidentLeaveFormRepo.findByDeanStatusAndCmoStatus("Accepted", "pending"));
+                forms.addAll(medicalLeaveFromRepo.findByDeanStatusAndCmoStatus("Accepted", "pending"));
+                forms.addAll(maternityLeaveFormRepo.findByDeanStatusAndCmoStatus("Accepted","pending"));
+            }
+            case "Registrar" -> {
+                forms.addAll(medicalLeaveFromRepo.findByCmoStatusAndRegistrarStatus("Accepted", "pending"));
+                forms.addAll(maternityLeaveFormRepo.findByCmoStatusAndRegistrarStatus("Accepted", "pending"));
+            }
+            case "Non Academic Establishment Division" -> {
+                forms.addAll(paternalLeaveFormRepo.findByDeanStatusAndNaeStatus("Accepted", "pending"));
+                forms.addAll(accidentLeaveFormRepo.findByCmoStatusAndNaeStatus("Accepted", "pending"));
+                forms.addAll(medicalLeaveFromRepo.findByRegistrarStatusAndNaeStatus("Accepted", "pending"));
+                forms.addAll(maternityLeaveFormRepo.findByRegistrarStatusAndNaeStatus("Accepted", "pending"));
+            }
+            default -> {
+                forms.addAll(Collections.emptyList());
+            }
+        }
+        return forms;
+    }
+
 }

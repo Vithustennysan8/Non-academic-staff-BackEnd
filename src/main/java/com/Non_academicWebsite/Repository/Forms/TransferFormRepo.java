@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Repository.Forms;
 
+import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,8 @@ public interface TransferFormRepo extends JpaRepository<TransferForm, Long> {
     List<TransferForm> findByFacultyAndRole(@Param("faculty") String faculty, @Param("role") Role role);
     @Query("SELECT n FROM TransferForm n JOIN n.user u WHERE u.faculty = :faculty")
     List<TransferForm> findByFaculty(@Param("faculty") String faculty);
+    @Query("SELECT n FROM TransferForm n JOIN n.user u WHERE u.faculty = :faculty AND n.headStatus = :status")
+    List<TransferForm> findByFacultyAndHeadStatus(@Param("faculty") String faculty, @Param("status") String status);
     @Query("SELECT n FROM TransferForm n JOIN n.user u WHERE u.faculty = :faculty AND u.department = :department")
     List<TransferForm> findByFacultyAndDepartment(@Param("faculty") String faculty, @Param("department") String department);
     List<TransferForm> findByUserIdStartingWithAndHeadStatus(String prefix, String accepted);
@@ -30,4 +33,14 @@ public interface TransferFormRepo extends JpaRepository<TransferForm, Long> {
     boolean existsByUserId(String userId);
 
     List<TransferForm> findByNaeStatus(String accepted);
+    @Query("SELECT n FROM TransferForm n JOIN n.user u WHERE u.faculty = :faculty AND n.headStatus = :headStatus AND " +
+            "n.deanStatus = :deanStatus")
+    List<TransferForm> findByFacultyAndHeadStatusAndDeanStatus(@Param("faculty") String faculty,@Param("headStatus") 
+    String accepted,@Param("deanStatus") String pending);
+
+    List<TransferForm> findByDeanStatusAndRegistrarStatus(String accepted, String pending);
+
+    List<TransferForm> findByRegistrarStatusAndNaeStatus(String accepted, String pending);
+
+    List<TransferForm> findByNaeStatusAndRegistrarApprovalStatus(String accepted, String pending);
 }

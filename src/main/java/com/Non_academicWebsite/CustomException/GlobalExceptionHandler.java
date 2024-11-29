@@ -49,4 +49,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleApprovalFlowExitsException(ApprovalFlowExitsException ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("status", HttpStatus.CONFLICT);
+        response.put("error", "Approval flow already exists!");
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
 }

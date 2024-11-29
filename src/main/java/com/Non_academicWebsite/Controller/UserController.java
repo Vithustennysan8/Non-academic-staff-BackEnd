@@ -37,12 +37,14 @@ public class UserController {
     }
 
     @GetMapping(value = "/staffs")
-    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header)
+            throws UserNotFoundException {
         return ResponseEntity.ok(staffService.getUsersByDepartment(header));
     }
 
     @GetMapping(value = "/info")
-    public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header)
+                                                    throws UserNotFoundException {
         String token = header.substring(7);
         return ResponseEntity.ok(staffService.getUser(token));
     }
@@ -50,7 +52,8 @@ public class UserController {
     @PutMapping(value = "/update")
     public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String header,
                                            @ModelAttribute RegisterDTO registerDTO,
-                                           @RequestParam(value = "image", required = false) MultipartFile image) throws IOException, UserNotFoundException {
+                                           @RequestParam(value = "image", required = false) MultipartFile image)
+                                            throws IOException, UserNotFoundException {
         User user = staffService.updateProfile(header, registerDTO, image);
         return ResponseEntity.ok(user);
     }
@@ -63,13 +66,19 @@ public class UserController {
 
     @DeleteMapping(value = "/delete")
     public ResponseEntity<String> deleteAccount(@RequestHeader("Authorization") String header,
-                                                @RequestBody SecurityDTO deleteAccountDTO) throws UserNotFoundException {
+                                                @RequestBody SecurityDTO deleteAccountDTO)
+                                                throws UserNotFoundException {
         return ResponseEntity.ok(staffService.deleteAccount(header, deleteAccountDTO));
     }
 
     @GetMapping("/leaveForms")
     public ResponseEntity<?> getAllAppliedLeaveForms(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(staffService.getAllAppliedLeaveForms(header));
+    }
+
+    @GetMapping("/leaveFormsById/{id}")
+    public ResponseEntity<?> getAllAppliedLeaveFormsById(@PathVariable("id") String id) throws UserNotFoundException {
+        return ResponseEntity.ok(staffService.getAllAppliedLeaveFormsById(id));
     }
 
     @GetMapping("/transferForms")
@@ -83,12 +92,14 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword/confirmation")
-    public ResponseEntity<String> confirmOTP(@RequestBody ForgotPasswordDTO forgotPasswordDTO) throws UserNotFoundException {
+    public ResponseEntity<String> confirmOTP(@RequestBody ForgotPasswordDTO forgotPasswordDTO)
+                                            throws UserNotFoundException {
         return ResponseEntity.ok(staffService.confirmOTP(forgotPasswordDTO.getOtp()));
     }
 
     @PostMapping("/forgotPassword/reset")
-    public ResponseEntity<String> resetForForgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO) throws UserNotFoundException {
+    public ResponseEntity<String> resetForForgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO)
+                                                        throws UserNotFoundException {
         return ResponseEntity.ok(staffService.resetForForgotPassword(forgotPasswordDTO));
     }
 

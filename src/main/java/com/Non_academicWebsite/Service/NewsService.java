@@ -10,7 +10,9 @@ import com.Non_academicWebsite.Repository.NewsRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +26,7 @@ public class NewsService {
     @Autowired
     private UserRepo userRepo;
 
-    public List<News> add(NewsDTO newsDTO, String header) throws UserNotFoundException {
+    public List<News> add(NewsDTO newsDTO, String header, MultipartFile image) throws UserNotFoundException, IOException {
         User user = extractUser(header);
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length()-7);
@@ -34,6 +36,9 @@ public class NewsService {
                 .body(newsDTO.getBody())
                 .createdAt(new Date())
                 .updatedAt(new Date())
+                .filetype(image != null?image.getContentType():null)
+                .filename(image != null? image.getOriginalFilename():null)
+                .fileData(image != null? image.getBytes():null)
                 .user(user)
                 .build();
 
@@ -49,7 +54,7 @@ public class NewsService {
     }
 
 
-    public List<News> update(Integer id, NewsDTO newsDTO, String header) throws UserNotFoundException {
+    public List<News> update(Integer id, NewsDTO newsDTO, String header, MultipartFile images) throws UserNotFoundException, IOException {
         User user = extractUser(header);
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length()-7);
@@ -59,6 +64,9 @@ public class NewsService {
             if (news != null && Objects.equals(news.getUser().getId(), user.getId())){
                 news.setHeading(newsDTO.getHeading() != null? newsDTO.getHeading(): news.getHeading());
                 news.setBody(newsDTO.getBody() != null? newsDTO.getBody(): news.getBody());
+                news.setFilename(images != null ? images.getOriginalFilename() : news.getFilename());
+                news.setFiletype(images!= null? images.getContentType() : news.getFiletype());
+                news.setFileData(images!= null? images.getBytes() : news.getFileData());
                 news.setUpdatedAt(new Date());
                 newsRepo.save(news);
             }
