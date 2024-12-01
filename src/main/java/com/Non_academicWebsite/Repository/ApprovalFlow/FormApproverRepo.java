@@ -5,7 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @EnableJpaRepositories
-public interface formApproverRepo extends JpaRepository<FormApprover, Long> {
+public interface FormApproverRepo extends JpaRepository<FormApprover, Long> {
+    List<FormApprover> findByFormId(Long id);
 }

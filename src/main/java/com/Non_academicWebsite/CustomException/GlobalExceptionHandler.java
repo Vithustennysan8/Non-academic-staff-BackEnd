@@ -59,4 +59,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleDynamicFormAlreadyExistsException(Exception ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("status", HttpStatus.CONFLICT);
+        response.put("error", "Dynamic form already exists!");
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
 }

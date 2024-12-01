@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class ApprovalFlowDTO {
     private String formType;
+    private String uniqueName;
     private List<ApprovalStage> approvalStage;
 
     @Data
