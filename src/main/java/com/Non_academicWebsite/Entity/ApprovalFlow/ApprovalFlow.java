@@ -1,7 +1,5 @@
 package com.Non_academicWebsite.Entity.ApprovalFlow;
 
-import com.Non_academicWebsite.Entity.Forms.DynamicForm;
-import com.Non_academicWebsite.Entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,9 +17,7 @@ public class ApprovalFlow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private DynamicForm dynamicForm;
+    private String dynamicForm;
     @Column(nullable = false)
     private String uniqueName;
     @Column(nullable = false)

@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.CustomException.DynamicFormAlreadyExistsException;
+import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Entity.Forms.FormField;
 import com.Non_academicWebsite.Entity.Forms.FormOption;
@@ -8,7 +9,6 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormRepo;
 import com.Non_academicWebsite.Repository.Forms.FormFieldRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
-import org.apache.catalina.LifecycleState;
 import org.hibernate.type.descriptor.java.IncomparableComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,45 @@ public class DynamicFormService {
     private FormOptionService formOptionService;
 
 
-    public DynamicForm createForm(String formType, String department, String faculty) throws DynamicFormAlreadyExistsException {
-        if(dynamicFormRepo.existsByFormTypeAndDepartmentAndFaculty(formType, department, faculty)){
+    public Object createFormField(List<FormFieldDTO> formFieldDTOList, String header, String formType)
+            throws DynamicFormAlreadyExistsException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        // create the new dynamic form for the form fields
+        // check if a dynamic form already exists for the form type and department and faculty
+        DynamicForm form = createForm(formType, user.getDepartment(), user.getFaculty());
+
+        int fieldOrder = 1;
+        // save the form fields
+        for (FormFieldDTO field : formFieldDTOList) {
+            FormField formField = formFieldRepo.save(FormField.builder()
+                    .dynamicForm(form)
+                    .fieldName(field.getLabel())
+                    .fieldType(field.getType())
+                    .fieldPlaceholder(field.getPlaceholder())
+                    .isRequired(field.isRequired())
+                    .sequence(fieldOrder)
+                    .build());
+
+            if(!field.getOptions().isEmpty()) {
+                field.getOptions().forEach(option -> {
+                    FormOption formOption = FormOption.builder()
+                            .formField(formField)
+                            .value(option)
+                            .build();
+                    formOptionService.addOption(formOption);
+                });
+            }
+            fieldOrder++;
+        }
+        return "Success";
+    }
+
+    public DynamicForm createForm(String formType, String department, String faculty)
+            throws DynamicFormAlreadyExistsException {
+
+        if(dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType, department,
+                faculty, true)){
             throw new DynamicFormAlreadyExistsException("Dynamic form already exists!!!");
         }
         DynamicForm dynamicForm = DynamicForm.builder()
@@ -43,20 +80,23 @@ public class DynamicFormService {
     }
 
     public DynamicForm getForm(String formType, String department, String faculty) {
-        if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFaculty(formType, department, faculty)){
+        if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType,
+                department, faculty, true)){
             throw new NullPointerException("dynamic form not found");
         }
-        return dynamicFormRepo.findByFormTypeAndDepartmentAndFaculty(formType, department, faculty);
+        return dynamicFormRepo.findByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType,
+                department, faculty, true);
     }
 
     public Object getDynamicForm(String header, String form) {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFaculty(form, user.getDepartment(), user.getFaculty())){
+        if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(form, user.getDepartment(),
+                user.getFaculty(), true)){
             return "There is no dynamic form";
         }
-        DynamicForm dynamicForm = dynamicFormRepo.findByFormTypeAndDepartmentAndFaculty(form,
-                user.getDepartment(), user.getFaculty());
+        DynamicForm dynamicForm = dynamicFormRepo.findByFormTypeAndDepartmentAndFacultyAndIsAvailable(form,
+                user.getDepartment(), user.getFaculty(), true);
 
         List<FormField> sortedFormFields = formFieldRepo.findAllByDynamicFormId(dynamicForm.getId()).stream()
                 .sorted((f1, f2) -> IncomparableComparator.INSTANCE.compare(f1.getSequence(), f2.getSequence())
@@ -92,13 +132,31 @@ public class DynamicFormService {
     public Object getAllDynamicForms(String header) {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        List<DynamicForm> dynamicForms = dynamicFormRepo.findAllByDepartmentAndFaculty(
-                user.getDepartment(), user.getFaculty());
+        return dynamicFormRepo.findAllByDepartmentAndFaculty(user.getDepartment(),
+                user.getFaculty());
+    }
 
-        List<String> responseForms = new ArrayList<>();
-        for(DynamicForm dynamicForm : dynamicForms) {
-            responseForms.add(dynamicForm.getFormType());
+    public List<DynamicForm> deleteForm(Long id, String header) {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        DynamicForm dynamicForm = dynamicFormRepo.findById(id).orElse(null);
+        if(dynamicForm == null || !dynamicForm.getDepartment().equals(user.getDepartment())
+                ||!dynamicForm.getFaculty().equals(user.getFaculty())) {
+            throw new RuntimeException( "You do not have permission to delete this dynamic form");
         }
-        return responseForms;
+
+        // make sure it is not available it seems to be unavailable/ deleted
+
+        dynamicForm.setAvailable(!dynamicForm.isAvailable());
+        dynamicFormRepo.save(dynamicForm);
+
+        return dynamicFormRepo.findAllByDepartmentAndFaculty(user.getDepartment(), user.getFaculty());
+    }
+
+    public Object getAllDynamicFormsForUser(String header) {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        return dynamicFormRepo.findAllByDepartmentAndFacultyAndIsAvailable(user.getDepartment(),
+                user.getFaculty(), true);
     }
 }

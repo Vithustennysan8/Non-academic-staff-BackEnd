@@ -13,6 +13,11 @@ import java.util.List;
 @Repository
 public interface ApprovalFlowRepo extends JpaRepository<ApprovalFlow, Integer> {
     List<ApprovalFlow> findByDepartmentAndFaculty(String department, String faculty);
-    boolean existsByDynamicFormIdAndUniqueNameAndDepartmentAndFaculty(Long id, String uniqueName, String department, String faculty);
-    void deleteByDynamicFormIdAndUniqueNameAndDepartmentAndFaculty(Long id, String uniqueName, String department, String faculty);
+    boolean existsByDynamicFormAndUniqueNameAndDepartmentAndFaculty(String form, String uniqueName, String department, String faculty);
+    void deleteByDynamicFormAndUniqueNameAndDepartmentAndFaculty(String form, String uniqueName, String department, String faculty);
+
+    List<ApprovalFlow> findByDynamicFormAndDepartmentAndFaculty(String form, String department, String faculty);
+
+    List<ApprovalFlow> findByUniqueNameAndDepartmentAndFaculty(String flow, String department, String faculty);
+
 }

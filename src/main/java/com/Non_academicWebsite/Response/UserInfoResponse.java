@@ -23,6 +23,7 @@ public class UserInfoResponse {
     private Date date_of_birth;
     private String gender;
     private String email;
+    private String normalEmail;
     private Long phone_no;
     private String address;
     private String city;

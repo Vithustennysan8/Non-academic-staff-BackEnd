@@ -30,6 +30,7 @@ public class User implements UserDetails {
     private String gender;
     @Column(unique = true, nullable = false)
     private String email;
+    private String normalEmail;
     private String app_password;
     private Long phone_no;
     @Column(nullable = false)

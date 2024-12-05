@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,14 +31,14 @@ public class ApprovalFlowService {
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
                 user.getDepartment(), user.getFaculty());
 
-        if(approvalFlowRepo.existsByDynamicFormIdAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getId(),
+        if(approvalFlowRepo.existsByDynamicFormAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getFormType(),
                 approvalFlowDTO.getUniqueName(), user.getDepartment(), user.getFaculty())) {
             throw new ApprovalFlowExitsException("Approval flow already exists!!!");
         }
 
         approvalFlowDTO.getApprovalStage().forEach(stage -> {
             ApprovalFlow approvalFlow = ApprovalFlow.builder()
-                    .dynamicForm(dynamicForm)
+                    .dynamicForm(dynamicForm.getFormType())
                     .faculty(user.getFaculty())
                     .uniqueName(approvalFlowDTO.getUniqueName())
                     .department(user.getDepartment())
@@ -61,11 +60,47 @@ public class ApprovalFlowService {
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
                 user.getDepartment(), user.getFaculty());
 
-        approvalFlowRepo.deleteByDynamicFormIdAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getId(),
+        approvalFlowRepo.deleteByDynamicFormAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getFormType(),
                 approvalFlowDTO.getUniqueName(), user.getDepartment(), user.getFaculty());
         addNewApprovalFlow(approvalFlowDTO,header);
 
          return getAllApprovalFlowsByDepartment(header);
+    }
+
+    public Object getApprovalFlowByForm(String dynamicForm, String header) {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        List<ApprovalFlow> flows = approvalFlowRepo.findByDynamicFormAndDepartmentAndFaculty(dynamicForm,
+                user.getDepartment(), user.getFaculty());
+
+
+        Map<String, Map<String,Object>> distinctFlow = new HashMap<>();
+        for(ApprovalFlow flow : flows) {
+            if (!distinctFlow.containsKey(flow.getUniqueName())) {
+                Map<String, Object> distinct = new HashMap<>();
+                distinct.put("formType", flow.getDynamicForm());
+                distinct.put("faculty", flow.getFaculty());
+                distinct.put("uniqueName", flow.getUniqueName());
+                distinct.put("department", flow.getDepartment());
+                distinct.put("flow", new ArrayList<Map<String, Object>>());
+                distinctFlow.put(flow.getUniqueName(), distinct);
+            }
+
+            Map<String, Object> distinct = distinctFlow.get(flow.getUniqueName());
+            List<Map<String, Object>> flowList = (List<Map<String, Object>>) distinct.get("flow");
+            flowList.add(Map.of(
+                    "roleName", flow.getRoleName(),
+                    "sequence", flow.getSequence()
+            ));
+
+        }
+
+        for(String form : distinctFlow.keySet()){
+            Map<String, Object> approvalFlow = distinctFlow.get(form);
+            List<Map<String,Object>> flow = (List<Map<String,Object>>) approvalFlow.get("flow");
+            approvalFlow.put("flow",flow.stream().sorted(Comparator.comparingInt(f ->
+                    (Integer) f.get("sequence"))).collect(Collectors.toList()));
+        }
+        return distinctFlow.values();
     }
 
     public Object getAllApprovalFlowsByDepartment(String header) {
@@ -77,7 +112,7 @@ public class ApprovalFlowService {
         for(ApprovalFlow flow : flows) {
             if (!distinctFlow.containsKey(flow.getUniqueName())) {
                 Map<String, Object> distinct = new HashMap<>();
-                distinct.put("formType", flow.getDynamicForm().getFormType());
+                distinct.put("formType", flow.getDynamicForm());
                 distinct.put("faculty", flow.getFaculty());
                 distinct.put("uniqueName", flow.getUniqueName());
                 distinct.put("department", flow.getDepartment());
@@ -110,7 +145,7 @@ public class ApprovalFlowService {
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
                 user.getDepartment(), user.getFaculty());
 
-        approvalFlowRepo.deleteByDynamicFormIdAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getId(),
+        approvalFlowRepo.deleteByDynamicFormAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getFormType(),
                 approvalFlowDTO.getUniqueName(), user.getDepartment(), user.getFaculty());
         return getAllApprovalFlowsByDepartment(header);
     }

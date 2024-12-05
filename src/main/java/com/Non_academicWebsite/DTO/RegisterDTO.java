@@ -19,6 +19,7 @@ public class RegisterDTO {
     private Date date_of_birth;
     private String gender;
     private String email;
+    private String normalEmail;
     private String app_password;
     private Long phone_no;
     private String password;

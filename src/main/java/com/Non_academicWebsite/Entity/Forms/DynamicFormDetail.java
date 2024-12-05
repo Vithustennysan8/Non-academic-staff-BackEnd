@@ -7,17 +7,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class DynamicForm {
+public class DynamicFormDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String formType;
-    private String department;
-    private String faculty;
-    private boolean isAvailable = true;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private DynamicFormUser dynamicFormUser;
+    private String tag;
+    private String value;
 }

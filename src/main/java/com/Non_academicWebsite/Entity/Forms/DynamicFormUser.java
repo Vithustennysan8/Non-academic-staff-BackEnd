@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -25,5 +27,5 @@ public class DynamicFormUser {
     private DynamicForm dynamicForm;
     private String status;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Data createdAt;
+    private Date createdAt;
 }

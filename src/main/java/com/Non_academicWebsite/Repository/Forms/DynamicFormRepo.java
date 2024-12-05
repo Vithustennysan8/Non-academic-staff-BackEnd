@@ -11,8 +11,16 @@ import java.util.List;
 @Repository
 public interface DynamicFormRepo extends JpaRepository<DynamicForm,Long> {
     boolean existsByFormTypeAndDepartmentAndFaculty(String formType, String department, String faculty);
-
     DynamicForm findByFormTypeAndDepartmentAndFaculty(String formType, String department, String faculty);
-
     List<DynamicForm> findAllByDepartmentAndFaculty(String department, String faculty);
+    boolean existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(String form, String department,
+                                                                  String faculty, boolean isAvailable);
+
+    DynamicForm findByFormTypeAndDepartmentAndFacultyAndIsAvailable(String formType, String department,
+                                                                    String faculty, boolean isAvailable);
+
+    List<DynamicForm> findAllByDepartmentAndFacultyAndIsAvailable(String department, String faculty,
+                                                                  boolean isAvailable);
+
+    DynamicForm findByIdAndIsAvailable(Long id, boolean isAvailable);
 }

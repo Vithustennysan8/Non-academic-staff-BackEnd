@@ -30,7 +30,7 @@ public class UserIdGenerator {
         faculties.put("Faculty of Veterinary Medicine and Animal Science", "VM");
         faculties.put("Registrar's Office", "RO");
         faculties.put("Administration Office", "AO");
-        faculties.put("IT Services ", "ITS");
+        faculties.put("IT Services", "ITS");
         faculties.put("Library Services", "LS");
         faculties.put("Facilities Management", "FM");
         faculties.put("Security Services", "SS");
@@ -117,8 +117,8 @@ public class UserIdGenerator {
         departments.put("Physics", "PHY");
         departments.put("Statistics and Computer Science", "STATCS");
         departments.put("Zoology", "ZOO");
-        departments.put("Basic Veterinary Sciences", " BVS");
-        departments.put("Farm Animal Production & Health", "FAPH");
+        departments.put("Basic Veterinary Sciences", "BVS");
+        departments.put("Farm Animal Production and Health", "FAPH");
         departments.put("Veterinary Clinical Sciences", "VCS");
         departments.put("Veterinary Pathobiology", "VPB");
         departments.put("Veterinary Public Health and Pharmacology", "VPHP");

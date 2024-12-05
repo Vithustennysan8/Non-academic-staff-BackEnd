@@ -84,6 +84,7 @@ public class StaffService {
                 .date_of_birth(user.getDate_of_birth())
                 .gender(user.getGender())
                 .email(user.getEmail())
+                .normalEmail(user.getNormalEmail())
                 .phone_no(user.getPhone_no())
                 .address(user.getAddress())
                 .city(user.getCity())
@@ -114,6 +115,7 @@ public class StaffService {
         user.setDate_of_birth(registerDTO.getDate_of_birth());
         user.setGender(registerDTO.getGender());
         user.setPhone_no(registerDTO.getPhone_no());
+        user.setNormalEmail(registerDTO.getNormalEmail());
         user.setAddress(registerDTO.getAddress());
         user.setCity(registerDTO.getCity());
         user.setPostal_code(registerDTO.getPostal_code());
@@ -123,8 +125,7 @@ public class StaffService {
         user.setImage_data(image != null? image.getBytes(): user.getImage_data());
         user.setUpdatedAt(new Date());
 
-        userRepo.save(user);
-        return user;
+        return userRepo.save(user);
     }
 
     public String resetPassword(String header, SecurityDTO resetPasswordDTO) throws UserNotFoundException {

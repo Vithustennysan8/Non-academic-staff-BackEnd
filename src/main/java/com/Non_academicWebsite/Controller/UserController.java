@@ -4,10 +4,7 @@ import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
-import com.Non_academicWebsite.Entity.Forms.Forms;
-import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Entity.User;
-import com.Non_academicWebsite.ExcelConverter.ExcelConverterService;
 import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
 import com.Non_academicWebsite.Service.StaffService;
@@ -28,8 +25,6 @@ public class UserController {
     private StaffService staffService;
     @Autowired
     private NormalLeaveFormRepo normalLeaveFormRepo;
-    @Autowired
-    private ExcelConverterService excelConverterService;
 
     @GetMapping("/get")
     public ResponseEntity<String> get() {
