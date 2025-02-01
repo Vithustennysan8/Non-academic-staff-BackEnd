@@ -7,13 +7,10 @@ import com.Non_academicWebsite.Response.AuthenticationResponse;
 import com.Non_academicWebsite.Service.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.sql.SQLOutput;
 
 @RestController
 @RequestMapping("api/auth")

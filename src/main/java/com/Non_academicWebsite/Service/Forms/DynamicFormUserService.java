@@ -7,7 +7,6 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormUserRepo;
-import com.Non_academicWebsite.Service.ApprovalFlow.FormApproverService;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -166,7 +165,7 @@ public class DynamicFormUserService {
     public Object getTheFormModified(String header, Long approverId){
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        FormApprover approvalForm = formApproverRepo.findById(approverId).orElse(null); ;
+        FormApprover approvalForm = formApproverRepo.findById(approverId).orElse(null);
 
         if (approvalForm == null){
             throw new RuntimeException("Form Approver not found");
@@ -246,9 +245,8 @@ public class DynamicFormUserService {
             form.put("approverDetails", map.get("approverDetails"));
 
             List<Map<String, String>> detail = (List<Map<String, String>>) form.get("formDetails");
-            details.forEach(dynamicFormDetail -> {
-                detail.add(Map.of(dynamicFormDetail.getTag(), dynamicFormDetail.getValue()));
-            });
+            details.forEach(dynamicFormDetail ->
+                    detail.add(Map.of(dynamicFormDetail.getTag(), dynamicFormDetail.getValue())));
             allForms.put(dynamicFormUser.getCreatedAt().toString(), form);
         }
         return allForms;

@@ -64,7 +64,7 @@ class StaffServiceTest {
                 .postal_code(12345)
                 .ic_no("1234567890ABC")
                 .emp_id("EMP001")
-                .job_type("developer")
+                .jobType("developer")
                 .department("IT")
                 .faculty("Engineering")
                 .role(Role.USER)
@@ -96,7 +96,7 @@ class StaffServiceTest {
         assertEquals(userInfoResponse.getCity(), mockUser.getCity());
         assertEquals(userInfoResponse.getPostal_code(), mockUser.getPostal_code());
         assertEquals(userInfoResponse.getIc_no(), mockUser.getIc_no());
-        assertEquals(userInfoResponse.getJob_type(), mockUser.getJob_type());
+        assertEquals(userInfoResponse.getJob_type(), mockUser.getJobType());
         assertEquals(userInfoResponse.getDepartment(), mockUser.getDepartment());
         assertEquals(userInfoResponse.getFaculty(), mockUser.getFaculty());
         assertEquals(userInfoResponse.getImage_type(), mockUser.getImage_type());
@@ -126,7 +126,7 @@ class StaffServiceTest {
                 .postal_code(null)
                 .ic_no("")
                 .emp_id("EMP001")
-                .job_type("developer")
+                .jobType("developer")
                 .department("IT")
                 .faculty("Engineering")
                 .role(null)
@@ -198,7 +198,7 @@ class StaffServiceTest {
                 .postal_code(12345)
                 .ic_no("1234567890ABC")
                 .emp_id("EMP001")
-                .job_type("developer")
+                .jobType("developer")
                 .department("IT")
                 .faculty("Engineering")
                 .role(Role.USER)

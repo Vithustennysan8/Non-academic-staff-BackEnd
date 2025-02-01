@@ -1,7 +1,6 @@
 package com.Non_academicWebsite.DTO;
 
 import com.Non_academicWebsite.Entity.Role;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
