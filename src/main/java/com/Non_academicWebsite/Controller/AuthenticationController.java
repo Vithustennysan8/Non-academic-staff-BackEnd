@@ -5,6 +5,7 @@ import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.Response.AuthenticationResponse;
 import com.Non_academicWebsite.Service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class AuthenticationController {
 
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<?> register(@ModelAttribute RegisterDTO registerDTO,
+    public ResponseEntity<?> register(@Valid @ModelAttribute RegisterDTO registerDTO,
                                       @RequestParam(value = "image", required = false) MultipartFile image) throws Exception {
 
         return ResponseEntity.ok(authenticationService.registerStaff(registerDTO, image));

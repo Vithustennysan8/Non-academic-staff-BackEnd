@@ -5,12 +5,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 @Setter
 @Getter
@@ -29,6 +28,7 @@ public class User implements UserDetails {
     private Date date_of_birth;
     private String gender;
     @Column(unique = true, nullable = false)
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@gs\\.pdn\\.ac\\.lk$", message = "Email must be from the gs.pdn.ac.lk domain")
     private String email;
     private String normalEmail;
     private String app_password;

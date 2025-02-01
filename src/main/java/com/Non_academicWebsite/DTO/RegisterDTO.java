@@ -30,6 +30,7 @@ public class RegisterDTO {
     private String emp_id;
     private String job_type;
     private String department;
+    private Integer facultyId;
     private String faculty;
     private Role role;
 }

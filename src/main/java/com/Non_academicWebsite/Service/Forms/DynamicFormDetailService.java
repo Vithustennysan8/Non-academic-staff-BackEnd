@@ -64,6 +64,7 @@ public class DynamicFormDetailService {
                     .formFlowType(flow)
                     .approver(Flow.getRoleName())
                     .approverOrder(Flow.getSequence())
+                    .approverStatus("Pending")
                     .build();
             formApproverRepo.save(formApprover);
         });

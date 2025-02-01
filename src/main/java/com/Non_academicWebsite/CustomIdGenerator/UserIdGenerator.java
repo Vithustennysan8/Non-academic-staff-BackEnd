@@ -1,7 +1,11 @@
 package com.Non_academicWebsite.CustomIdGenerator;
 
+import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Service.DepartmentService;
+import com.Non_academicWebsite.Service.FacultyService;
+import com.Non_academicWebsite.Service.JobPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +17,12 @@ public class UserIdGenerator {
 
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private FacultyService facultyService;
+    @Autowired
+    private DepartmentService departmentService;
+    @Autowired
+    private JobPositionService jobPositionService;
 
     private static final HashMap<String, String> faculties = new HashMap<>();
     private static final HashMap<String, String> departments = new HashMap<>();
@@ -149,19 +159,20 @@ public class UserIdGenerator {
 
     }
 
-    public String generateCustomUserID(String faculty, String department, String position) {
-        String facultyCode = getFacultyCode(faculty);
-        String departmentCode = getDepartmentCode(department);
-        String positionCode = getPositionCode(position);
+    public String generateCustomUserID(Integer facId, String department, String position) {
+        Faculty fac = facultyService.getFaculty(facId);
+        String facultyCode = fac.getAlias();
+
+        String departmentCode = departmentService.getDepartmentCode(fac.getId(), department);
+        String positionCode = jobPositionService.getPositionCode(position);
 
         String prefix = facultyCode + "_" + departmentCode + "_" + positionCode + "_";
         String lastId = userRepo.findTopByIdStartingWithOrderByIdDesc(prefix)
                 .map(User::getId).orElse(prefix + "000");
 
         int lastIdNumber = Integer.parseInt(lastId.substring(prefix.length())) + 1;
-        String newId = prefix + String.format("%03d", lastIdNumber);
 
-        return newId;
+        return prefix + String.format("%03d", lastIdNumber);
     }
 
 

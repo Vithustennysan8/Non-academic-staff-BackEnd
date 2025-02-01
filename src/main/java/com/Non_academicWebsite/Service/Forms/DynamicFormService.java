@@ -74,6 +74,7 @@ public class DynamicFormService {
                 .formType(formType)
                 .department(department)
                 .faculty(faculty)
+                .isAvailable(true)
                 .build();
         dynamicFormRepo.save(dynamicForm);
         return dynamicForm;
@@ -146,7 +147,6 @@ public class DynamicFormService {
         }
 
         // make sure it is not available it seems to be unavailable/ deleted
-
         dynamicForm.setAvailable(!dynamicForm.isAvailable());
         dynamicFormRepo.save(dynamicForm);
 
@@ -158,5 +158,9 @@ public class DynamicFormService {
 
         return dynamicFormRepo.findAllByDepartmentAndFacultyAndIsAvailable(user.getDepartment(),
                 user.getFaculty(), true);
+    }
+
+    public Object getAllDynamicFormsForApprover(String header, String department, String faculty) {
+        return dynamicFormRepo.findAllByDepartmentAndFaculty(department, faculty);
     }
 }

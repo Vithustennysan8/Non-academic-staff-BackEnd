@@ -6,6 +6,7 @@ import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
+import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
@@ -41,13 +42,16 @@ public class AuthenticationService {
     private RegisterConfirmationTokenService confirmationTokenService;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private FacultyService facultyService;
 
     @Transactional
     public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, UserAlreadyExistsException {
         if (userRepo.existsByEmail(registerDTO.getEmail())) {
             throw new UserAlreadyExistsException("User Already found with "+registerDTO.getEmail()+" emailId!!!");
         }
-        String customId = userIdGenerator.generateCustomUserID(registerDTO.getFaculty(), registerDTO.getDepartment(), registerDTO.getJob_type());
+        String customId = userIdGenerator.generateCustomUserID(registerDTO.getFacultyId(), registerDTO.getDepartment(), registerDTO.getJob_type());
+        Faculty fac = facultyService.getFaculty(registerDTO.getFacultyId());
 
         User user = User.builder()
                 .id(customId)
@@ -66,7 +70,7 @@ public class AuthenticationService {
                 .emp_id(registerDTO.getEmp_id())
                 .jobType(registerDTO.getJob_type())
                 .department(registerDTO.getDepartment())
-                .faculty(registerDTO.getFaculty())
+                .faculty(fac.getFacultyName())
                 .createdAt(new Date())
                 .updatedAt(new Date())
                 .image_type(image != null ? image.getContentType() : null)
@@ -83,7 +87,6 @@ public class AuthenticationService {
         System.out.println(confirmationToken);
 
         String url = "http://localhost:8080/api/auth/verify?token=" + confirmationToken;
-//        mailService.sendMail("vithustennysan21@gmail.com", url, user.getFirst_name(), user.getDepartment(), user.getFaculty());
 
         return true;
     }

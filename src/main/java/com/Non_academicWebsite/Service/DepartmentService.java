@@ -83,4 +83,12 @@ public class DepartmentService {
         departmentRepo.deleteById(departmentId);
         return get(header);
     }
+
+    public String getDepartmentCode(Integer facId, String department) {
+        Department departmentEntity = departmentRepo.findByFacultyIdAndDepartmentName(facId, department);
+        if (departmentEntity == null) {
+            throw new RuntimeException("Department not found");
+        }
+        return departmentEntity.getAlias();
+    }
 }

@@ -28,7 +28,7 @@ public class JobPositionService {
                .jobPositionName(facOrDeptDTO.getName())
                .alias(facOrDeptDTO.getAlias())
                .build();
-
+        jobPositionRepo.save(newJobPosition);
         return get();
     }
 
@@ -52,5 +52,13 @@ public class JobPositionService {
         }
         jobPositionRepo.delete(jobPosition);
         return get();
+    }
+
+    public String getPositionCode(String position) {
+        JobPosition jobPosition = jobPositionRepo.findByJobPositionName(position).orElse(null);
+        if(jobPosition!= null) {
+            return jobPosition.getAlias();
+        }
+        return null;
     }
 }

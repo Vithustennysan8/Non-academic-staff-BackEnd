@@ -158,7 +158,7 @@ class StaffServiceTest {
         assertEquals(userInfoResponse.getCity(), mockUser.getCity());
         assertEquals(userInfoResponse.getPostal_code(), mockUser.getPostal_code());
         assertEquals(userInfoResponse.getIc_no(), mockUser.getIc_no());
-        assertEquals(userInfoResponse.getJob_type(), mockUser.getJob_type());
+        assertEquals(userInfoResponse.getJob_type(), mockUser.getJobType());
         assertEquals(userInfoResponse.getDepartment(), mockUser.getDepartment());
         assertEquals(userInfoResponse.getFaculty(), mockUser.getFaculty());
         assertEquals(userInfoResponse.getImage_type(), mockUser.getImage_type());

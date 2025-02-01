@@ -62,6 +62,7 @@ public class ApprovalFlowService {
 
         approvalFlowRepo.deleteByDynamicFormAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getFormType(),
                 approvalFlowDTO.getUniqueName(), user.getDepartment(), user.getFaculty());
+
         addNewApprovalFlow(approvalFlowDTO,header);
 
          return getAllApprovalFlowsByDepartment(header);

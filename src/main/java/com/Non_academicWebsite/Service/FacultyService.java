@@ -57,4 +57,12 @@ public class FacultyService {
         facultyRepo.deleteById(facultyToDelete.getId());
         return facultyRepo.findAll();
     }
+
+    public Faculty getFaculty(Integer faculty) {
+        Faculty fac = facultyRepo.findById(faculty).orElse(null);
+        if(fac == null){
+            throw new RuntimeException("Faculty not found");
+        }
+        return fac;
+    }
 }

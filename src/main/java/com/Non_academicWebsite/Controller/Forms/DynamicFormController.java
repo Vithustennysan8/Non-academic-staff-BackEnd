@@ -38,6 +38,13 @@ public class DynamicFormController {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicForms(header));
     }
 
+    @GetMapping(value = "/admin/dynamicForm/getAll/{department}/{faculty}")
+    public ResponseEntity<?> getAllDynamicFormsForApprover(@RequestHeader("Authorization") String header,
+                                                @PathVariable("department") String department,
+                                                @PathVariable("faculty") String faculty){
+        return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForApprover(header, department, faculty));
+    }
+
     @GetMapping(value = "/auth/user/dynamicForm/getAll")
     public ResponseEntity<?> getAllDynamicFormsForUser(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUser(header));

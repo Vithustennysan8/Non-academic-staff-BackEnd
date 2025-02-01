@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Entity
 @Data
@@ -24,6 +27,7 @@ public class FormApprover {
     public String approverId;
     public int approverOrder;
     public String approverStatus;
-    public String approvalAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public Date approvalAt;
     public String approvalDescription;
 }

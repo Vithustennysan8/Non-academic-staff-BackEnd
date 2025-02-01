@@ -14,4 +14,6 @@ public interface DepartmentRepo extends JpaRepository<Department, Integer> {
     boolean existsByFacultyIdAndAlias(Integer id, String alias);
 
     boolean existsByFacultyIdAndDepartmentName(Integer id, String name);
+
+    Department findByFacultyIdAndDepartmentName(Integer facId, String department);
 }

@@ -35,7 +35,7 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.updateFaculty(faculty, header, facultyId));
     }
 
-    @DeleteMapping("/admin/faculty/update/{facultyId}")
+    @DeleteMapping("/admin/faculty/delete/{facultyId}")
     public ResponseEntity<List<Faculty>> deleteFaculty(@PathVariable("facultyId") Integer facultyId,
                                               @RequestHeader("Authorization") String header){
         return ResponseEntity.ok(facultyService.deleteFaculty(header, facultyId));

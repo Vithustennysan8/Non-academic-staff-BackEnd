@@ -14,4 +14,5 @@ public class ApprovalDTO {
     private String user;
     private String description;
     private String formType;
+    private Long formId;
 }
