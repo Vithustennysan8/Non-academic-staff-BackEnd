@@ -32,7 +32,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD="#Passwd10"
+      - MYSQL_ROOT_PASSWORD="#Vithu10"
       - MYSQL_DATABASE=non_academic_staff
     volumes:
       - mysql_data:/var/lib/mysql

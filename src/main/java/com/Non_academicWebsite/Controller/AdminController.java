@@ -60,6 +60,13 @@ public class AdminController {
         return ResponseEntity.ok(confirmationTokenService.getVerifyRequests(header));
     }
 
+    // used to retrieve the admin register requests
+    @GetMapping(value = "/verifyAdminRegisterRequests")
+    public ResponseEntity<List<RegisterConfirmationToken>> getVerifyAdminRegisterRequests
+                                                            (@RequestHeader("Authorization") String header){
+        return ResponseEntity.ok(confirmationTokenService.getVerifyAdminRegisterRequests(header));
+    }
+
 
     // used to verify the newly registered user
     @PutMapping(value = "/verify/{token}")

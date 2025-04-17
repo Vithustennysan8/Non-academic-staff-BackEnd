@@ -2,12 +2,14 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
@@ -30,10 +32,14 @@ public class NormalLeaveFormService {
     private final String url = "http://localhost:5173/notifications";
 
 
-    public NormalLeaveForm add(String header, NormalLeaveFormDTO normalLeaveFormDTO) {
+    public NormalLeaveForm add(String header, NormalLeaveFormDTO normalLeaveFormDTO) throws UnauthorizedAccessException {
         String token = header.substring(7);
         String email = jwtService.extractUserEmail(token);
         User user = userRepo.findByEmail(email).orElseThrow(() -> new NullPointerException("User is not found!"));
+
+        if (user.getRole() != Role.USER){
+            throw new UnauthorizedAccessException("User only can request leaves");
+        }
 
         NormalLeaveForm normalLeaveForm = NormalLeaveForm.builder()
                 .upfNo(normalLeaveFormDTO.getUpfNo())

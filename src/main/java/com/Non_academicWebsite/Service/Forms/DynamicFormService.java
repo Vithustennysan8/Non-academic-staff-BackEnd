@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.CustomException.DynamicFormAlreadyExistsException;
+import com.Non_academicWebsite.CustomException.DynamicFormNotFoundException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Entity.Forms.FormField;
@@ -8,12 +9,15 @@ import com.Non_academicWebsite.Entity.Forms.FormOption;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormRepo;
 import com.Non_academicWebsite.Repository.Forms.FormFieldRepo;
+import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.hibernate.type.descriptor.java.IncomparableComparator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DynamicFormService {
@@ -26,6 +30,8 @@ public class DynamicFormService {
     private FormFieldRepo formFieldRepo;
     @Autowired
     private FormOptionService formOptionService;
+    @Autowired
+    private UserRepo userRepo;
 
 
     public Object createFormField(List<FormFieldDTO> formFieldDTOList, String header, String formType)
@@ -79,10 +85,10 @@ public class DynamicFormService {
         return dynamicForm;
     }
 
-    public DynamicForm getForm(String formType, String department, String faculty) {
+    public DynamicForm getForm(String formType, String department, String faculty) throws DynamicFormNotFoundException {
         if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType,
                 department, faculty, true)){
-            throw new NullPointerException("dynamic form not found");
+            throw new DynamicFormNotFoundException("dynamic form not found");
         }
         return dynamicFormRepo.findByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType,
                 department, faculty, true);
@@ -159,7 +165,32 @@ public class DynamicFormService {
                 user.getFaculty(), true);
     }
 
+    public Object getAllDynamicFormsForUserById(String id) {
+        User user = userRepo.findById(id).orElseThrow(() -> new UsernameNotFoundException("User " + id + " does not exist"));
+
+        List<DynamicForm> forms =  dynamicFormRepo.findAllByDepartmentAndFacultyAndIsAvailable(user.getDepartment(),
+                user.getFaculty(), true);
+
+        Map<String, Integer> dynamicFormsAndCount = new HashMap<>();
+        for(DynamicForm form : forms) {
+            dynamicFormsAndCount.put(form.getFormType(), 0);
+        }
+        return dynamicFormsAndCount;
+    }
+
+    public Object getAllDynamicFormsByFacultyAndDepartment(String faculty, String department) {
+        List<DynamicForm> forms =  dynamicFormRepo.findAllByDepartmentAndFacultyAndIsAvailable(department,
+                faculty, true);
+
+        Map<String, Integer> dynamicFormsAndCount = new HashMap<>();
+        for(DynamicForm form : forms) {
+            dynamicFormsAndCount.put(form.getFormType(), 0);
+        }
+        return dynamicFormsAndCount;
+    }
+
     public Object getAllDynamicFormsForApprover(String header, String department, String faculty) {
         return dynamicFormRepo.findAllByDepartmentAndFaculty(department, faculty);
     }
+
 }

@@ -21,7 +21,7 @@ public class FormApprover {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
-    public Long formId;
+    public Long formId;  // dynamic form id
     public String formFlowType;
     public String approver;
     public String approverId;

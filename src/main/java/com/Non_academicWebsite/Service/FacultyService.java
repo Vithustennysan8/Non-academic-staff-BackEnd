@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Faculty;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.FacultyRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FacultyService {
@@ -19,20 +21,25 @@ public class FacultyService {
     @Autowired
     private ExtractUserService extractUserService;
 
-    public List<Faculty> getFaculty() {
+    public List<Faculty> getFaculties() {
         return facultyRepo.findAll();
     }
 
     public List<Faculty> addFaculty(FacOrDeptDTO faculty, String header) {
-        Faculty newFaculty = Faculty.builder()
-                .facultyName(faculty.getName())
-                .alias(faculty.getAlias())
-                .isAvailable(true)
-                .createdAt(new Date())
-                .updatedAt(new Date())
-                .build();
-        facultyRepo.save(newFaculty);
-        return facultyRepo.findAll();
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        if (user.getRole() == Role.ADMIN
+                || user.getRole() == Role.SUPER_ADMIN){
+            Faculty newFaculty = Faculty.builder()
+                    .facultyName(faculty.getName())
+                    .alias(faculty.getAlias())
+                    .isAvailable(true)
+                    .createdAt(new Date())
+                    .updatedAt(new Date())
+                    .build();
+            facultyRepo.save(newFaculty);
+            return facultyRepo.findAll();
+        }
+        throw new IllegalStateException("No permission to add faculty");
     }
 
     public List<Faculty> updateFaculty(FacOrDeptDTO faculty, String header, Integer facultyId) {
@@ -58,8 +65,12 @@ public class FacultyService {
         return facultyRepo.findAll();
     }
 
-    public Faculty getFaculty(Integer faculty) {
-        Faculty fac = facultyRepo.findById(faculty).orElse(null);
+    public Faculty getFac(Integer facId) {
+        if (facId == null){
+            throw new IllegalArgumentException("Faculty ID cannot be null");
+        }
+
+        Faculty fac = facultyRepo.findById(facId).orElse(null);
         if(fac == null){
             throw new RuntimeException("Faculty not found");
         }

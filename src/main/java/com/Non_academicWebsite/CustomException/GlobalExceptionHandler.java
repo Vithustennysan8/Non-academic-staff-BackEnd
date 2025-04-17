@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleDynamicFormAlreadyExistsException(Exception ex){
+    public ResponseEntity<Map<String, Object>> handleDynamicFormAlreadyExistsException(DynamicFormAlreadyExistsException ex){
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         response.put("status", HttpStatus.CONFLICT);
@@ -69,4 +69,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleDynamicFormNotFoundException(DynamicFormNotFoundException ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("status", HttpStatus.NOT_FOUND);
+        response.put("error", "Dynamic form not exists!");
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("status", HttpStatus.FORBIDDEN);
+        response.put("error", "User don't have the permission!");
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
 }

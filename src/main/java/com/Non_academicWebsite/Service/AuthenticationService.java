@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.CustomException.UserAlreadyExistsException;
 import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
@@ -8,10 +9,12 @@ import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.AuthenticationResponse;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +47,8 @@ public class AuthenticationService {
     private MailService mailService;
     @Autowired
     private FacultyService facultyService;
+    @Autowired
+    private ExtractUserService extractUserService;
 
     @Transactional
     public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, UserAlreadyExistsException {
@@ -51,7 +56,15 @@ public class AuthenticationService {
             throw new UserAlreadyExistsException("User Already found with "+registerDTO.getEmail()+" emailId!!!");
         }
         String customId = userIdGenerator.generateCustomUserID(registerDTO.getFacultyId(), registerDTO.getDepartment(), registerDTO.getJob_type());
-        Faculty fac = facultyService.getFaculty(registerDTO.getFacultyId());
+        Faculty fac = facultyService.getFac(registerDTO.getFacultyId());
+
+//        Role role = null;
+//        switch (registerDTO.getRole()){
+//            case USER -> role = Role.USER;
+//            case MANAGER -> role = Role.MANAGER;
+//            case ADMIN -> role = Role.ADMIN;
+//            case SUPER_ADMIN -> role = Role.SUPER_ADMIN;
+//        }
 
         User user = User.builder()
                 .id(customId)
@@ -77,7 +90,6 @@ public class AuthenticationService {
                 .image_name(image != null ? image.getOriginalFilename() : null)
                 .image_data(image != null ? image.getBytes() : null)
                 .role(registerDTO.getRole())
-//                .role(Role.USER)
                 .verified(false)
                 .build();
 
@@ -92,7 +104,14 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse login(LoginDTO loginDTO) throws UserNotFoundException {
+    public AuthenticationResponse login(LoginDTO loginDTO) throws UserNotFoundException, UnauthorizedAccessException {
+        User user = userRepo.findByEmail(loginDTO.getEmail())
+                .orElseThrow(()-> new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!"));
+
+        if (!user.isVerified()){
+             throw new UnauthorizedAccessException("User registration not verified yet!");
+        }
+
         try{
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -104,8 +123,6 @@ public class AuthenticationService {
             throw new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!");
         }
 
-        User user = userRepo.findByEmail(loginDTO.getEmail())
-                .orElseThrow(()-> new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!"));
 
         var jwtToken = jwtService.generateToken(user, user.getRole());
 
@@ -117,9 +134,7 @@ public class AuthenticationService {
     }
 
     public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {
             return Collections.emptyList();
@@ -127,14 +142,19 @@ public class AuthenticationService {
 
         User requestedUser = confirmationTokenService.confirm(confirmationToken) ;
         if (requestedUser != null) {
-            if (Objects.equals(user.getJobType(), "Head of the Department") || Objects.equals(user.getJobType(), "Dean")){
+            if (Role.ADMIN == user.getRole() || Role.SUPER_ADMIN == user.getRole()){
                 requestedUser.setVerified(true);
                 userRepo.save(requestedUser);
-                mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser, user.getFirst_name()+" "+user.getLast_name());
+                mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser,
+                        user.getFirst_name()+" "+user.getLast_name());
             }else {
                 return Collections.emptyList();
             }
         }
+
+        if (Objects.equals(user.getRole(), Role.SUPER_ADMIN))
+            return confirmationTokenService.getVerifyAdminRegisterRequests(header);
+
         return confirmationTokenService.getVerifyRequests(header);
     }
 }

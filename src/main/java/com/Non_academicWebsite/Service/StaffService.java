@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
@@ -8,16 +9,20 @@ import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
+import com.Non_academicWebsite.Entity.Incharge;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 //import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
+import com.Non_academicWebsite.Repository.InchargeRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import com.Non_academicWebsite.Service.Forms.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,16 +56,16 @@ public class StaffService {
     private TransferFormService transferFormService;
     @Autowired
     private OtpConfirmationService otpConfirmationService;
+    @Autowired
+    private ExtractUserService extractUserService;
+    @Autowired
+    private InchargeRepo inchargeRepo;
 
 
     public List<User> getUsersByDepartment(String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        String id = user.getId();
-        String prefix = id.substring(0, id.length() - 7);
+        String prefix = extractUserService.getTheIdPrefixByUser(user);
         List<User> users = new ArrayList<>();
         if(user.getRole() == Role.USER){
             users.addAll(userRepo.findByFacultyAndJobType(user.getFaculty(), "Dean"));
@@ -70,8 +75,7 @@ public class StaffService {
     }
 
     public UserInfoResponse getUser(String token) throws UserNotFoundException {
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = extractUserService.extractUserByAuthorizationHeader("Bearer "+token);
 
         String imageBase64 = null;
         if (user.getImage_data() != null) {
@@ -105,10 +109,7 @@ public class StaffService {
     }
 
     public User updateProfile(String header, RegisterDTO registerDTO, MultipartFile image) throws IOException, UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         user.setFirst_name(registerDTO.getFirst_name());
         user.setLast_name(registerDTO.getLast_name());
@@ -129,10 +130,8 @@ public class StaffService {
     }
 
     public String resetPassword(String header, SecurityDTO resetPasswordDTO) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
         String oldPassword = resetPasswordDTO.getOld_password();
         String newPassword = resetPasswordDTO.getNew_password();
 
@@ -150,10 +149,8 @@ public class StaffService {
 
     @Transactional
     public String deleteAccount(String header, SecurityDTO deleteAccountDTO) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
         String oldPassword = deleteAccountDTO.getPassword_for_delete();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
@@ -234,10 +231,50 @@ public class StaffService {
         }
         List<Object> forms = new ArrayList<>();
         forms.addAll(normalLeaveFormService.getFormsOfUserById(id));
-        forms.addAll(accidentLeaveFormService.getFormsOfUserById(id));
-        forms.addAll(paternalLeaveFormService.getFormsOfUserById(id));
-        forms.addAll(maternityLeaveFormService.getFormsOfUserById(id));
-        forms.addAll(medicalLeaveFormService.getFormsOfUserById(id));
+//        forms.addAll(accidentLeaveFormService.getFormsOfUserById(id));
+//        forms.addAll(paternalLeaveFormService.getFormsOfUserById(id));
+//        forms.addAll(maternityLeaveFormService.getFormsOfUserById(id));
+//        forms.addAll(medicalLeaveFormService.getFormsOfUserById(id));
         return forms;
+    }
+
+    public List<User> getAllManagers(String header) {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        List<User> users = new ArrayList<>();
+        users.addAll(userRepo.findByRoleAndDepartmentAndFaculty(Role.MANAGER, user.getDepartment(), user.getFaculty()));
+        users.addAll(userRepo.findByRoleAndDepartmentAndFaculty(Role.ADMIN, user.getDepartment(), user.getFaculty()));
+
+        return users;
+    }
+
+    public List<User> assignAsAdmin(String id, String header) throws UserNotFoundException {
+        User admin = extractUserService.extractUserByAuthorizationHeader(header);
+
+        User manager = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("Manager is not find"));
+        Incharge incharge = Incharge.builder()
+                .userId(manager.getId())
+                .job_type(manager.getJobType())
+                .build();
+        inchargeRepo.save(incharge);
+        
+        manager.setRole(Role.ADMIN);
+        manager.setJobType(admin.getJobType());
+        userRepo.save(manager);
+
+        return getAllManagers(header);
+    }
+
+    public List<User> unAssignAsAdmin(String id, String header) throws UnauthorizedAccessException, UserNotFoundException {
+        User admin = extractUserService.extractUserByAuthorizationHeader(header);
+
+        Incharge manager = inchargeRepo.findByUserId(id).orElseThrow(() -> new UnauthorizedAccessException("Can't do that"));
+        User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        user.setJobType(manager.getJob_type());
+        user.setRole(Role.MANAGER);
+        userRepo.save(user);
+        inchargeRepo.deleteById(manager.getId());
+
+        return getAllManagers(header);
     }
 }

@@ -3,6 +3,7 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Entity.Faculty;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.DepartmentRepo;
 import com.Non_academicWebsite.Repository.FacultyRepo;
@@ -30,6 +31,10 @@ public class DepartmentService {
 
     public List<Department> get(String header) {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        if (user.getRole() == Role.SUPER_ADMIN){
+            return departmentRepo.findAll();
+        }
         Faculty faculty = facultyRepo.findByFacultyName(user.getFaculty());
         return departmentRepo.findAllByFacultyId(faculty.getId());
     }
@@ -37,7 +42,10 @@ public class DepartmentService {
     public List<Department> add(FacOrDeptDTO facOrDeptDTO, String header) {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        Faculty faculty = facultyRepo.findByFacultyName(user.getFaculty());
+        Faculty faculty = facOrDeptDTO.getFaculty().isEmpty() ? facultyRepo.findByFacultyName(user.getFaculty()):
+                facultyRepo.findByFacultyName(facOrDeptDTO.getFaculty());
+
+
         if(departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias()) &&
         departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
             throw new RuntimeException("Department already exists");

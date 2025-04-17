@@ -19,7 +19,7 @@ public class FacultyController {
 
     @GetMapping("/auth/user/faculty/getAll")
     public ResponseEntity<List<Faculty>> getFaculty(){
-        return ResponseEntity.ok(facultyService.getFaculty());
+        return ResponseEntity.ok(facultyService.getFaculties());
     }
 
     @PostMapping("/admin/faculty/add")

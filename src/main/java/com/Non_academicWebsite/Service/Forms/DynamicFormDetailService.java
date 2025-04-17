@@ -1,11 +1,14 @@
 package com.Non_academicWebsite.Service.Forms;
 
+import com.Non_academicWebsite.CustomException.DynamicFormNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Entity.ApprovalFlow.ApprovalFlow;
 import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormUser;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ApprovalFlow.ApprovalFlowRepo;
 import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
@@ -41,8 +44,11 @@ public class DynamicFormDetailService {
 
 
     public Object addDynamicFormDetails(String header, Map<String, String> parameters, List<MultipartFile> files,
-                                        String form, String flow) {
+                                        String form, String flow) throws DynamicFormNotFoundException, UnauthorizedAccessException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
+        if (user.getRole() != Role.USER){
+            throw new UnauthorizedAccessException("User only can requests leaves!");
+        }
 
         // save the form and user details
         DynamicForm dynamicForm = dynamicFormService.getForm(form, user.getDepartment(), user.getFaculty());

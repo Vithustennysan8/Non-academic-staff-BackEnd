@@ -15,8 +15,20 @@ import static com.Non_academicWebsite.Entity.Permission.*;
 @RequiredArgsConstructor
 public enum Role {
     USER(Collections.emptySet()),
+    MANAGER(
+            Set.of(
+                    MANAGER_CREATE,
+                    MANAGER_READ,
+                    MANAGER_UPDATE,
+                    MANAGER_DELETE
+            )
+    ),
     ADMIN(
             Set.of(
+                    MANAGER_CREATE,
+                    MANAGER_READ,
+                    MANAGER_UPDATE,
+                    MANAGER_DELETE,
                     ADMIN_CREATE,
                     ADMIN_READ,
                     ADMIN_UPDATE,
@@ -32,7 +44,11 @@ public enum Role {
                     ADMIN_DELETE,
                     ADMIN_UPDATE,
                     ADMIN_READ,
-                    ADMIN_CREATE
+                    ADMIN_CREATE,
+                    MANAGER_CREATE,
+                    MANAGER_READ,
+                    MANAGER_UPDATE,
+                    MANAGER_DELETE
             )
     );
 

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @EnableJpaRepositories
 @Repository
 public interface DynamicFormFileDetailRepo extends JpaRepository<DynamicFormFileDetail, Long> {
+    DynamicFormFileDetail findByDynamicFormUserId(Long id);
 }

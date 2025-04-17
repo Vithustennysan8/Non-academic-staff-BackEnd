@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Controller.Forms;
 
 import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
 import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Service.Forms.NormalLeaveFormService;
@@ -20,7 +21,8 @@ public class NormalLeaveFormController {
 
     @PostMapping(value = "/add")
     public ResponseEntity<NormalLeaveForm> addForm(@RequestHeader("Authorization") String header,
-                                                   @RequestBody NormalLeaveFormDTO normalLeaveFormDTO){
+                                                   @RequestBody NormalLeaveFormDTO normalLeaveFormDTO)
+                                                    throws UnauthorizedAccessException {
         return ResponseEntity.ok(normalLeaveFormService.add(header, normalLeaveFormDTO));
 
     }

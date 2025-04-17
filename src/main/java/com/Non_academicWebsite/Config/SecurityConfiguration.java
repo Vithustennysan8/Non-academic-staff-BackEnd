@@ -41,7 +41,15 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyAuthority(ADMIN_READ.name(), SUPER_ADMIN_READ.name())
                         .requestMatchers(HttpMethod.POST, "/api/admin/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPER_ADMIN_CREATE.name())
                         .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPER_ADMIN_UPDATE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPER_ADMIN_DELETE.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPER_ADMIN_DELETE.name()).requestMatchers("/api/admin/**").hasAnyRole(ADMIN.name(), SUPER_ADMIN.name())
+
+                        .requestMatchers("/api/admin/**").hasAnyRole(ADMIN.name(), SUPER_ADMIN.name(), MANAGER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/manager/**").hasAnyAuthority(ADMIN_READ.name(), SUPER_ADMIN_READ.name(), MANAGER_READ.name())
+                        .requestMatchers(HttpMethod.POST, "/api/manager/**").hasAnyAuthority(ADMIN_CREATE.name(), SUPER_ADMIN_CREATE.name(), MANAGER_CREATE.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/manager/**").hasAnyAuthority(ADMIN_UPDATE.name(), SUPER_ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/manager/**").hasAnyAuthority(ADMIN_DELETE.name(), SUPER_ADMIN_DELETE.name(), MANAGER_DELETE.name())
+
+
                         .anyRequest().authenticated();
                 });
         http

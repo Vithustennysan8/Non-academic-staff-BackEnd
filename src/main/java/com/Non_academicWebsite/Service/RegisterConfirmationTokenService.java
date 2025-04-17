@@ -7,13 +7,11 @@ import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class RegisterConfirmationTokenService {
@@ -23,6 +21,8 @@ public class RegisterConfirmationTokenService {
     private JwtService jwtService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private ExtractUserService extractUserService;
 
     public String createToken(User user) {
 
@@ -40,20 +40,25 @@ public class RegisterConfirmationTokenService {
 
     public User confirm(String token) throws UserNotFoundException {
         RegisterConfirmationToken confirmationToken = confirmationTokenRepo.findByToken(token);
-//        assert confirmationToken != null;
         confirmationToken.setConfirmedAt(new Date(System.currentTimeMillis()));
         confirmationTokenRepo.save(confirmationToken);
         return confirmationToken.getUser();
     }
 
     public List<RegisterConfirmationToken> getVerifyRequests(String header) {
-        String token = header.substring(7); // The part of the header after "Bearer "
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
-        if(user == null || user.getRole()!= Role.ADMIN) {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        if(user == null || user.getRole() != Role.ADMIN) {
             return Collections.emptyList();
         }
         String prefix = user.getId().substring(0, user.getId().length() - 7);
         return confirmationTokenRepo.findByUserIdPrefixAndVerificationStatus(prefix, false);
+    }
+
+    public List<RegisterConfirmationToken> getVerifyAdminRegisterRequests(String header) {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+        if(user == null || user.getRole() != Role.SUPER_ADMIN) {
+            return Collections.emptyList();
+        }
+        return confirmationTokenRepo.findByRoleAndVerificationStatus(Role.ADMIN, false);
     }
 }

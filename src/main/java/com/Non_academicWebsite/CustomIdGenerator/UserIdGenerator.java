@@ -123,7 +123,7 @@ public class UserIdGenerator {
         departments.put("Environmental and Industrial Sciences", "EIS");
         departments.put("Geology", "GEO");
         departments.put("Mathematics", "MATH");
-        departments.put("Molecular Biology and Biotechnology", "");
+        departments.put("Molecular Biology and Biotechnology", "MBB");
         departments.put("Physics", "PHY");
         departments.put("Statistics and Computer Science", "STATCS");
         departments.put("Zoology", "ZOO");
@@ -160,7 +160,7 @@ public class UserIdGenerator {
     }
 
     public String generateCustomUserID(Integer facId, String department, String position) {
-        Faculty fac = facultyService.getFaculty(facId);
+        Faculty fac = facultyService.getFac(facId);
         String facultyCode = fac.getAlias();
 
         String departmentCode = departmentService.getDepartmentCode(fac.getId(), department);

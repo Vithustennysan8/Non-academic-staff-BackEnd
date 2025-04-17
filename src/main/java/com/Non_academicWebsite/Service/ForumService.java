@@ -9,6 +9,7 @@ import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +27,11 @@ public class ForumService {
     private UserRepo userRepo;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private ExtractUserService extractUserService;
 
     public Object addForum(String header, ForumDTO forumDTO) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
         var forum = Forum.builder()
                 .user(user)
                 .userName(user.getFirst_name().concat(" " + user.getLast_name()))
@@ -45,9 +45,7 @@ public class ForumService {
     }
 
     public List<Forum> getForums(String header) throws UserNotFoundException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found"));
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         String id = user.getId();
         String prefix = id.substring(0, id.length() - 7);
@@ -60,10 +58,8 @@ public class ForumService {
     }
 
     public List<Forum> deleteForum(Long id, String header) throws Exception {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found"));
         if (forumRepo.existsById(id)) {
             Forum forum = forumRepo.findById(id).orElseThrow(()-> new ForumNotFoundException("Forum not found "+ id +" with this id."));
             if (Objects.equals(forum.getUser().getId(), user.getId()) || user.getRole() == Role.ADMIN) {
@@ -78,12 +74,10 @@ public class ForumService {
     }
 
     public List<Forum> updateForum(Long id, ForumDTO forumDTO, String header) throws Exception{
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new UserNotFoundException("user not found"));
         String userId = user.getId();
-        String prefix = userId.substring(0, userId.length() - 3);
+        String prefix = userId.substring(0, userId.length() - 7);
         if (forumRepo.existsById(id)) {
             Forum forum = forumRepo.findById(id).orElseThrow(()-> new ForumNotFoundException("Forum not found "+ id +" with this id."));
             if (Objects.equals(forum.getUser().getId(), user.getId())) {

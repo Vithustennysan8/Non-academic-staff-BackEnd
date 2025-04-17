@@ -132,33 +132,33 @@ public class AdminService {
         List<Forms> forms = new ArrayList<>();
         switch (user.getJobType()) {
             case "Head of the Department" -> {
-                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
+//                forms.addAll(accidentLeaveFormRepo.findByUserIdStartingWith(prefix));
                 forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
-                forms.addAll(paternalLeaveFormRepo.findByUserIdStartingWith(prefix));
-                forms.addAll(medicalLeaveFromRepo.findByUserIdStartingWith(prefix));
-                forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWith(prefix));
+//                forms.addAll(paternalLeaveFormRepo.findByUserIdStartingWith(prefix));
+//                forms.addAll(medicalLeaveFromRepo.findByUserIdStartingWith(prefix));
+//                forms.addAll(maternityLeaveFormRepo.findByUserIdStartingWith(prefix));
             }
             case "Dean" -> {
-                forms.addAll(accidentLeaveFormRepo.findByFaculty(user.getFaculty()));
+//                forms.addAll(accidentLeaveFormRepo.findByFaculty(user.getFaculty()));
                 forms.addAll(normalLeaveFormRepo.findByFaculty(user.getFaculty()));
-                forms.addAll(paternalLeaveFormRepo.findByFaculty(user.getFaculty()));
-                forms.addAll(medicalLeaveFromRepo.findByFaculty(user.getFaculty()));
-                forms.addAll(maternityLeaveFormRepo.findByFaculty(user.getFaculty()));
+//                forms.addAll(paternalLeaveFormRepo.findByFaculty(user.getFaculty()));
+//                forms.addAll(medicalLeaveFromRepo.findByFaculty(user.getFaculty()));
+//                forms.addAll(maternityLeaveFormRepo.findByFaculty(user.getFaculty()));
             }
             case "Chief Medical Officer" -> {
-                forms.addAll(accidentLeaveFormRepo.findAll());
-                forms.addAll(medicalLeaveFromRepo.findAll());
-                forms.addAll(maternityLeaveFormRepo.findAll());
+//                forms.addAll(accidentLeaveFormRepo.findAll());
+//                forms.addAll(medicalLeaveFromRepo.findAll());
+//                forms.addAll(maternityLeaveFormRepo.findAll());
             }
             case "Registrar" -> {
-                forms.addAll(medicalLeaveFromRepo.findAll());
-                forms.addAll(maternityLeaveFormRepo.findAll());
+//                forms.addAll(medicalLeaveFromRepo.findAll());
+//                forms.addAll(maternityLeaveFormRepo.findAll());
             }
             case "Non Academic Establishment Division" -> {
-                forms.addAll(paternalLeaveFormRepo.findAll());
-                forms.addAll(accidentLeaveFormRepo.findAll());
-                forms.addAll(medicalLeaveFromRepo.findAll());
-                forms.addAll(maternityLeaveFormRepo.findAll());
+//                forms.addAll(paternalLeaveFormRepo.findAll());
+//                forms.addAll(accidentLeaveFormRepo.findAll());
+//                forms.addAll(medicalLeaveFromRepo.findAll());
+//                forms.addAll(maternityLeaveFormRepo.findAll());
             }
             default -> {
                 forms.addAll(Collections.emptyList());

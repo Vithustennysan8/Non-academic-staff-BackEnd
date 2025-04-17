@@ -19,4 +19,5 @@ public interface UserRepo extends JpaRepository<User, String> {
     List<User> findByIdStartingWithAndVerified(String prefix, boolean verified);
     List<User> findByFacultyAndJobType(String faculty, String jobType);
     Optional<User> findByRole(Role role);
+    List<User> findByRoleAndDepartmentAndFaculty(Role role, String department, String faculty);
 }

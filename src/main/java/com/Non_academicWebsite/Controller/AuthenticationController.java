@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
@@ -23,13 +24,13 @@ public class AuthenticationController {
     @PostMapping(value = "/signup")
     public ResponseEntity<?> register(@Valid @ModelAttribute RegisterDTO registerDTO,
                                       @RequestParam(value = "image", required = false) MultipartFile image) throws Exception {
-
+        System.out.println(registerDTO.toString());
         return ResponseEntity.ok(authenticationService.registerStaff(registerDTO, image));
-
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) throws UserNotFoundException {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) throws UserNotFoundException,
+                                                                                        UnauthorizedAccessException {
         return ResponseEntity
                 .ok(authenticationService.login(loginDTO));
     }

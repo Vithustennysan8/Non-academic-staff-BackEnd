@@ -50,6 +50,17 @@ public class DynamicFormController {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUser(header));
     }
 
+    @GetMapping(value = "/admin/dynamicForm/getAllByFacultyAndDepartment")
+    public ResponseEntity<?> getAllDynamicFormsByFacultyAndDepartment(@RequestParam("department") String department,
+                                                            @RequestParam("faculty") String faculty){
+        return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsByFacultyAndDepartment(faculty, department));
+    }
+
+    @GetMapping(value = "/auth/user/dynamicForm/getAllById/{id}")
+    public ResponseEntity<?> getAllDynamicFormsForUserById(@PathVariable("id") String id){
+        return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUserById(id));
+    }
+
     @DeleteMapping(value = "/auth/user/dynamicForm/delete/{id}")
     public ResponseEntity<List<DynamicForm>> deleteForm(@PathVariable("id") Long id,
                                                         @RequestHeader("Authorization") String header) {

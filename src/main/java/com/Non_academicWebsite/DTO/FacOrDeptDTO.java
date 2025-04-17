@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FacOrDeptDTO {
+    private String faculty;
     private String name;
     private String alias;
 }

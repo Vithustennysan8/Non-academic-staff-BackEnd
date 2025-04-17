@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service.ApprovalFlow;
 
 import com.Non_academicWebsite.CustomException.ApprovalFlowExitsException;
+import com.Non_academicWebsite.CustomException.DynamicFormNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalFlow.ApprovalFlowDTO;
 import com.Non_academicWebsite.Entity.ApprovalFlow.ApprovalFlow;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
@@ -25,7 +26,7 @@ public class ApprovalFlowService {
     @Autowired
     private DynamicFormService dynamicFormService;
 
-    public Object addNewApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header) {
+    public Object addNewApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header) throws DynamicFormNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
@@ -54,7 +55,7 @@ public class ApprovalFlowService {
     }
 
     @Transactional
-    public Object updateApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header) {
+    public Object updateApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header) throws DynamicFormNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
@@ -140,7 +141,7 @@ public class ApprovalFlowService {
     }
 
     @Transactional
-    public Object deleteApprovalFlow(String header, ApprovalFlowDTO approvalFlowDTO) {
+    public Object deleteApprovalFlow(String header, ApprovalFlowDTO approvalFlowDTO) throws DynamicFormNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),

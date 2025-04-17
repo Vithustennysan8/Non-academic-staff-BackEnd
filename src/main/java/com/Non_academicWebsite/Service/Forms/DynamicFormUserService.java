@@ -2,13 +2,20 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormDetail;
+import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormUser;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormDetailRepo;
+import com.Non_academicWebsite.Repository.Forms.DynamicFormFileDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormUserRepo;
+import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,7 +31,12 @@ public class DynamicFormUserService {
     @Autowired
     private DynamicFormDetailRepo dynamicFormDetailRepo;
     @Autowired
+    private DynamicFormFileDetailRepo dynamicFormFileDetailRepo;
+    @Autowired
     private FormApproverRepo formApproverRepo;
+    @Autowired
+    private UserRepo userRepo;
+
 
     public Object getAllFormApplied(String header) {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
@@ -45,6 +57,10 @@ public class DynamicFormUserService {
 
         Map<String, Object> allForms = generateOutput(dynamicFormUsers);
         return allForms.values().toArray();
+    }
+
+    public Object getAllFormAppliedBYId(String id) {
+        return dynamicFormUserRepo.findByUserId(id);
     }
 
     public Object getAllFormRequests(String header) {
@@ -236,7 +252,7 @@ public class DynamicFormUserService {
             List<DynamicFormDetail> details = dynamicFormDetailRepo.findByDynamicFormUserId(dynamicFormUser.getId());
             form.put("formId", dynamicFormUser.getId());
             form.put("form", dynamicFormUser.getDynamicForm().getFormType());
-            form.put("userName", dynamicFormUser.getUser().getFirst_name());
+            form.put("formUser", dynamicFormUser.getUser());
             form.put("faculty", dynamicFormUser.getUser().getFaculty());
             form.put("department", dynamicFormUser.getUser().getDepartment());
             form.put("formStatus", dynamicFormUser.getStatus());
@@ -266,5 +282,9 @@ public class DynamicFormUserService {
 
         dynamicFormUser.setStatus("Rejected");
         dynamicFormUserRepo.save(dynamicFormUser);
+    }
+
+    public DynamicFormFileDetail generatePdf(Long id) {
+        return dynamicFormFileDetailRepo.findByDynamicFormUserId(id);
     }
 }
