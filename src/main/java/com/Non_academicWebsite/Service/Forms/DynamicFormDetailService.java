@@ -60,8 +60,10 @@ public class DynamicFormDetailService {
                 .build();
         dynamicFormUserRepo.save(dynamicFormUser);
 
-        List<ApprovalFlow> flows = approvalFlowRepo.findByUniqueNameAndDepartmentAndFaculty(flow, user.getDepartment(),
-                user.getFaculty());
+        List<ApprovalFlow> flows = approvalFlowRepo.findByUniqueNameAndDynamicFormAndDepartmentAndFaculty(flow,
+                dynamicForm.getFormType(), user.getDepartment(), user.getFaculty());
+
+        System.out.println(flows);
 
         flows.forEach(Flow -> {
             FormApprover formApprover = FormApprover.builder()

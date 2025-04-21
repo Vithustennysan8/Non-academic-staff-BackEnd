@@ -20,4 +20,6 @@ public interface ApprovalFlowRepo extends JpaRepository<ApprovalFlow, Integer> {
 
     List<ApprovalFlow> findByUniqueNameAndDepartmentAndFaculty(String flow, String department, String faculty);
 
+    List<ApprovalFlow> findByUniqueNameAndDynamicFormAndDepartmentAndFaculty(String flow, String form,
+                                                                             String department, String faculty);
 }

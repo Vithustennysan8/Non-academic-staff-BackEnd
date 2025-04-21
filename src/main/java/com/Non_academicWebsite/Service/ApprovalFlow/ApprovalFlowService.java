@@ -112,17 +112,17 @@ public class ApprovalFlowService {
 
         Map<String, Map<String,Object>> distinctFlow = new HashMap<>();
         for(ApprovalFlow flow : flows) {
-            if (!distinctFlow.containsKey(flow.getUniqueName())) {
+            if (!distinctFlow.containsKey(flow.getDynamicForm()+ " - " +flow.getUniqueName())) {
                 Map<String, Object> distinct = new HashMap<>();
                 distinct.put("formType", flow.getDynamicForm());
                 distinct.put("faculty", flow.getFaculty());
                 distinct.put("uniqueName", flow.getUniqueName());
                 distinct.put("department", flow.getDepartment());
                 distinct.put("flow", new ArrayList<Map<String, Object>>());
-                distinctFlow.put(flow.getUniqueName(), distinct);
+                distinctFlow.put(flow.getDynamicForm()+ " - " +flow.getUniqueName(), distinct);
             }
 
-            Map<String, Object> distinct = distinctFlow.get(flow.getUniqueName());
+            Map<String, Object> distinct = distinctFlow.get(flow.getDynamicForm()+ " - " +flow.getUniqueName());
             List<Map<String, Object>> flowList = (List<Map<String, Object>>) distinct.get("flow");
             flowList.add(Map.of(
                     "roleName", flow.getRoleName(),

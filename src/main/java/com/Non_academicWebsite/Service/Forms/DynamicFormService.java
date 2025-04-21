@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DynamicFormService {
@@ -192,5 +191,4 @@ public class DynamicFormService {
     public Object getAllDynamicFormsForApprover(String header, String department, String faculty) {
         return dynamicFormRepo.findAllByDepartmentAndFaculty(department, faculty);
     }
-
 }
