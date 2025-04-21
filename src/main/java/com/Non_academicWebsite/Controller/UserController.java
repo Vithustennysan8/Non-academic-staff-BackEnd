@@ -39,6 +39,12 @@ public class UserController {
         return ResponseEntity.ok(staffService.getUsersByDepartment(header));
     }
 
+    @GetMapping(value = "/super_admin/staffs")
+    public ResponseEntity<List<User>> getAllUsers(@RequestHeader("Authorization") String header)
+            throws UserNotFoundException, UnauthorizedAccessException {
+        return ResponseEntity.ok(staffService.getAllUsers(header));
+    }
+
     @GetMapping(value = "/auth/user/info")
     public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header)
                                                     throws UserNotFoundException {

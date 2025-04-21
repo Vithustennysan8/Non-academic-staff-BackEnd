@@ -74,6 +74,15 @@ public class StaffService {
         return users;
     }
 
+    public List<User> getAllUsers(String header) throws UnauthorizedAccessException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        if (user.getRole() != Role.SUPER_ADMIN){
+            throw new UnauthorizedAccessException("You don't have the permission!");
+        }
+        return userRepo.findAll();
+    }
+
     public UserInfoResponse getUser(String token) throws UserNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader("Bearer "+token);
 
@@ -277,4 +286,6 @@ public class StaffService {
 
         return getAllManagers(header);
     }
+
+
 }
