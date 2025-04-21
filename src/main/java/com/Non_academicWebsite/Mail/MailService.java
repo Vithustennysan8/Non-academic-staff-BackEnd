@@ -25,7 +25,8 @@ public class MailService {
     public void sendMail( String to, String url, String employeeName, String formType,
                          String status , String approverName) {
 
-        String systemMail = "vithustennysan20@gmail.com";
+        // TODO : system mail address should add
+        String systemMail = "";
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
