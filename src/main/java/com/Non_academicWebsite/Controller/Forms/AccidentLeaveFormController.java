@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/auth/accidentLeaveForm")
+@RequestMapping(value = "/api/v1/auth/accidentLeaveForm")
 public class AccidentLeaveFormController {
     @Autowired
     private AccidentLeaveFormService accidentLeaveFormService;

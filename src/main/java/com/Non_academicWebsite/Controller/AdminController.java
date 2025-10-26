@@ -1,6 +1,6 @@
 package com.Non_academicWebsite.Controller;
 
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
 import com.Non_academicWebsite.Entity.Forms.MaternityLeaveForm;
@@ -13,6 +13,7 @@ import com.Non_academicWebsite.Service.AuthenticationService;
 import com.Non_academicWebsite.Service.Forms.*;
 import com.Non_academicWebsite.Service.RegisterConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/admin")
+@RequestMapping(value = "/api/v1/admin")
 public class AdminController {
     @Autowired
     private NormalLeaveFormService normalLeaveFormService;
@@ -50,20 +51,22 @@ public class AdminController {
     // Admin can delete a user by ID
     @DeleteMapping(value = "/deleteUser/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable("id") String id,
-                                            @RequestHeader("Authorization") String header) throws UserNotFoundException {
+                                            @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(adminService.deleteUserById(id, header));
     }
 
     // used to retrieve the all registered user for verification
     @GetMapping(value = "/verifyRegisterRequests")
-    public ResponseEntity<List<RegisterConfirmationToken>> getVerifyRequests(@RequestHeader("Authorization") String header){
+    public ResponseEntity<List<RegisterConfirmationToken>> getVerifyRequests(@RequestHeader("Authorization") String header)
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(confirmationTokenService.getVerifyRequests(header));
     }
 
     // used to retrieve the admin register requests
     @GetMapping(value = "/verifyAdminRegisterRequests")
     public ResponseEntity<List<RegisterConfirmationToken>> getVerifyAdminRegisterRequests
-                                                            (@RequestHeader("Authorization") String header){
+                                                            (@RequestHeader("Authorization") String header)
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(confirmationTokenService.getVerifyAdminRegisterRequests(header));
     }
 
@@ -71,7 +74,7 @@ public class AdminController {
     // used to verify the newly registered user
     @PutMapping(value = "/verify/{token}")
     public ResponseEntity<List<RegisterConfirmationToken>> confirmUser(@PathVariable("token") String token,
-                                              @RequestHeader("Authorization") String header) throws UserNotFoundException {
+                                              @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(authenticationService.confirmUser(token, header));
     }
 
@@ -79,59 +82,59 @@ public class AdminController {
     @PostMapping(value = "/req/normalLeaveForm")
     public ResponseEntity<?> getReqNormalLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
                                                    @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(normalLeaveFormService.getNormalLeaveForms(reqFormsDTO, header));
+        return ResponseEntity.status(HttpStatus.CREATED).body(normalLeaveFormService.getNormalLeaveForms(reqFormsDTO, header));
     }
 
     // used to retrieve the all AccidentLeaveForm
     @PostMapping(value = "/req/accidentLeaveForm")
     public ResponseEntity<?> getReqAccidentLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
                                                    @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(accidentLeaveFormService.getAccidentLeaveForms(reqFormsDTO, header));
+        return ResponseEntity.status(HttpStatus.CREATED).body(accidentLeaveFormService.getAccidentLeaveForms(reqFormsDTO, header));
     }
 
     @PostMapping(value = "/req/paternalLeaveForm")
     public ResponseEntity<List<PaternalLeaveForm>> getReqPaternalLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
                                                                            @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(paternalLeaveFormService.getPaternalLeaveForms(reqFormsDTO, header));
+        return ResponseEntity.status(HttpStatus.CREATED).body(paternalLeaveFormService.getPaternalLeaveForms(reqFormsDTO, header));
     }
 
     @PostMapping(value = "/req/maternityLeaveForm")
     public ResponseEntity<List<MaternityLeaveForm>> getReqMaternityLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
                                                                              @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(maternityLeaveFormService.getMaternityLeaveForms(reqFormsDTO, header));
+        return ResponseEntity.status(HttpStatus.CREATED).body(maternityLeaveFormService.getMaternityLeaveForms(reqFormsDTO, header));
     }
 
     @PostMapping(value = "/req/medicalLeaveForm")
     public ResponseEntity<List<MedicalLeaveForm>> getReqMedicalLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
                                                                          @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(medicalLeaveFormService.getMedicalLeaveForms(reqFormsDTO, header));
+        return ResponseEntity.status(HttpStatus.CREATED).body(medicalLeaveFormService.getMedicalLeaveForms(reqFormsDTO, header));
     }
 
     // used to retrieve the all TransferForm
     @PostMapping(value = "/req/transferForm")
     public ResponseEntity<?> getReqTransferForm(@RequestBody ReqFormsDTO reqFormsDTO,
                                                  @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(transferFormService.getTransferForms(reqFormsDTO, header));
+        return ResponseEntity.status(HttpStatus.CREATED).body(transferFormService.getTransferForms(reqFormsDTO, header));
     }
 
     // used to retrieve the all LeaveRequests
     @GetMapping("/leaveForms/notify")
-    public ResponseEntity<?> notifyAllLeaveFormRequests(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<?> notifyAllLeaveFormRequests(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(adminService.getAllLeaveFormRequests(header));
     }
 
     @GetMapping("/leaveForms/notification")
-    public ResponseEntity<?> pendingNotificationLeaveFormRequestsByApprover(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<?> pendingNotificationLeaveFormRequestsByApprover(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(adminService.getPendingLeaveFormRequestsByApprover(header));
     }
 
     @GetMapping("/transferForms/notification")
-    public ResponseEntity<List<TransferForm>> notifyAllTransferFormRequests(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<List<TransferForm>> notifyAllTransferFormRequests(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(adminService.getAllTransferFormRequests(header));
     }
 
     @GetMapping(value = "leaveForms/getAllForms")
-    public ResponseEntity<?> getAllLeaveForm(@RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<?> getAllLeaveForm(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(adminService.getAllLeaveForms(header));
     }
 

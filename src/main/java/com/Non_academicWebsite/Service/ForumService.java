@@ -1,8 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
-import com.Non_academicWebsite.CustomException.ForumNotFoundException;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ForumDTO;
 import com.Non_academicWebsite.Entity.Forum;
 import com.Non_academicWebsite.Entity.Role;
@@ -30,7 +29,7 @@ public class ForumService {
     @Autowired
     private ExtractUserService extractUserService;
 
-    public Object addForum(String header, ForumDTO forumDTO) throws UserNotFoundException {
+    public Object addForum(String header, ForumDTO forumDTO) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         var forum = Forum.builder()
                 .user(user)
@@ -44,7 +43,7 @@ public class ForumService {
         return forumRepo.save(forum);
     }
 
-    public List<Forum> getForums(String header) throws UserNotFoundException {
+    public List<Forum> getForums(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         String id = user.getId();
@@ -61,12 +60,15 @@ public class ForumService {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if (forumRepo.existsById(id)) {
-            Forum forum = forumRepo.findById(id).orElseThrow(()-> new ForumNotFoundException("Forum not found "+ id +" with this id."));
+            Forum forum = forumRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Forum not found "+ id +" with this id."));
             if (Objects.equals(forum.getUser().getId(), user.getId()) || user.getRole() == Role.ADMIN) {
                 forumRepo.deleteById(id);
             }
         }
-        List<Forum> forums = forumRepo.findAll();
+        String userId = user.getId();
+        String prefix = userId.substring(0, userId.length() - 7);
+
+        List<Forum> forums = forumRepo.findByUserIdStartingWith(prefix);
         if (forums.isEmpty()) {
             return Collections.emptyList();
         }
@@ -79,7 +81,7 @@ public class ForumService {
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length() - 7);
         if (forumRepo.existsById(id)) {
-            Forum forum = forumRepo.findById(id).orElseThrow(()-> new ForumNotFoundException("Forum not found "+ id +" with this id."));
+            Forum forum = forumRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Forum not found "+ id +" with this id."));
             if (Objects.equals(forum.getUser().getId(), user.getId())) {
                 forum.setUserName(user.getFirst_name().concat(" " + user.getLast_name()));
                 forum.setSubject(forumDTO.getSubject());

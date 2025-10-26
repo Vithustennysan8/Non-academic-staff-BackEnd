@@ -1,13 +1,11 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
-import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
-import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.Incharge;
 import com.Non_academicWebsite.Entity.Role;
@@ -22,7 +20,6 @@ import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import com.Non_academicWebsite.Service.Forms.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,7 +59,7 @@ public class StaffService {
     private InchargeRepo inchargeRepo;
 
 
-    public List<User> getUsersByDepartment(String header) throws UserNotFoundException {
+    public List<User> getUsersByDepartment(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         String prefix = extractUserService.getTheIdPrefixByUser(user);
@@ -74,7 +71,7 @@ public class StaffService {
         return users;
     }
 
-    public List<User> getAllUsers(String header) throws UnauthorizedAccessException {
+    public List<User> getAllUsers(String header) throws UnauthorizedAccessException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if (user.getRole() != Role.SUPER_ADMIN){
@@ -83,7 +80,7 @@ public class StaffService {
         return userRepo.findAll();
     }
 
-    public UserInfoResponse getUser(String token) throws UserNotFoundException {
+    public UserInfoResponse getUser(String token) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader("Bearer "+token);
 
         String imageBase64 = null;
@@ -117,7 +114,7 @@ public class StaffService {
                 .build();
     }
 
-    public User updateProfile(String header, RegisterDTO registerDTO, MultipartFile image) throws IOException, UserNotFoundException {
+    public User updateProfile(String header, RegisterDTO registerDTO, MultipartFile image) throws IOException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         user.setFirst_name(registerDTO.getFirst_name());
@@ -138,7 +135,7 @@ public class StaffService {
         return userRepo.save(user);
     }
 
-    public String resetPassword(String header, SecurityDTO resetPasswordDTO) throws UserNotFoundException {
+    public String resetPassword(String header, SecurityDTO resetPasswordDTO) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         String oldPassword = resetPasswordDTO.getOld_password();
@@ -157,7 +154,7 @@ public class StaffService {
 
 
     @Transactional
-    public String deleteAccount(String header, SecurityDTO deleteAccountDTO) throws UserNotFoundException {
+    public String deleteAccount(String header, SecurityDTO deleteAccountDTO) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         String oldPassword = deleteAccountDTO.getPassword_for_delete();
@@ -192,24 +189,24 @@ public class StaffService {
         return transferFormService.getFormsOfUser(header);
     }
 
-    public String sendOTP(String email) throws UserNotFoundException {
+    public String sendOTP(String email) throws ResourceNotFoundException {
         if (!userRepo.existsByEmail(email)) {
             throw new IllegalStateException("Email not matched");
         }
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User is not found!!!"));
         user.setVerified(false);
         userRepo.save(user);
         otpConfirmationService.sendOtp(user, email);
         return "success";
     }
 
-    public String confirmOTP(Integer otp) throws UserNotFoundException {
+    public String confirmOTP(Integer otp) throws ResourceNotFoundException {
         String userEmail = otpConfirmationService.getUserEmail(otp);
         if(userEmail == null){
-            throw new UserNotFoundException("User not found with this OTP");
+            throw new ResourceNotFoundException("User not found with this OTP");
         }
         User user = userRepo.findByEmail(userEmail).
-                orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+                orElseThrow(()-> new ResourceNotFoundException("User is not found!!!"));
 
         String status = otpConfirmationService.confirmOtp(otp);
         if(status == "OTP confirmed successfully"){
@@ -220,10 +217,10 @@ public class StaffService {
         return "OTP not confirmed";
     }
 
-    public String resetForForgotPassword(ForgotPasswordDTO forgotPasswordDTO) throws UserNotFoundException {
+    public String resetForForgotPassword(ForgotPasswordDTO forgotPasswordDTO) throws ResourceNotFoundException {
         String email = forgotPasswordDTO.getEmail();
 
-        User user = userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        User user = userRepo.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User is not found!!!"));
         String newPassword = forgotPasswordDTO.getNewPassword();
 
         if (passwordEncoder.matches(newPassword, user.getPassword())) {
@@ -234,9 +231,9 @@ public class StaffService {
         return "Reset success";
     }
 
-    public List<Object> getAllAppliedLeaveFormsById(String id) throws UserNotFoundException {
+    public List<Object> getAllAppliedLeaveFormsById(String id) throws ResourceNotFoundException {
         if (!userRepo.existsById(id)) {
-            throw new UserNotFoundException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
         List<Object> forms = new ArrayList<>();
         forms.addAll(normalLeaveFormService.getFormsOfUserById(id));
@@ -247,7 +244,7 @@ public class StaffService {
         return forms;
     }
 
-    public List<User> getAllManagers(String header) {
+    public List<User> getAllManagers(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         List<User> users = new ArrayList<>();
@@ -257,10 +254,10 @@ public class StaffService {
         return users;
     }
 
-    public List<User> assignAsAdmin(String id, String header) throws UserNotFoundException {
+    public List<User> assignAsAdmin(String id, String header) throws ResourceNotFoundException {
         User admin = extractUserService.extractUserByAuthorizationHeader(header);
 
-        User manager = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("Manager is not find"));
+        User manager = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Manager is not find"));
         Incharge incharge = Incharge.builder()
                 .userId(manager.getId())
                 .job_type(manager.getJobType())
@@ -274,11 +271,11 @@ public class StaffService {
         return getAllManagers(header);
     }
 
-    public List<User> unAssignAsAdmin(String id, String header) throws UnauthorizedAccessException, UserNotFoundException {
+    public List<User> unAssignAsAdmin(String id, String header) throws UnauthorizedAccessException, ResourceNotFoundException {
         User admin = extractUserService.extractUserByAuthorizationHeader(header);
 
         Incharge manager = inchargeRepo.findByUserId(id).orElseThrow(() -> new UnauthorizedAccessException("Can't do that"));
-        User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
         user.setJobType(manager.getJob_type());
         user.setRole(Role.MANAGER);
         userRepo.save(user);

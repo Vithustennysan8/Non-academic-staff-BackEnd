@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.CustomException.DynamicFormAlreadyExistsException;
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Entity.Forms.FormField;
@@ -26,7 +27,7 @@ public class FormFieldService {
     private FormOptionService formOptionService;
 
     public Object createFormField(List<FormFieldDTO> formFieldDTOList, String header, String formType)
-            throws DynamicFormAlreadyExistsException {
+            throws ResourceExistsException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         // create the new dynamic form for the form fields

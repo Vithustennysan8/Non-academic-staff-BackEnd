@@ -1,10 +1,9 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.Forms.Forms;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
-import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.*;
 import com.Non_academicWebsite.Repository.ForumRepo;
@@ -13,7 +12,6 @@ import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -46,7 +44,7 @@ public class AdminService {
     private ExtractUserService extractUserService;
 
 
-    public List<Object> getAllLeaveFormRequests(String header) throws UserNotFoundException {
+    public List<Object> getAllLeaveFormRequests(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         String prefix = extractUserService.getTheIdPrefixByUser(user);
 
@@ -87,7 +85,7 @@ public class AdminService {
         return forms;
     }
 
-    public List<TransferForm> getAllTransferFormRequests(String header) throws UserNotFoundException {
+    public List<TransferForm> getAllTransferFormRequests(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         String prefix = extractUserService.getTheIdPrefixByUser(user);
 
@@ -114,7 +112,7 @@ public class AdminService {
     }
 
     @Transactional
-    public Object deleteUserById(String id, String header) throws UserNotFoundException {
+    public Object deleteUserById(String id, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(userRepo.existsById(id)){
@@ -125,7 +123,7 @@ public class AdminService {
         return confirmationTokenService.getVerifyRequests(header);
     }
 
-    public List<Forms> getAllLeaveForms(String header) throws UserNotFoundException {
+    public List<Forms> getAllLeaveForms(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         String prefix = extractUserService.getTheIdPrefixByUser(user);
 
@@ -189,7 +187,7 @@ public class AdminService {
 //        return null;
 //    }
 
-    public List<Object> getPendingLeaveFormRequestsByApprover(String header) throws UserNotFoundException {
+    public List<Object> getPendingLeaveFormRequestsByApprover(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         String prefix = extractUserService.getTheIdPrefixByUser(user);
 

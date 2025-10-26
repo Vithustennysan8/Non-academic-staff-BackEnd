@@ -1,7 +1,7 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
@@ -11,7 +11,6 @@ import com.Non_academicWebsite.Response.UserInfoResponse;
 import com.Non_academicWebsite.Service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +19,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/api/v1/")
 @CrossOrigin
 public class UserController {
     @Autowired
@@ -34,20 +33,19 @@ public class UserController {
     }
 
     @GetMapping(value = "/auth/user/staffs")
-    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header)
-            throws UserNotFoundException {
+    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getUsersByDepartment(header));
     }
 
     @GetMapping(value = "/super_admin/staffs")
     public ResponseEntity<List<User>> getAllUsers(@RequestHeader("Authorization") String header)
-            throws UserNotFoundException, UnauthorizedAccessException {
+            throws UnauthorizedAccessException, ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getAllUsers(header));
     }
 
     @GetMapping(value = "/auth/user/info")
     public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header)
-                                                    throws UserNotFoundException {
+            throws ResourceNotFoundException {
         String token = header.substring(7);
         return ResponseEntity.ok(staffService.getUser(token));
     }
@@ -56,21 +54,21 @@ public class UserController {
     public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String header,
                                            @ModelAttribute RegisterDTO registerDTO,
                                            @RequestParam(value = "image", required = false) MultipartFile image)
-                                            throws IOException, UserNotFoundException {
+            throws IOException, ResourceNotFoundException {
         User user = staffService.updateProfile(header, registerDTO, image);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping(value = "/auth/user/reset")
     public ResponseEntity<String> resetPassword(@RequestHeader("Authorization") String header,
-                                                @RequestBody SecurityDTO resetPasswordDTO) throws UserNotFoundException {
+                                                @RequestBody SecurityDTO resetPasswordDTO) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.resetPassword(header, resetPasswordDTO));
     }
 
     @DeleteMapping(value = "/auth/user/delete")
     public ResponseEntity<String> deleteAccount(@RequestHeader("Authorization") String header,
                                                 @RequestBody SecurityDTO deleteAccountDTO)
-                                                throws UserNotFoundException {
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.deleteAccount(header, deleteAccountDTO));
     }
 
@@ -80,7 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/auth/user/leaveFormsById/{id}")
-    public ResponseEntity<?> getAllAppliedLeaveFormsById(@PathVariable("id") String id) throws UserNotFoundException {
+    public ResponseEntity<?> getAllAppliedLeaveFormsById(@PathVariable("id") String id) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getAllAppliedLeaveFormsById(id));
     }
 
@@ -90,34 +88,36 @@ public class UserController {
     }
 
     @PostMapping("/auth/user/forgotPassword/sendOTP")
-    public ResponseEntity<String> sendOTP(@RequestBody ForgotPasswordDTO forgotPasswordDTO) throws UserNotFoundException {
+    public ResponseEntity<String> sendOTP(@RequestBody ForgotPasswordDTO forgotPasswordDTO) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.sendOTP(forgotPasswordDTO.getEmail()));
     }
 
     @PostMapping("/auth/user/forgotPassword/confirmation")
     public ResponseEntity<String> confirmOTP(@RequestBody ForgotPasswordDTO forgotPasswordDTO)
-                                            throws UserNotFoundException {
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.confirmOTP(forgotPasswordDTO.getOtp()));
     }
 
     @PostMapping("/auth/user/forgotPassword/reset")
     public ResponseEntity<String> resetForForgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO)
-                                                        throws UserNotFoundException {
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.resetForForgotPassword(forgotPasswordDTO));
     }
 
     @GetMapping("admin/managers")
-    public ResponseEntity<List<User>> getAllManagers(@RequestHeader("Authorization") String header){
+    public ResponseEntity<List<User>> getAllManagers(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getAllManagers(header));
     }
 
     @PutMapping("admin/incharge/{id}")
-    public ResponseEntity<List<User>> assignAsAdmin(@PathVariable("id") String id, @RequestHeader("Authorization") String header) throws UserNotFoundException {
+    public ResponseEntity<List<User>> assignAsAdmin(@PathVariable("id") String id, @RequestHeader("Authorization") String header)
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.assignAsAdmin(id, header));
     }
 
     @PutMapping("admin/unIncharge/{id}")
-    public ResponseEntity<List<User>> unAssignAsAdmin(@PathVariable("id") String id, @RequestHeader("Authorization") String header) throws UserNotFoundException, UnauthorizedAccessException {
+    public ResponseEntity<List<User>> unAssignAsAdmin(@PathVariable("id") String id, @RequestHeader("Authorization") String header)
+            throws UnauthorizedAccessException, ResourceNotFoundException {
         return ResponseEntity.ok(staffService.unAssignAsAdmin(id, header));
     }
 

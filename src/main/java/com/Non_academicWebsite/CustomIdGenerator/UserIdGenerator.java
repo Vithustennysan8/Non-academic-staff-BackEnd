@@ -156,7 +156,6 @@ public class UserIdGenerator {
         positions.put("Labourer", "LB");
         positions.put("Driver", "DR");
         positions.put("Carpenter", "CP");
-
     }
 
     public String generateCustomUserID(Integer facId, String department, String position) {

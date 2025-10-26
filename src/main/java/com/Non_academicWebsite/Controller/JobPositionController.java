@@ -4,6 +4,7 @@ import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.JobPosition;
 import com.Non_academicWebsite.Service.JobPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("api")
+@RequestMapping("api/v1/")
 public class JobPositionController {
 
     @Autowired
@@ -25,7 +26,7 @@ public class JobPositionController {
     @PostMapping("/admin/jobPosition/add")
     public ResponseEntity<List<JobPosition>> add(@RequestBody FacOrDeptDTO facOrDeptDTO,
                                                  @RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(jobPositionService.add(facOrDeptDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(jobPositionService.add(facOrDeptDTO));
     }
 
     @PutMapping("/admin/jobPosition/update/{jobPositionId}")

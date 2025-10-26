@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/auth/maternityLeaveForm")
+@RequestMapping("/api/v1/auth/maternityLeaveForm")
 public class MaternityLeaveFormController {
     @Autowired
     private MaternityLeaveFormService maternityLeaveFormService;

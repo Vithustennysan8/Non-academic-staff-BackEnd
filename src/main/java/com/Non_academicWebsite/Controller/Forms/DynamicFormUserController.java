@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller.Forms;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Service.Forms.DynamicFormUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "api/")
+@RequestMapping(value = "api/v1/")
 public class DynamicFormUserController {
 
     @Autowired
     private DynamicFormUserService dynamicFormUserService;
 
     @GetMapping(value = "/auth/user/DynamicFormUser/getAll")
-    public ResponseEntity<?> getAllFormApplied(@RequestHeader("Authorization") String header){
+    public ResponseEntity<?> getAllFormApplied(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormUserService.getAllFormApplied(header));
     }
 
@@ -41,7 +42,7 @@ public class DynamicFormUserController {
     }
 
     @GetMapping(value = "admin/DynamicFormUser/getAll")
-    public ResponseEntity<?> getAllFormRequests(@RequestHeader("Authorization") String header){
+    public ResponseEntity<?> getAllFormRequests(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormUserService.getAllFormRequests(header));
     }
 }

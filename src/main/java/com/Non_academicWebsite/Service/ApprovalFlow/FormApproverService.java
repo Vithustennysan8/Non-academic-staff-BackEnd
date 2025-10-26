@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Service.ApprovalFlow;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
 import com.Non_academicWebsite.Entity.User;
@@ -23,7 +24,7 @@ public class FormApproverService {
     @Autowired
     private DynamicFormUserService dynamicFormUserService;
 
-    public Object getApprover(Long formId, String header) {
+    public Object getApprover(Long formId, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         List<FormApprover> formApprovers = formApproverRepo.findByFormId(formId).stream()
@@ -32,7 +33,7 @@ public class FormApproverService {
         return null;
     }
 
-    public Object getFormsApprover(String header) {
+    public Object getFormsApprover(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         List<FormApprover> formApprovers = formApproverRepo.findAll().stream()
@@ -44,7 +45,7 @@ public class FormApproverService {
         return null;
     }
 
-    public Object acceptForm(Long approverId, ApprovalDTO approvalDTO, String header) {
+    public Object acceptForm(Long approverId, ApprovalDTO approvalDTO, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         FormApprover formApp = formApproverRepo.findById(approverId).orElse(null);
 
@@ -64,7 +65,7 @@ public class FormApproverService {
         return dynamicFormUserService.getTheFormModified(header, approverId);
     }
 
-    public Object rejectForm(Long approverId, ApprovalDTO approvalDTO, String header) {
+    public Object rejectForm(Long approverId, ApprovalDTO approvalDTO, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         FormApprover formApp = formApproverRepo.findById(approverId).orElse(null);
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/auth/medicalLeaveForm")
+@RequestMapping("/api/v1/auth/medicalLeaveForm")
 public class MedicalLeaveFormController {
     @Autowired
     private MedicalLeaveFormService medicalLeaveFormService;

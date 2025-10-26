@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/auth/paternalLeaveForm")
+@RequestMapping("/api/v1/auth/paternalLeaveForm")
 public class PaternalLeaveFormController {
     @Autowired
     private PaternalLeaveFormService paternalLeaveFormService;

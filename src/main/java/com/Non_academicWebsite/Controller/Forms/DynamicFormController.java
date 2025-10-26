@@ -1,10 +1,12 @@
 package com.Non_academicWebsite.Controller.Forms;
 
-import com.Non_academicWebsite.CustomException.DynamicFormAlreadyExistsException;
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Service.Forms.DynamicFormService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/")
+@RequestMapping(value = "/api/v1/")
 public class DynamicFormController {
 
     @Autowired
@@ -23,18 +25,18 @@ public class DynamicFormController {
     public ResponseEntity<?> createForm(@RequestBody List<FormFieldDTO> formFieldDTOList,
                                         @RequestHeader("Authorization") String header,
                                         @PathVariable("formType") String formType)
-                                        throws DynamicFormAlreadyExistsException {
-        return ResponseEntity.ok(dynamicFormService.createFormField(formFieldDTOList, header, formType));
+            throws ResourceExistsException, ResourceNotFoundException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(dynamicFormService.createFormField(formFieldDTOList, header, formType));
     }
 
     @GetMapping(value = "/auth/user/dynamicForm/get/{form}")
     public ResponseEntity<?> getDynamicForm(@RequestHeader("Authorization") String header,
-                                            @PathVariable("form") String form){
+                                            @PathVariable("form") String form) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getDynamicForm(header, form));
     }
 
     @GetMapping(value = "/admin/dynamicForm/getAll")
-    public ResponseEntity<?> getAllDynamicForms(@RequestHeader("Authorization") String header){
+    public ResponseEntity<?> getAllDynamicForms(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicForms(header));
     }
 
@@ -46,7 +48,7 @@ public class DynamicFormController {
     }
 
     @GetMapping(value = "/auth/user/dynamicForm/getAll")
-    public ResponseEntity<?> getAllDynamicFormsForUser(@RequestHeader("Authorization") String header){
+    public ResponseEntity<?> getAllDynamicFormsForUser(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUser(header));
     }
 
@@ -61,9 +63,9 @@ public class DynamicFormController {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUserById(id));
     }
 
-    @DeleteMapping(value = "/auth/user/dynamicForm/delete/{id}")
+    @DeleteMapping(value = "/admin/dynamicForm/delete/{id}")
     public ResponseEntity<List<DynamicForm>> deleteForm(@PathVariable("id") Long id,
-                                                        @RequestHeader("Authorization") String header) {
+                                                        @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
 
         return ResponseEntity.ok(dynamicFormService.deleteForm(id, header));
     }

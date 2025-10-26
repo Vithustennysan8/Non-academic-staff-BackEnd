@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Service.Forms;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
@@ -38,7 +39,7 @@ public class DynamicFormUserService {
     private UserRepo userRepo;
 
 
-    public Object getAllFormApplied(String header) {
+    public Object getAllFormApplied(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
@@ -63,7 +64,7 @@ public class DynamicFormUserService {
         return dynamicFormUserRepo.findByUserId(id);
     }
 
-    public Object getAllFormRequests(String header) {
+    public Object getAllFormRequests(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         List<FormApprover> approvalForms = formApproverRepo.findByApprover(user.getJobType()) ;
@@ -178,7 +179,7 @@ public class DynamicFormUserService {
 
     }
 
-    public Object getTheFormModified(String header, Long approverId){
+    public Object getTheFormModified(String header, Long approverId) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         FormApprover approvalForm = formApproverRepo.findById(approverId).orElse(null);

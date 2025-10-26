@@ -1,7 +1,7 @@
 package com.Non_academicWebsite.Service.ApprovalFlow;
 
-import com.Non_academicWebsite.CustomException.ApprovalFlowExitsException;
-import com.Non_academicWebsite.CustomException.DynamicFormNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalFlow.ApprovalFlowDTO;
 import com.Non_academicWebsite.Entity.ApprovalFlow.ApprovalFlow;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
@@ -26,7 +26,8 @@ public class ApprovalFlowService {
     @Autowired
     private DynamicFormService dynamicFormService;
 
-    public Object addNewApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header) throws DynamicFormNotFoundException {
+    public Object addNewApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header)
+            throws ResourceExistsException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
@@ -34,7 +35,7 @@ public class ApprovalFlowService {
 
         if(approvalFlowRepo.existsByDynamicFormAndUniqueNameAndDepartmentAndFaculty(dynamicForm.getFormType(),
                 approvalFlowDTO.getUniqueName(), user.getDepartment(), user.getFaculty())) {
-            throw new ApprovalFlowExitsException("Approval flow already exists!!!");
+            throw new ResourceExistsException("Approval flow already exists!!!");
         }
 
         approvalFlowDTO.getApprovalStage().forEach(stage -> {
@@ -55,7 +56,8 @@ public class ApprovalFlowService {
     }
 
     @Transactional
-    public Object updateApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header) throws DynamicFormNotFoundException {
+    public Object updateApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header)
+            throws ResourceExistsException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),
@@ -69,7 +71,8 @@ public class ApprovalFlowService {
          return getAllApprovalFlowsByDepartment(header);
     }
 
-    public Object getApprovalFlowByForm(String dynamicForm, String header) {
+    public Object
+    getApprovalFlowByForm(String dynamicForm, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         List<ApprovalFlow> flows = approvalFlowRepo.findByDynamicFormAndDepartmentAndFaculty(dynamicForm,
                 user.getDepartment(), user.getFaculty());
@@ -105,7 +108,7 @@ public class ApprovalFlowService {
         return distinctFlow.values();
     }
 
-    public Object getAllApprovalFlowsByDepartment(String header) {
+    public Object getAllApprovalFlowsByDepartment(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         List<ApprovalFlow> flows = approvalFlowRepo.findByDepartmentAndFaculty(user.getDepartment(), user.getFaculty());
 
@@ -141,7 +144,7 @@ public class ApprovalFlowService {
     }
 
     @Transactional
-    public Object deleteApprovalFlow(String header, ApprovalFlowDTO approvalFlowDTO) throws DynamicFormNotFoundException {
+    public Object deleteApprovalFlow(String header, ApprovalFlowDTO approvalFlowDTO) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormService.getForm(approvalFlowDTO.getFormType(),

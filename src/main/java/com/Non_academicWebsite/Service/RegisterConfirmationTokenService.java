@@ -1,7 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
@@ -38,14 +38,14 @@ public class RegisterConfirmationTokenService {
         return token;
     }
 
-    public User confirm(String token) throws UserNotFoundException {
+    public User confirm(String token) {
         RegisterConfirmationToken confirmationToken = confirmationTokenRepo.findByToken(token);
         confirmationToken.setConfirmedAt(new Date(System.currentTimeMillis()));
         confirmationTokenRepo.save(confirmationToken);
         return confirmationToken.getUser();
     }
 
-    public List<RegisterConfirmationToken> getVerifyRequests(String header) {
+    public List<RegisterConfirmationToken> getVerifyRequests(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         if(user == null || user.getRole() != Role.ADMIN) {
             return Collections.emptyList();
@@ -54,7 +54,8 @@ public class RegisterConfirmationTokenService {
         return confirmationTokenRepo.findByUserIdPrefixAndVerificationStatus(prefix, false);
     }
 
-    public List<RegisterConfirmationToken> getVerifyAdminRegisterRequests(String header) {
+    public List<RegisterConfirmationToken> getVerifyAdminRegisterRequests(String header)
+            throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         if(user == null || user.getRole() != Role.SUPER_ADMIN) {
             return Collections.emptyList();

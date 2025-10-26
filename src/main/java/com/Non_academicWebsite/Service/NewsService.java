@@ -1,7 +1,7 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.NewsDTO;
 import com.Non_academicWebsite.Entity.News;
 import com.Non_academicWebsite.Entity.Role;
@@ -26,7 +26,8 @@ public class NewsService {
     @Autowired
     private UserRepo userRepo;
 
-    public List<News> add(NewsDTO newsDTO, String header, MultipartFile image) throws UserNotFoundException, IOException {
+    public List<News> add(NewsDTO newsDTO, String header, MultipartFile image)
+            throws IOException, ResourceNotFoundException {
         User user = extractUser(header);
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length()-7);
@@ -43,18 +44,17 @@ public class NewsService {
                 .build();
 
         newsRepo.save(news);
-        return newsRepo.findByUserIdStartingWith(prefix);
+        return newsRepo.findNews(prefix);
     }
 
-    public List<News> get(String header) throws UserNotFoundException {
+    public List<News> get(String header) throws ResourceNotFoundException {
         User user = extractUser(header);
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length()-7);
-        return newsRepo.findByUserIdStartingWith(prefix);
+        return newsRepo.findNews(prefix);
     }
 
-
-    public List<News> update(Integer id, NewsDTO newsDTO, String header, MultipartFile images) throws UserNotFoundException, IOException {
+    public List<News> update(Integer id, NewsDTO newsDTO, String header, MultipartFile images) throws IOException, ResourceNotFoundException {
         User user = extractUser(header);
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length()-7);
@@ -71,16 +71,16 @@ public class NewsService {
                 newsRepo.save(news);
             }
         }
-        return newsRepo.findByUserIdStartingWith(prefix);
+        return newsRepo.findNews(prefix);
     }
 
-    public User extractUser(String Authorization) throws UserNotFoundException {
+    public User extractUser(String Authorization) throws ResourceNotFoundException {
         String token = Authorization.substring(7);
         String email = jwtService.extractUserEmail(token);
-        return userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User is not found!!!"));
+        return userRepo.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User is not found!!!"));
     }
 
-    public List<News> delete(Integer id, String header) throws UserNotFoundException {
+    public List<News> delete(Integer id, String header) throws ResourceNotFoundException {
         User user = extractUser(header);
         String userId = user.getId();
         String prefix = userId.substring(0, userId.length()-7);
@@ -91,6 +91,6 @@ public class NewsService {
                 newsRepo.deleteById(id);
             }
         }
-        return newsRepo.findByUserIdStartingWith(prefix);
+        return newsRepo.findNews(prefix);
     }
 }

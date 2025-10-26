@@ -1,7 +1,6 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.Role;

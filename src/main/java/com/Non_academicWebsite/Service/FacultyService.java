@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Service;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Entity.Role;
@@ -25,7 +26,7 @@ public class FacultyService {
         return facultyRepo.findAll();
     }
 
-    public List<Faculty> addFaculty(FacOrDeptDTO faculty, String header) {
+    public List<Faculty> addFaculty(FacOrDeptDTO faculty, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         if (user.getRole() == Role.ADMIN
                 || user.getRole() == Role.SUPER_ADMIN){
@@ -42,7 +43,7 @@ public class FacultyService {
         throw new IllegalStateException("No permission to add faculty");
     }
 
-    public List<Faculty> updateFaculty(FacOrDeptDTO faculty, String header, Integer facultyId) {
+    public List<Faculty> updateFaculty(FacOrDeptDTO faculty, String header, Integer facultyId) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         Faculty facultyToUpdate = facultyRepo.findById(facultyId).orElseThrow(
@@ -55,7 +56,7 @@ public class FacultyService {
         return facultyRepo.findAll();
     }
 
-    public List<Faculty> deleteFaculty(String header, Integer facultyId) {
+    public List<Faculty> deleteFaculty(String header, Integer facultyId) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         Faculty facultyToDelete = facultyRepo.findById(facultyId).orElseThrow(

@@ -1,7 +1,7 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.Response.AuthenticationResponse;
@@ -14,12 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("api/v1/auth")
 @CrossOrigin
 public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
-
 
     @PostMapping(value = "/signup")
     public ResponseEntity<?> register(@Valid @ModelAttribute RegisterDTO registerDTO,
@@ -29,8 +28,8 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) throws UserNotFoundException,
-                                                                                        UnauthorizedAccessException {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginDTO loginDTO) throws
+            UnauthorizedAccessException, ResourceNotFoundException {
         return ResponseEntity
                 .ok(authenticationService.login(loginDTO));
     }

@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Service;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Entity.Faculty;
@@ -29,7 +30,7 @@ public class DepartmentService {
         return departmentRepo.findAll();
     }
 
-    public List<Department> get(String header) {
+    public List<Department> get(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if (user.getRole() == Role.SUPER_ADMIN){
@@ -39,10 +40,10 @@ public class DepartmentService {
         return departmentRepo.findAllByFacultyId(faculty.getId());
     }
 
-    public List<Department> add(FacOrDeptDTO facOrDeptDTO, String header) {
+    public List<Department> add(FacOrDeptDTO facOrDeptDTO, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        Faculty faculty = facOrDeptDTO.getFaculty().isEmpty() ? facultyRepo.findByFacultyName(user.getFaculty()):
+        Faculty faculty = facOrDeptDTO.getFaculty() == null ? facultyRepo.findByFacultyName(user.getFaculty()):
                 facultyRepo.findByFacultyName(facOrDeptDTO.getFaculty());
 
 
@@ -62,7 +63,7 @@ public class DepartmentService {
         return get(header);
     }
 
-    public List<Department> update(FacOrDeptDTO facOrDeptDTO, String header, Integer departmentId) {
+    public List<Department> update(FacOrDeptDTO facOrDeptDTO, String header, Integer departmentId) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         Faculty faculty = facultyRepo.findByFacultyName(user.getFaculty());
@@ -79,7 +80,7 @@ public class DepartmentService {
         return get(header);
     }
 
-    public List<Department> delete(String header, Integer departmentId) {
+    public List<Department> delete(String header, Integer departmentId) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         Faculty faculty = facultyRepo.findByFacultyName(user.getFaculty());

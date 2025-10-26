@@ -1,6 +1,6 @@
 package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.CustomException.DynamicFormNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Entity.ApprovalFlow.ApprovalFlow;
 import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
@@ -44,7 +44,7 @@ public class DynamicFormDetailService {
 
 
     public Object addDynamicFormDetails(String header, Map<String, String> parameters, List<MultipartFile> files,
-                                        String form, String flow) throws DynamicFormNotFoundException, UnauthorizedAccessException {
+                                        String form, String flow) throws UnauthorizedAccessException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         if (user.getRole() != Role.USER){
             throw new UnauthorizedAccessException("User only can requests leaves!");

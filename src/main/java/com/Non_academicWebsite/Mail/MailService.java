@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,12 @@ import java.util.Properties;
 @Service
 public class MailService {
 
+    @Value("${spring.mail.username}")
+    private String hostMail;
+
+    @Value("${spring.mail.password}")
+    private String mailAppPassword;
+
     @Autowired
     private JavaMailSender mailSender;
     private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
@@ -25,8 +32,6 @@ public class MailService {
     public void sendMail( String to, String url, String employeeName, String formType,
                          String status , String approverName) {
 
-        // TODO : system mail address should add
-        String systemMail = "";
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -35,7 +40,8 @@ public class MailService {
             helper.setText(emailContent, true);
             helper.setTo(to);
             helper.setSubject("Verify the register");
-            helper.setFrom(systemMail);
+            helper.setFrom(hostMail);
+
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
@@ -47,7 +53,6 @@ public class MailService {
     @Async
     public void sendMailForRegister(String to, String url, User user, String approver) {
 
-        String systemMail = "vithustennysan20@gmail.com";
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -56,7 +61,7 @@ public class MailService {
             helper.setText(emailContent, true);
             helper.setTo(to);
             helper.setSubject("Verify the register");
-            helper.setFrom(systemMail);
+            helper.setFrom(hostMail);
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
@@ -67,7 +72,7 @@ public class MailService {
 
     @Async
     public void sendMailForOTP(Integer OTP, String Name, String to){
-        String systemMail = "vithustennysan20@gmail.com";
+
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -76,7 +81,7 @@ public class MailService {
             helper.setText(emailContent, true);
             helper.setTo(to);
             helper.setSubject("OTP Verification");
-            helper.setFrom(systemMail);
+            helper.setFrom(hostMail);
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {

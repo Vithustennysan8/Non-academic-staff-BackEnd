@@ -11,81 +11,35 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Map<String, Object>> handleUserAlreadyExitsException(UserAlreadyExistsException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "User already found!");
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    @ExceptionHandler(ResourceExistsException.class)
+    public ResponseEntity<ApiError> handleResourceExitsException(ResourceExistsException ex){
+        return new ResponseEntity<>(
+                new ApiError(HttpStatus.CONFLICT.value(), ex.getMessage()),
+                HttpStatus.CONFLICT
+        );
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleUserNotFoundException(UserNotFoundException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.NOT_FOUND);
-        response.put("error", "User not found!!!");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(ForumNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleForumNotFoundException(ForumNotFoundException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.NOT_FOUND);
-        response.put("error", "User not found!!!");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFoundException(ResourceNotFoundException ex){
+        return new ResponseEntity<>(
+                new ApiError(HttpStatus.NOT_FOUND.value(), ex.getMessage()),
+                HttpStatus.NOT_FOUND
+        );
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleFormUserProcessException(FormUnderProcessException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.BAD_REQUEST);
-        response.put("error", "Form under process can't be deleted");
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiError> handleFormUserProcessException(FormUnderProcessException ex){
+        return new ResponseEntity<>(
+                new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleApprovalFlowExitsException(ApprovalFlowExitsException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.CONFLICT);
-        response.put("error", "Approval flow already exists!");
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleDynamicFormAlreadyExistsException(DynamicFormAlreadyExistsException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.CONFLICT);
-        response.put("error", "Dynamic form already exists!");
-
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleDynamicFormNotFoundException(DynamicFormNotFoundException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.NOT_FOUND);
-        response.put("error", "Dynamic form not exists!");
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", HttpStatus.FORBIDDEN);
-        response.put("error", "User don't have the permission!");
-
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    public ResponseEntity<ApiError> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
+        return new ResponseEntity<>(
+                new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage()),
+                HttpStatus.FORBIDDEN
+        );
     }
 }

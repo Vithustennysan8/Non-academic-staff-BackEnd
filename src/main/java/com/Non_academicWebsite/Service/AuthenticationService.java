@@ -1,9 +1,9 @@
 package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
-import com.Non_academicWebsite.CustomException.UserAlreadyExistsException;
-import com.Non_academicWebsite.CustomException.UserNotFoundException;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
@@ -51,9 +51,9 @@ public class AuthenticationService {
     private ExtractUserService extractUserService;
 
     @Transactional
-    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, UserAlreadyExistsException {
+    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, ResourceExistsException {
         if (userRepo.existsByEmail(registerDTO.getEmail())) {
-            throw new UserAlreadyExistsException("User Already found with "+registerDTO.getEmail()+" emailId!!!");
+            throw new ResourceExistsException("User Already found with "+registerDTO.getEmail()+" emailId!!!");
         }
         String customId = userIdGenerator.generateCustomUserID(registerDTO.getFacultyId(), registerDTO.getDepartment(), registerDTO.getJob_type());
         Faculty fac = facultyService.getFac(registerDTO.getFacultyId());
@@ -104,9 +104,9 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse login(LoginDTO loginDTO) throws UserNotFoundException, UnauthorizedAccessException {
+    public AuthenticationResponse login(LoginDTO loginDTO) throws UnauthorizedAccessException, ResourceNotFoundException {
         User user = userRepo.findByEmail(loginDTO.getEmail())
-                .orElseThrow(()-> new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!"));
+                .orElseThrow(()-> new ResourceNotFoundException("User not found with " + loginDTO.getEmail() + " this email!!!"));
 
         if (!user.isVerified()){
              throw new UnauthorizedAccessException("User registration not verified yet!");
@@ -120,7 +120,7 @@ public class AuthenticationService {
                     )
             );
         }catch (Exception ex){
-            throw new UserNotFoundException("User not found with "+loginDTO.getEmail()+" this email!!!");
+            throw new ResourceNotFoundException("username or password is incorrect");
         }
 
 
@@ -129,11 +129,13 @@ public class AuthenticationService {
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
+                .user(user)
                 .message("logged")
                 .build();
     }
 
-    public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header) throws UserNotFoundException {
+    public List<RegisterConfirmationToken> confirmUser(String confirmationToken, String header)
+            throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {

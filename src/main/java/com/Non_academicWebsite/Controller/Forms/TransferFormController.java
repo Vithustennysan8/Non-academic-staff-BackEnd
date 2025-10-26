@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/auth/transferForm")
+@RequestMapping(value = "/api/v1/auth/transferForm")
 public class TransferFormController {
     @Autowired
     private TransferFormService transferFormService;

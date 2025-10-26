@@ -1,7 +1,7 @@
 package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.CustomException.DynamicFormAlreadyExistsException;
-import com.Non_academicWebsite.CustomException.DynamicFormNotFoundException;
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Entity.Forms.FormField;
@@ -34,7 +34,7 @@ public class DynamicFormService {
 
 
     public Object createFormField(List<FormFieldDTO> formFieldDTOList, String header, String formType)
-            throws DynamicFormAlreadyExistsException {
+            throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         // create the new dynamic form for the form fields
@@ -68,11 +68,11 @@ public class DynamicFormService {
     }
 
     public DynamicForm createForm(String formType, String department, String faculty)
-            throws DynamicFormAlreadyExistsException {
+            throws ResourceExistsException {
 
         if(dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType, department,
                 faculty, true)){
-            throw new DynamicFormAlreadyExistsException("Dynamic form already exists!!!");
+            throw new ResourceExistsException("Dynamic form already exists!!!");
         }
         DynamicForm dynamicForm = DynamicForm.builder()
                 .formType(formType)
@@ -84,16 +84,16 @@ public class DynamicFormService {
         return dynamicForm;
     }
 
-    public DynamicForm getForm(String formType, String department, String faculty) throws DynamicFormNotFoundException {
+    public DynamicForm getForm(String formType, String department, String faculty) throws ResourceNotFoundException {
         if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType,
                 department, faculty, true)){
-            throw new DynamicFormNotFoundException("dynamic form not found");
+            throw new ResourceNotFoundException("dynamic form not found");
         }
         return dynamicFormRepo.findByFormTypeAndDepartmentAndFacultyAndIsAvailable(formType,
                 department, faculty, true);
     }
 
-    public Object getDynamicForm(String header, String form) {
+    public Object getDynamicForm(String header, String form) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(form, user.getDepartment(),
@@ -134,14 +134,14 @@ public class DynamicFormService {
         return responseForm;
     }
 
-    public Object getAllDynamicForms(String header) {
+    public Object getAllDynamicForms(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         return dynamicFormRepo.findAllByDepartmentAndFaculty(user.getDepartment(),
                 user.getFaculty());
     }
 
-    public List<DynamicForm> deleteForm(Long id, String header) {
+    public List<DynamicForm> deleteForm(Long id, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         DynamicForm dynamicForm = dynamicFormRepo.findById(id).orElse(null);
@@ -157,7 +157,7 @@ public class DynamicFormService {
         return dynamicFormRepo.findAllByDepartmentAndFaculty(user.getDepartment(), user.getFaculty());
     }
 
-    public Object getAllDynamicFormsForUser(String header) {
+    public Object getAllDynamicFormsForUser(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         return dynamicFormRepo.findAllByDepartmentAndFacultyAndIsAvailable(user.getDepartment(),
