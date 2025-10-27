@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Controller.Forms;
 
 import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.Forms.TransferFormDTO;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Service.Forms.TransferFormService;
@@ -20,13 +21,14 @@ public class TransferFormController {
     @PostMapping(value = "/add")
     public ResponseEntity<TransferForm> addForm(@RequestHeader("Authorization") String header,
                                                     @ModelAttribute TransferFormDTO transferFormDTO,
-                                                    @RequestParam(value = "files", required = false) MultipartFile file) throws IOException {
+                                                    @RequestParam(value = "files", required = false) MultipartFile file)
+            throws IOException, ResourceNotFoundException {
         return ResponseEntity.ok(transferFormService.add(header, transferFormDTO, file));
 
     }
 
     @GetMapping(value = "/getByDepartment")
-    public ResponseEntity<List<TransferForm>> getForms(@RequestHeader("Authorization") String header){
+    public ResponseEntity<List<TransferForm>> getForms(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(transferFormService.getForms(header));
     }
 

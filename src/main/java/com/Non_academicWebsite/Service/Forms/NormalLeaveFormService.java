@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
@@ -12,6 +13,7 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +29,14 @@ public class NormalLeaveFormService {
     private UserRepo userRepo;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private ExtractUserService extractUserService;
     private final String url = "http://localhost:5173/notifications";
 
 
-    public NormalLeaveForm add(String header, NormalLeaveFormDTO normalLeaveFormDTO) throws UnauthorizedAccessException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new NullPointerException("User is not found!"));
+    public NormalLeaveForm add(String header, NormalLeaveFormDTO normalLeaveFormDTO)
+            throws UnauthorizedAccessException, ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if (user.getRole() != Role.USER){
             throw new UnauthorizedAccessException("User only can request leaves");
@@ -68,10 +71,8 @@ public class NormalLeaveFormService {
         return normalLeaveFormRepo.save(normalLeaveForm);
     }
 
-    public Object getNormalLeaveForms(ReqFormsDTO reqFormsDTO, String header) {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public Object getNormalLeaveForms(ReqFormsDTO reqFormsDTO, String header) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {
             return Collections.emptyList();
@@ -91,10 +92,8 @@ public class NormalLeaveFormService {
         return normalLeaveFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
     }
 
-    public List<NormalLeaveForm> getForms(String header) {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public List<NormalLeaveForm> getForms(String header) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {
             return Collections.emptyList();
@@ -105,10 +104,8 @@ public class NormalLeaveFormService {
         return normalLeaveFormRepo.findByUserIdStartingWith(prefix);
     }
 
-    public List<NormalLeaveForm> getFormsOfUser(String header) {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public List<NormalLeaveForm> getFormsOfUser(String header) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {
             return Collections.emptyList();
@@ -165,10 +162,8 @@ public class NormalLeaveFormService {
         return "delete success";
     }
 
-    public String deleteByUser(Long id, String header) throws FormUnderProcessException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public String deleteByUser(Long id, String header) throws FormUnderProcessException, ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         NormalLeaveForm normalLeaveForm = normalLeaveFormRepo.findById(id).orElse(null);
 
@@ -188,5 +183,14 @@ public class NormalLeaveFormService {
 
     public Collection<NormalLeaveForm> getFormsOfUserById(String id) {
         return normalLeaveFormRepo.findByUserId(id);
+    }
+
+    public List<NormalLeaveForm> getFormsPending(String header) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        if(user == null) {
+            return Collections.emptyList();
+        }
+        return normalLeaveFormRepo.findByUserIdAndStatus(user.getId(), "pending");
     }
 }

@@ -1,6 +1,7 @@
 package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
@@ -44,7 +45,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetNormalLeaveForms_UserNotFound() {
+    void testGetNormalLeaveForms_UserNotFound() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
 
@@ -60,7 +61,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetNormalLeaveForms_NoDepartmentNoFaculty() {
+    void testGetNormalLeaveForms_NoDepartmentNoFaculty() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
         User user = new User();
@@ -80,7 +81,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetNormalLeaveForms_FacultyNull() {
+    void testGetNormalLeaveForms_FacultyNull() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
 
@@ -105,7 +106,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetNormalLeaveForms_DepartmentNull() {
+    void testGetNormalLeaveForms_DepartmentNull() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
         User user = new User();
@@ -127,7 +128,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetNormalLeaveForms_BothFacultyAndDepartmentPresent() {
+    void testGetNormalLeaveForms_BothFacultyAndDepartmentPresent() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
         User user = new User();
@@ -151,7 +152,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetForms_UserNotFound() {
+    void testGetForms_UserNotFound() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
 
@@ -166,7 +167,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetForms_ValidUser() {
+    void testGetForms_ValidUser() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
         User user = new User();
@@ -188,7 +189,7 @@ class NormalLeaveFormServiceTest {
     }
 
     @Test
-    void testGetForms_EmptyLeaveForms() {
+    void testGetForms_EmptyLeaveForms() throws ResourceNotFoundException {
         String token = "Bearer some.jwt.token";
         String email = "test@example.com";
         User user = new User();

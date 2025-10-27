@@ -1,6 +1,8 @@
 package com.Non_academicWebsite.Controller.Forms;
 
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Service.Forms.DynamicFormUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +46,17 @@ public class DynamicFormUserController {
     @GetMapping(value = "admin/DynamicFormUser/getAll")
     public ResponseEntity<?> getAllFormRequests(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormUserService.getAllFormRequests(header));
+    }
+
+    @DeleteMapping("/user/DynamicFormUser/{id}")
+    public ResponseEntity<?> deleteFromByUser(@RequestHeader("Authorization") String header, @PathVariable("id") Long id)
+            throws ResourceNotFoundException, UnauthorizedAccessException, FormUnderProcessException {
+        return ResponseEntity.ok(dynamicFormUserService.deleteFormByUser(header, id));
+    }
+
+    @DeleteMapping("/admin/DynamicFormUser/{id}")
+    public ResponseEntity<?> deleteFrom(@RequestHeader("Authorization") String header, @PathVariable("id") Long id)
+            throws ResourceNotFoundException, FormUnderProcessException, UnauthorizedAccessException {
+        return ResponseEntity.ok(dynamicFormUserService.deleteForm(header, id));
     }
 }

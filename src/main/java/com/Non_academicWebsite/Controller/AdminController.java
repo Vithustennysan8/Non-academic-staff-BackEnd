@@ -70,14 +70,14 @@ public class AdminController {
     // used to retrieve the all NormalLeaveForm
     @PostMapping(value = "/req/normalLeaveForm")
     public ResponseEntity<?> getReqNormalLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
-                                                   @RequestHeader("Authorization") String header){
+                                                   @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.CREATED).body(normalLeaveFormService.getNormalLeaveForms(reqFormsDTO, header));
     }
 
     // used to retrieve the all TransferForm
     @PostMapping(value = "/req/transferForm")
     public ResponseEntity<?> getReqTransferForm(@RequestBody ReqFormsDTO reqFormsDTO,
-                                                 @RequestHeader("Authorization") String header){
+                                                 @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.status(HttpStatus.CREATED).body(transferFormService.getTransferForms(reqFormsDTO, header));
     }
 

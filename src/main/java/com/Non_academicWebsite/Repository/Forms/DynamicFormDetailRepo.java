@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface DynamicFormDetailRepo extends JpaRepository<DynamicFormDetail, Long> {
     List<DynamicFormDetail> findByDynamicFormUserId(Long id);
+    void deleteAllByDynamicFormUserId(Long id);
 }

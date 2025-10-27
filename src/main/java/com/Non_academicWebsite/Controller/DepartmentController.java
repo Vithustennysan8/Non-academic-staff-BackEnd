@@ -21,7 +21,7 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @GetMapping(value = "/user/department/getAll")
+    @GetMapping(value = "/auth/user/department/getAll")
     public ResponseEntity<List<Department>> getAll() {
         return ResponseEntity.ok(departmentService.getAll());
     }

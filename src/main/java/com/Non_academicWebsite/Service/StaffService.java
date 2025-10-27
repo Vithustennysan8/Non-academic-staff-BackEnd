@@ -162,13 +162,6 @@ public class StaffService {
         return "delete success";
     }
 
-    public List<Object> getAllAppliedLeaveForms(String header) {
-        List<Object> forms = new ArrayList<>();
-        forms.addAll(normalLeaveFormService.getFormsOfUser(header));
-
-        return forms;
-    }
-
     public List<TransferForm> getAllTransferForms(String header) {
         return transferFormService.getFormsOfUser(header);
     }

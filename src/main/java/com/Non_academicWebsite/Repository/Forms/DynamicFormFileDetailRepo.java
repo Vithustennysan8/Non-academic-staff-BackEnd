@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DynamicFormFileDetailRepo extends JpaRepository<DynamicFormFileDetail, Long> {
     DynamicFormFileDetail findByDynamicFormUserId(Long id);
+    void deleteAllByDynamicFormUserId(Long id);
 }

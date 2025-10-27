@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.FormUnderProcessException;
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.Forms.TransferFormDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
@@ -10,6 +11,7 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.TransferFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,12 +32,12 @@ public class TransferFormService {
     private UserRepo userRepo;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private ExtractUserService extractUserService;
     private final String url = "http://localhost:5173/notifications";
 
-    public TransferForm add(String header, TransferFormDTO transferFormDTO, MultipartFile file) throws IOException {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public TransferForm add(String header, TransferFormDTO transferFormDTO, MultipartFile file) throws IOException, ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         TransferForm transferForm = TransferForm.builder()
                 .designation(transferFormDTO.getDesignation())
@@ -64,10 +66,8 @@ public class TransferFormService {
         return transferFormRepo.save(transferForm);
     }
 
-    public List<TransferForm> getTransferForms(ReqFormsDTO reqFormsDTO, String header) {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public List<TransferForm> getTransferForms(ReqFormsDTO reqFormsDTO, String header) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {
             return Collections.emptyList();
@@ -87,10 +87,8 @@ public class TransferFormService {
         return transferFormRepo.findByFacultyAndDepartment(reqFormsDTO.getFaculty(), reqFormsDTO.getDepartment());
     }
 
-    public List<TransferForm> getForms(String header) {
-        String token = header.substring(7);
-        String email = jwtService.extractUserEmail(token);
-        User user = userRepo.findByEmail(email).orElse(null);
+    public List<TransferForm> getForms(String header) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         if(user == null) {
             return Collections.emptyList();

@@ -20,14 +20,14 @@ import java.util.Date;
 public class FormApprover {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
-    public Long formId;  // dynamic form id
-    public String formFlowType;
-    public String approver;
-    public String approverId;
-    public int approverOrder;
-    public String approverStatus;
+    private Long id;
+    private Long formId;  // dynamicFormUser id
+    private String formFlowType;
+    private String approver;
+    private String approverId;
+    private int approverOrder;
+    private String approverStatus;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    public Date approvalAt;
-    public String approvalDescription;
+    private Date approvalAt;
+    private String approvalDescription;
 }

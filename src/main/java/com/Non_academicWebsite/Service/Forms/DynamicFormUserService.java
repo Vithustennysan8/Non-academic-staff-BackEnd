@@ -1,10 +1,13 @@
 package com.Non_academicWebsite.Service.Forms;
 
+import com.Non_academicWebsite.CustomException.FormUnderProcessException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormUser;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormDetailRepo;
@@ -12,6 +15,7 @@ import com.Non_academicWebsite.Repository.Forms.DynamicFormFileDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormUserRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -287,5 +291,56 @@ public class DynamicFormUserService {
 
     public DynamicFormFileDetail generatePdf(Long id) {
         return dynamicFormFileDetailRepo.findByDynamicFormUserId(id);
+    }
+
+    @Transactional
+    public Object deleteFormByUser(String header, Long id) throws ResourceNotFoundException, UnauthorizedAccessException,
+            FormUnderProcessException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Form not found"));
+
+        if(!Objects.equals(dynamicFormUser.getUser().getId(), user.getId())){
+            throw new UnauthorizedAccessException("Permission denied");
+        }
+
+        FormApprover formApprover = formApproverRepo.findByFormIdAndApproverOrder(dynamicFormUser.getId(), 1);
+        if(formApprover == null){
+            throw new ResourceNotFoundException("Aprrover flow issue");
+        }
+
+        if(Objects.equals(formApprover.getApproverStatus(), "Accepted")){
+            throw new FormUnderProcessException("Form under process, can't delete this form");
+        }
+
+        formApproverRepo.deleteAllByFormId(dynamicFormUser.getDynamicForm().getId());
+        dynamicFormDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
+        dynamicFormFileDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
+        dynamicFormUserRepo.delete(dynamicFormUser);
+        return "Success";
+    }
+
+    @Transactional
+    public Object deleteForm(String header, Long id) throws ResourceNotFoundException, UnauthorizedAccessException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Form not found"));
+
+        if(user.getRole() == Role.USER){
+            throw new UnauthorizedAccessException("Permission denied");
+        }
+
+        FormApprover formApprover = formApproverRepo.findByFormIdAndApproverOrder(dynamicFormUser.getId(), 1);
+        if(formApprover == null){
+            throw new ResourceNotFoundException("Aprrover flow issue");
+        }
+
+        formApproverRepo.deleteAllByFormId(dynamicFormUser.getDynamicForm().getId());
+        dynamicFormDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
+        dynamicFormFileDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
+        dynamicFormUserRepo.delete(dynamicFormUser);
+        return "Success";
     }
 }

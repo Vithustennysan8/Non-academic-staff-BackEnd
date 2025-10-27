@@ -21,7 +21,7 @@ public class FacultyController {
     @Autowired
     private FacultyService facultyService;
 
-    @GetMapping("/user/faculty/getAll")
+    @GetMapping("/auth/user/faculty/getAll")
     public ResponseEntity<List<Faculty>> getFaculty(){
         return ResponseEntity.ok(facultyService.getFaculties());
     }

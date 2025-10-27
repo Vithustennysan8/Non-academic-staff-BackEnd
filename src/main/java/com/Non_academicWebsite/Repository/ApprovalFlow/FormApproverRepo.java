@@ -19,4 +19,8 @@ public interface FormApproverRepo extends JpaRepository<FormApprover, Long> {
     boolean existsByFormIdAndApproverOrderAndApproverStatus(Long formId, int i, String accepted);
 
     FormApprover findTopByFormIdOrderByApproverOrderDesc(Long formId);
+
+    FormApprover findByFormIdAndApproverOrder(Long id, int i);
+
+    void deleteAllByFormId(Long id);
 }

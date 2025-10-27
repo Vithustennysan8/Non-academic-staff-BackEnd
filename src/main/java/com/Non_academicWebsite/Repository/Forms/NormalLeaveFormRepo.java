@@ -28,7 +28,6 @@ public interface NormalLeaveFormRepo extends JpaRepository<NormalLeaveForm, Long
     List<NormalLeaveForm> findByUserId(String id);
     List<NormalLeaveForm> findByUserIdStartingWithAndHeadStatus(String prefix, String accepted);
     void deleteByUserId(String userId);
-
     boolean existsByUserId(String userId);
-
+    List<NormalLeaveForm> findByUserIdAndStatus(String id, String pending);
 }

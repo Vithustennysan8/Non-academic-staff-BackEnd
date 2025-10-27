@@ -20,7 +20,7 @@ public class JobPositionController {
     @Autowired
     private JobPositionService jobPositionService;
 
-    @GetMapping("/user/jobPosition/get")
+    @GetMapping("/auth/user/jobPosition/get")
     public ResponseEntity<List<JobPosition>> get(){
         return ResponseEntity.ok(jobPositionService.get());
     }

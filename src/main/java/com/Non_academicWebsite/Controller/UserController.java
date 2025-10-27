@@ -73,11 +73,6 @@ public class UserController {
         return ResponseEntity.ok(staffService.deleteAccount(header, deleteAccountDTO));
     }
 
-    @GetMapping("/user/leaveForms")
-    public ResponseEntity<?> getAllAppliedLeaveForms(@RequestHeader("Authorization") String header){
-        return ResponseEntity.ok(staffService.getAllAppliedLeaveForms(header));
-    }
-
     @GetMapping("/user/leaveFormsById/{id}")
     public ResponseEntity<?> getAllAppliedLeaveFormsById(@PathVariable("id") String id) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getAllAppliedLeaveFormsById(id));
