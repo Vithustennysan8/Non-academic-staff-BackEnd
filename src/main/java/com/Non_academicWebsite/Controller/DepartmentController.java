@@ -1,6 +1,8 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Service.DepartmentService;
@@ -32,20 +34,20 @@ public class DepartmentController {
 
     @PostMapping(value = "/admin/department/add")
     public ResponseEntity<List<Department>> add(@RequestBody FacOrDeptDTO facOrDeptDTO,
-                                                @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+                                                @RequestHeader("Authorization") String header) throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.status(HttpStatus.CREATED).body(departmentService.add(facOrDeptDTO, header));
     }
 
     @PutMapping(value = "/admin/department/update/{departmentId}")
     public ResponseEntity<List<Department>> update(@PathVariable("departmentId") Integer departmentId,
                                                 @RequestBody FacOrDeptDTO facOrDeptDTO,
-                                                @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+                                                @RequestHeader("Authorization") String header) throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.ok(departmentService.update(facOrDeptDTO, header, departmentId));
     }
 
     @DeleteMapping(value = "/admin/department/delete/{departmentId}")
     public ResponseEntity<List<Department>> delete(@PathVariable("departmentId") Integer departmentId,
-                                                @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+                                                @RequestHeader("Authorization") String header) throws ResourceNotFoundException, UnauthorizedAccessException {
         return ResponseEntity.ok(departmentService.delete(header, departmentId));
     }
 }

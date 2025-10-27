@@ -1,6 +1,5 @@
 package com.Non_academicWebsite.Repository.Forms;
 
-import com.Non_academicWebsite.Entity.Forms.AccidentLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

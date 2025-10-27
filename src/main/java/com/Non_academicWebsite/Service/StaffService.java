@@ -42,14 +42,6 @@ public class StaffService {
     @Autowired
     private NormalLeaveFormService normalLeaveFormService;
     @Autowired
-    private AccidentLeaveFormService accidentLeaveFormService;
-    @Autowired
-    private PaternalLeaveFormService paternalLeaveFormService;
-    @Autowired
-    private MaternityLeaveFormService maternityLeaveFormService;
-    @Autowired
-    private MedicalLeaveFormService medicalLeaveFormService;
-    @Autowired
     private TransferFormService transferFormService;
     @Autowired
     private OtpConfirmationService otpConfirmationService;
@@ -166,10 +158,6 @@ public class StaffService {
         forumRepo.deleteByUserId(user.getId());
         registerConfirmationTokenRepo.deleteByUserId(user.getId());
         normalLeaveFormService.deleteForm(user.getId());
-        accidentLeaveFormService.deleteForm(user.getId());
-        paternalLeaveFormService.deleteForm(user.getId());
-        maternityLeaveFormService.deleteForm(user.getId());
-        medicalLeaveFormService.deleteForm(user.getId());
         userRepo.delete(user);
         return "delete success";
     }
@@ -177,10 +165,6 @@ public class StaffService {
     public List<Object> getAllAppliedLeaveForms(String header) {
         List<Object> forms = new ArrayList<>();
         forms.addAll(normalLeaveFormService.getFormsOfUser(header));
-        forms.addAll(accidentLeaveFormService.getFormsOfUser(header));
-        forms.addAll(paternalLeaveFormService.getFormsOfUser(header));
-        forms.addAll(maternityLeaveFormService.getFormsOfUser(header));
-        forms.addAll(medicalLeaveFormService.getFormsOfUser(header));
 
         return forms;
     }

@@ -2,10 +2,12 @@ package com.Non_academicWebsite.Service.Forms;
 
 import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Entity.Forms.FormField;
 import com.Non_academicWebsite.Entity.Forms.FormOption;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormRepo;
 import com.Non_academicWebsite.Repository.Forms.FormFieldRepo;
@@ -98,7 +100,7 @@ public class DynamicFormService {
 
         if(!dynamicFormRepo.existsByFormTypeAndDepartmentAndFacultyAndIsAvailable(form, user.getDepartment(),
                 user.getFaculty(), true)){
-            return "There is no dynamic form";
+            throw new ResourceNotFoundException("There is no dynamic form");
         }
         DynamicForm dynamicForm = dynamicFormRepo.findByFormTypeAndDepartmentAndFacultyAndIsAvailable(form,
                 user.getDepartment(), user.getFaculty(), true);
@@ -141,13 +143,15 @@ public class DynamicFormService {
                 user.getFaculty());
     }
 
-    public List<DynamicForm> deleteForm(Long id, String header) throws ResourceNotFoundException {
+    public List<DynamicForm> deleteForm(Long id, String header) throws ResourceNotFoundException, UnauthorizedAccessException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        DynamicForm dynamicForm = dynamicFormRepo.findById(id).orElse(null);
-        if(dynamicForm == null || !dynamicForm.getDepartment().equals(user.getDepartment())
-                ||!dynamicForm.getFaculty().equals(user.getFaculty())) {
-            throw new RuntimeException( "You do not have permission to delete this dynamic form");
+        DynamicForm dynamicForm = dynamicFormRepo.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Form not found"));
+
+        if( user.getRole() != Role.USER || (!dynamicForm.getDepartment().equals(user.getDepartment())
+                ||!dynamicForm.getFaculty().equals(user.getFaculty()))) {
+            throw new UnauthorizedAccessException( "You do not have permission to delete this dynamic form");
         }
 
         // make sure it is not available it seems to be unavailable/ deleted
@@ -164,8 +168,8 @@ public class DynamicFormService {
                 user.getFaculty(), true);
     }
 
-    public Object getAllDynamicFormsForUserById(String id) {
-        User user = userRepo.findById(id).orElseThrow(() -> new UsernameNotFoundException("User " + id + " does not exist"));
+    public Object getAllDynamicFormsForUserById(String id) throws ResourceNotFoundException {
+        User user = userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User " + id + " does not exist"));
 
         List<DynamicForm> forms =  dynamicFormRepo.findAllByDepartmentAndFacultyAndIsAvailable(user.getDepartment(),
                 user.getFaculty(), true);

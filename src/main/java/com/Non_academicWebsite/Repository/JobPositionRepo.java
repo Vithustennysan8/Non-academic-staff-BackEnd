@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface JobPositionRepo extends JpaRepository<JobPosition, Integer> {
     Optional<JobPosition> findByJobPositionName(String position);
+    boolean existsByJobPositionName(String name);
+    boolean existsByAlias(String alias);
 }

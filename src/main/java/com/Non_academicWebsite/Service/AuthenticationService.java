@@ -51,7 +51,7 @@ public class AuthenticationService {
     private ExtractUserService extractUserService;
 
     @Transactional
-    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, ResourceExistsException {
+    public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, ResourceExistsException, ResourceNotFoundException {
         if (userRepo.existsByEmail(registerDTO.getEmail())) {
             throw new ResourceExistsException("User Already found with "+registerDTO.getEmail()+" emailId!!!");
         }
@@ -97,8 +97,6 @@ public class AuthenticationService {
 
         String confirmationToken = confirmationTokenService.createToken(user);
         System.out.println(confirmationToken);
-
-        String url = "http://localhost:8080/api/auth/verify?token=" + confirmationToken;
 
         return true;
     }
@@ -147,6 +145,7 @@ public class AuthenticationService {
             if (Role.ADMIN == user.getRole() || Role.SUPER_ADMIN == user.getRole()){
                 requestedUser.setVerified(true);
                 userRepo.save(requestedUser);
+//              // TODO: change the url to the frontEnd url
                 mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser,
                         user.getFirst_name()+" "+user.getLast_name());
             }else {

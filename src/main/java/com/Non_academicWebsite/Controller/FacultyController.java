@@ -1,6 +1,8 @@
 package com.Non_academicWebsite.Controller;
 
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Service.FacultyService;
@@ -26,7 +28,7 @@ public class FacultyController {
 
     @PostMapping("/admin/faculty/add")
     public ResponseEntity<List<Faculty>> addFaculty(@RequestBody FacOrDeptDTO faculty,
-                                              @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+                                              @RequestHeader("Authorization") String header) throws ResourceNotFoundException, ResourceExistsException, UnauthorizedAccessException {
         return ResponseEntity.status(HttpStatus.CREATED).body(facultyService.addFaculty(faculty, header));
     }
 

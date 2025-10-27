@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FacultyRepo extends JpaRepository<Faculty, Integer> {
     Faculty findByFacultyName(String faculty);
+    boolean existsByFacultyName(String name);
+    boolean existsByAlias(String alias);
 }

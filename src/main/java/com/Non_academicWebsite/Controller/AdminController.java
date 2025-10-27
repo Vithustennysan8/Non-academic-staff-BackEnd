@@ -3,9 +3,6 @@ package com.Non_academicWebsite.Controller;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalDTO;
 import com.Non_academicWebsite.DTO.ReqFormsDTO;
-import com.Non_academicWebsite.Entity.Forms.MaternityLeaveForm;
-import com.Non_academicWebsite.Entity.Forms.MedicalLeaveForm;
-import com.Non_academicWebsite.Entity.Forms.PaternalLeaveForm;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
 import com.Non_academicWebsite.Service.AdminService;
@@ -25,14 +22,6 @@ import java.util.List;
 public class AdminController {
     @Autowired
     private NormalLeaveFormService normalLeaveFormService;
-    @Autowired
-    private AccidentLeaveFormService accidentLeaveFormService;
-    @Autowired
-    private PaternalLeaveFormService paternalLeaveFormService;
-    @Autowired
-    private MaternityLeaveFormService maternityLeaveFormService;
-    @Autowired
-    private MedicalLeaveFormService medicalLeaveFormService;
     @Autowired
     private TransferFormService transferFormService;
     @Autowired
@@ -85,31 +74,6 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(normalLeaveFormService.getNormalLeaveForms(reqFormsDTO, header));
     }
 
-    // used to retrieve the all AccidentLeaveForm
-    @PostMapping(value = "/req/accidentLeaveForm")
-    public ResponseEntity<?> getReqAccidentLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
-                                                   @RequestHeader("Authorization") String header){
-        return ResponseEntity.status(HttpStatus.CREATED).body(accidentLeaveFormService.getAccidentLeaveForms(reqFormsDTO, header));
-    }
-
-    @PostMapping(value = "/req/paternalLeaveForm")
-    public ResponseEntity<List<PaternalLeaveForm>> getReqPaternalLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
-                                                                           @RequestHeader("Authorization") String header){
-        return ResponseEntity.status(HttpStatus.CREATED).body(paternalLeaveFormService.getPaternalLeaveForms(reqFormsDTO, header));
-    }
-
-    @PostMapping(value = "/req/maternityLeaveForm")
-    public ResponseEntity<List<MaternityLeaveForm>> getReqMaternityLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
-                                                                             @RequestHeader("Authorization") String header){
-        return ResponseEntity.status(HttpStatus.CREATED).body(maternityLeaveFormService.getMaternityLeaveForms(reqFormsDTO, header));
-    }
-
-    @PostMapping(value = "/req/medicalLeaveForm")
-    public ResponseEntity<List<MedicalLeaveForm>> getReqMedicalLeaveForm(@RequestBody ReqFormsDTO reqFormsDTO,
-                                                                         @RequestHeader("Authorization") String header){
-        return ResponseEntity.status(HttpStatus.CREATED).body(medicalLeaveFormService.getMedicalLeaveForms(reqFormsDTO, header));
-    }
-
     // used to retrieve the all TransferForm
     @PostMapping(value = "/req/transferForm")
     public ResponseEntity<?> getReqTransferForm(@RequestBody ReqFormsDTO reqFormsDTO,
@@ -144,10 +108,6 @@ public class AdminController {
                                                    @RequestBody ApprovalDTO approvalDTO){
         return switch (approvalDTO.getFormType()) {
             case "Normal Leave Form" -> ResponseEntity.ok(normalLeaveFormService.acceptForm(formId, approvalDTO));
-            case "Accident Leave Form" -> ResponseEntity.ok(accidentLeaveFormService.acceptForm(formId, approvalDTO));
-            case "Paternal Leave Form" -> ResponseEntity.ok(paternalLeaveFormService.acceptForm(formId, approvalDTO));
-            case "Maternity Leave Form" -> ResponseEntity.ok(maternityLeaveFormService.acceptForm(formId, approvalDTO));
-            case "Medical Leave Form" -> ResponseEntity.ok(medicalLeaveFormService.acceptForm(formId, approvalDTO));
             case "Transfer Form" -> ResponseEntity.ok(transferFormService.acceptForm(formId, approvalDTO));
             default -> ResponseEntity.ok("Failed");
         };
@@ -159,10 +119,6 @@ public class AdminController {
                                                    @RequestBody ApprovalDTO approvalDTO){
         return switch (approvalDTO.getFormType()) {
             case "Normal Leave Form" -> ResponseEntity.ok(normalLeaveFormService.rejectForm(formId, approvalDTO));
-            case "Accident Leave Form" -> ResponseEntity.ok(accidentLeaveFormService.rejectForm(formId, approvalDTO));
-            case "Paternal Leave Form" -> ResponseEntity.ok(paternalLeaveFormService.rejectForm(formId, approvalDTO));
-            case "Maternity Leave Form" -> ResponseEntity.ok(maternityLeaveFormService.rejectForm(formId, approvalDTO));
-            case "Medical Leave Form" -> ResponseEntity.ok(medicalLeaveFormService.rejectForm(formId, approvalDTO));
             case "Transfer Form" -> ResponseEntity.ok(transferFormService.rejectForm(formId, approvalDTO));
             default -> ResponseEntity.ok("Failed");
         };

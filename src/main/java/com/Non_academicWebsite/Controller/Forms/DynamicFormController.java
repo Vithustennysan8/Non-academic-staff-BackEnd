@@ -2,6 +2,7 @@ package com.Non_academicWebsite.Controller.Forms;
 
 import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Service.Forms.DynamicFormService;
@@ -55,17 +56,18 @@ public class DynamicFormController {
     @GetMapping(value = "/admin/dynamicForm/getAllByFacultyAndDepartment")
     public ResponseEntity<?> getAllDynamicFormsByFacultyAndDepartment(@RequestParam("department") String department,
                                                             @RequestParam("faculty") String faculty){
+        System.out.println(faculty + " -- " + department);
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsByFacultyAndDepartment(faculty, department));
     }
 
     @GetMapping(value = "/auth/user/dynamicForm/getAllById/{id}")
-    public ResponseEntity<?> getAllDynamicFormsForUserById(@PathVariable("id") String id){
+    public ResponseEntity<?> getAllDynamicFormsForUserById(@PathVariable("id") String id) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUserById(id));
     }
 
     @DeleteMapping(value = "/admin/dynamicForm/delete/{id}")
     public ResponseEntity<List<DynamicForm>> deleteForm(@PathVariable("id") Long id,
-                                                        @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+                                                        @RequestHeader("Authorization") String header) throws ResourceNotFoundException, UnauthorizedAccessException {
 
         return ResponseEntity.ok(dynamicFormService.deleteForm(id, header));
     }

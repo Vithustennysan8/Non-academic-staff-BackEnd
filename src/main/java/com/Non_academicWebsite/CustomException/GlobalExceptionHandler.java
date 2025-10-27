@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(FormUnderProcessException.class)
     public ResponseEntity<ApiError> handleFormUserProcessException(FormUnderProcessException ex){
         return new ResponseEntity<>(
                 new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
@@ -35,8 +35,16 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ApiError> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
+        return new ResponseEntity<>(
+                new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage()),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(PartialFileUploadException.class)
+    public ResponseEntity<ApiError> handlePartialFileUploadException(PartialFileUploadException ex){
         return new ResponseEntity<>(
                 new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage()),
                 HttpStatus.FORBIDDEN

@@ -1,6 +1,8 @@
 package com.Non_academicWebsite.Service;
 
+import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
+import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Entity.Faculty;
@@ -40,16 +42,22 @@ public class DepartmentService {
         return departmentRepo.findAllByFacultyId(faculty.getId());
     }
 
-    public List<Department> add(FacOrDeptDTO facOrDeptDTO, String header) throws ResourceNotFoundException {
+    public List<Department> add(FacOrDeptDTO facOrDeptDTO, String header)
+            throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        Faculty faculty = facOrDeptDTO.getFaculty() == null ? facultyRepo.findByFacultyName(user.getFaculty()):
-                facultyRepo.findByFacultyName(facOrDeptDTO.getFaculty());
+        String facultyName = facOrDeptDTO.getFaculty() == null ? user.getFaculty() : facOrDeptDTO.getFaculty();
 
+        Faculty faculty = facultyRepo.findByFacultyName(facultyName);
+        if (faculty == null) {
+            throw new ResourceNotFoundException("Faculty not found: " + facultyName);
+        }
 
-        if(departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias()) &&
-        departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
-            throw new RuntimeException("Department already exists");
+        if(departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias())){
+            throw new ResourceExistsException("Alias already exists, try new");
+        }
+        if(departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
+            throw new ResourceExistsException("Department already exists");
         }
         Department newDepartment = Department.builder()
                .departmentName(facOrDeptDTO.getName())
@@ -63,14 +71,25 @@ public class DepartmentService {
         return get(header);
     }
 
-    public List<Department> update(FacOrDeptDTO facOrDeptDTO, String header, Integer departmentId) throws ResourceNotFoundException {
+    public List<Department> update(FacOrDeptDTO facOrDeptDTO, String header, Integer departmentId)
+            throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        Faculty faculty = facultyRepo.findByFacultyName(user.getFaculty());
-        Department department = departmentRepo.findById(departmentId).orElse(null);
-        if(departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias()) &&
-                departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
-            throw new RuntimeException("Department already exists");
+        String facultyName = facOrDeptDTO.getFaculty() == null ? user.getFaculty() : facOrDeptDTO.getFaculty();
+
+        Faculty faculty = facultyRepo.findByFacultyName(facultyName);
+        if (faculty == null) {
+            throw new ResourceNotFoundException("Faculty not found: " + facultyName);
+        }
+
+        Department department = departmentRepo.findById(departmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
+
+        if(departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias())){
+            throw new ResourceExistsException("Alias already exists, try new");
+        }
+        if(departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
+            throw new ResourceExistsException("Department already exists");
         }
 
         department.setDepartmentName(facOrDeptDTO.getName());
@@ -80,13 +99,20 @@ public class DepartmentService {
         return get(header);
     }
 
-    public List<Department> delete(String header, Integer departmentId) throws ResourceNotFoundException {
+    public List<Department> delete(String header, Integer departmentId) throws ResourceNotFoundException, UnauthorizedAccessException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         Faculty faculty = facultyRepo.findByFacultyName(user.getFaculty());
-        Department department = departmentRepo.findById(departmentId).orElse(null);
-        if (department == null ||!department.getFacultyId().equals(faculty.getId())) {
-            throw new RuntimeException("You do not have permission to delete this department");
+        if (faculty == null) {
+            throw new ResourceNotFoundException("Faculty not found");
+        }
+
+        Department department = departmentRepo.findById(departmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
+
+        if (user.getRole() == Role.USER ||
+                (user.getRole() != Role.SUPER_ADMIN && !department.getFacultyId().equals(faculty.getId()))) {
+            throw new UnauthorizedAccessException("You do not have permission to delete this department");
         }
 
         departmentRepo.deleteById(departmentId);

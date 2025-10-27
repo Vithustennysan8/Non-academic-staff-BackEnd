@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Controller.Forms;
 
+import com.Non_academicWebsite.CustomException.PartialFileUploadException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Service.Forms.DynamicFormDetailService;
@@ -26,7 +27,7 @@ public class DynamicFormDetailController {
                                                    @PathVariable("form") String form,
                                                    @RequestParam Map<String, String> parameters,
                                                    @RequestParam(value = "file", required = false) List<MultipartFile> files)
-            throws UnauthorizedAccessException, ResourceNotFoundException {
+            throws UnauthorizedAccessException, ResourceNotFoundException, PartialFileUploadException {
         return ResponseEntity.status(HttpStatus.CREATED).body(dynamicFormDetailService.addDynamicFormDetails(header, parameters, files, form, flow));
     }
 };

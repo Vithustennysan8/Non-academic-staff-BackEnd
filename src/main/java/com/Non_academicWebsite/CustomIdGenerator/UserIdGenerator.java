@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.CustomIdGenerator;
 
+import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.UserRepo;
@@ -158,7 +159,7 @@ public class UserIdGenerator {
         positions.put("Carpenter", "CP");
     }
 
-    public String generateCustomUserID(Integer facId, String department, String position) {
+    public String generateCustomUserID(Integer facId, String department, String position) throws ResourceNotFoundException {
         Faculty fac = facultyService.getFac(facId);
         String facultyCode = fac.getAlias();
 

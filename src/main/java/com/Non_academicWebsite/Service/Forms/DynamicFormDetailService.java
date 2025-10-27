@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Service.Forms;
 
+import com.Non_academicWebsite.CustomException.PartialFileUploadException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Entity.ApprovalFlow.ApprovalFlow;
@@ -44,7 +45,8 @@ public class DynamicFormDetailService {
 
 
     public Object addDynamicFormDetails(String header, Map<String, String> parameters, List<MultipartFile> files,
-                                        String form, String flow) throws UnauthorizedAccessException, ResourceNotFoundException {
+                                        String form, String flow)
+            throws UnauthorizedAccessException, ResourceNotFoundException, PartialFileUploadException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
         if (user.getRole() != Role.USER){
             throw new UnauthorizedAccessException("User only can requests leaves!");
@@ -91,19 +93,26 @@ public class DynamicFormDetailService {
         if(files == null){
             return "form submitted without multiple files";
         }
-        files.forEach(file  -> {
+
+        List<String> failedFiles = new ArrayList<>();
+        for (MultipartFile file : files) {
             try {
-                DynamicFormFileDetail dynamicFormDetail = DynamicFormFileDetail.builder()
+                DynamicFormFileDetail detail = DynamicFormFileDetail.builder()
                         .dynamicFormUser(dynamicFormUser)
                         .fileName(file.getOriginalFilename())
                         .fileType(file.getContentType())
                         .file(file.getBytes())
                         .build();
-                dynamicFormFileDetailRepo.save(dynamicFormDetail);
+
+                dynamicFormFileDetailRepo.save(detail);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                failedFiles.add(file.getOriginalFilename());
             }
-        });
+        }
+
+        if (!failedFiles.isEmpty()) {
+            throw new PartialFileUploadException("Some files failed: " + String.join(", ", failedFiles));
+        }
         return "Added dynamic form";
     }
 }
