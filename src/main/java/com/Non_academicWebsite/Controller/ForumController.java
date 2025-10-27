@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "api/v1/auth/forum")
+@RequestMapping(value = "api/v1/user/forum")
 public class ForumController {
 
     @Autowired

@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/v1/auth/user/dynamicFormDetail")
+@RequestMapping(value = "/api/v1/user/dynamicFormDetail")
 public class DynamicFormDetailController {
 
     @Autowired
@@ -28,6 +28,7 @@ public class DynamicFormDetailController {
                                                    @RequestParam Map<String, String> parameters,
                                                    @RequestParam(value = "file", required = false) List<MultipartFile> files)
             throws UnauthorizedAccessException, ResourceNotFoundException, PartialFileUploadException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(dynamicFormDetailService.addDynamicFormDetails(header, parameters, files, form, flow));
+        return ResponseEntity.status(HttpStatus.CREATED).body(dynamicFormDetailService
+                .addDynamicFormDetails(header, parameters, files, form, flow));
     }
 };

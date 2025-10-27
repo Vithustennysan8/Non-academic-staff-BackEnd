@@ -27,13 +27,14 @@ public class UserController {
     @Autowired
     private NormalLeaveFormRepo normalLeaveFormRepo;
 
-    @GetMapping("/auth/user/get")
+    @GetMapping("/user/get")
     public ResponseEntity<String> get() {
         return ResponseEntity.ok("USER::get");
     }
 
-    @GetMapping(value = "/auth/user/staffs")
-    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+    @GetMapping(value = "/user/staffs")
+    public ResponseEntity<List<User>> getUsersByDepartment(@RequestHeader("Authorization") String header)
+            throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getUsersByDepartment(header));
     }
 
@@ -43,14 +44,14 @@ public class UserController {
         return ResponseEntity.ok(staffService.getAllUsers(header));
     }
 
-    @GetMapping(value = "/auth/user/info")
+    @GetMapping(value = "/user/info")
     public ResponseEntity<UserInfoResponse> getUser(@RequestHeader("Authorization") String header)
             throws ResourceNotFoundException {
         String token = header.substring(7);
         return ResponseEntity.ok(staffService.getUser(token));
     }
 
-    @PutMapping(value = "/auth/user/update")
+    @PutMapping(value = "/user/update")
     public ResponseEntity<?> updateProfile(@RequestHeader("Authorization") String header,
                                            @ModelAttribute RegisterDTO registerDTO,
                                            @RequestParam(value = "image", required = false) MultipartFile image)
@@ -59,30 +60,30 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping(value = "/auth/user/reset")
+    @PutMapping(value = "/user/reset")
     public ResponseEntity<String> resetPassword(@RequestHeader("Authorization") String header,
                                                 @RequestBody SecurityDTO resetPasswordDTO) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.resetPassword(header, resetPasswordDTO));
     }
 
-    @DeleteMapping(value = "/auth/user/delete")
+    @DeleteMapping(value = "/user/delete")
     public ResponseEntity<String> deleteAccount(@RequestHeader("Authorization") String header,
                                                 @RequestBody SecurityDTO deleteAccountDTO)
             throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.deleteAccount(header, deleteAccountDTO));
     }
 
-    @GetMapping("/auth/user/leaveForms")
+    @GetMapping("/user/leaveForms")
     public ResponseEntity<?> getAllAppliedLeaveForms(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(staffService.getAllAppliedLeaveForms(header));
     }
 
-    @GetMapping("/auth/user/leaveFormsById/{id}")
+    @GetMapping("/user/leaveFormsById/{id}")
     public ResponseEntity<?> getAllAppliedLeaveFormsById(@PathVariable("id") String id) throws ResourceNotFoundException {
         return ResponseEntity.ok(staffService.getAllAppliedLeaveFormsById(id));
     }
 
-    @GetMapping("/auth/user/transferForms")
+    @GetMapping("/user/transferForms")
     public ResponseEntity<?> getAllTransferForms(@RequestHeader("Authorization") String header){
         return ResponseEntity.ok(staffService.getAllTransferForms(header));
     }

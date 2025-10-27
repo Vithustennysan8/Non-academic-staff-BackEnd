@@ -17,17 +17,17 @@ public class DynamicFormUserController {
     @Autowired
     private DynamicFormUserService dynamicFormUserService;
 
-    @GetMapping(value = "/auth/user/DynamicFormUser/getAll")
+    @GetMapping(value = "/user/DynamicFormUser/getAll")
     public ResponseEntity<?> getAllFormApplied(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormUserService.getAllFormApplied(header));
     }
 
-    @GetMapping(value = "/auth/user/DynamicFormUser/getAllById/{id}")
+    @GetMapping(value = "/user/DynamicFormUser/getAllById/{id}")
     public ResponseEntity<?> getAllFormAppliedBYId(@PathVariable("id") String id){
         return ResponseEntity.ok(dynamicFormUserService.getAllFormAppliedBYId(id));
     }
 
-    @GetMapping("/auth/user/DynamicFormUser/getPdf/{id}")
+    @GetMapping("/user/DynamicFormUser/getPdf/{id}")
     public ResponseEntity<byte[]> getPdf(@PathVariable("id") Long id) {
         DynamicFormFileDetail fileData = dynamicFormUserService.generatePdf(id);
 

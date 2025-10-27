@@ -25,7 +25,7 @@ public class ApprovalFlowController {
         return ResponseEntity.status(HttpStatus.CREATED).body(approvalFlowService.addNewApprovalFlow(approvalFlowDTO, header));
     }
 
-    @GetMapping(value = "/auth/user/approvalFlow/get/{form}")
+    @GetMapping(value = "/user/approvalFlow/get/{form}")
     public ResponseEntity<?> getApprovalFlowByForm(@PathVariable("form") String form,
                                                    @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(approvalFlowService.getApprovalFlowByForm(form, header));

@@ -30,7 +30,7 @@ public class DynamicFormController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dynamicFormService.createFormField(formFieldDTOList, header, formType));
     }
 
-    @GetMapping(value = "/auth/user/dynamicForm/get/{form}")
+    @GetMapping(value = "/user/dynamicForm/get/{form}")
     public ResponseEntity<?> getDynamicForm(@RequestHeader("Authorization") String header,
                                             @PathVariable("form") String form) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getDynamicForm(header, form));
@@ -48,7 +48,7 @@ public class DynamicFormController {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForApprover(header, department, faculty));
     }
 
-    @GetMapping(value = "/auth/user/dynamicForm/getAll")
+    @GetMapping(value = "/user/dynamicForm/getAll")
     public ResponseEntity<?> getAllDynamicFormsForUser(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUser(header));
     }
@@ -56,11 +56,10 @@ public class DynamicFormController {
     @GetMapping(value = "/admin/dynamicForm/getAllByFacultyAndDepartment")
     public ResponseEntity<?> getAllDynamicFormsByFacultyAndDepartment(@RequestParam("department") String department,
                                                             @RequestParam("faculty") String faculty){
-        System.out.println(faculty + " -- " + department);
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsByFacultyAndDepartment(faculty, department));
     }
 
-    @GetMapping(value = "/auth/user/dynamicForm/getAllById/{id}")
+    @GetMapping(value = "/user/dynamicForm/getAllById/{id}")
     public ResponseEntity<?> getAllDynamicFormsForUserById(@PathVariable("id") String id) throws ResourceNotFoundException {
         return ResponseEntity.ok(dynamicFormService.getAllDynamicFormsForUserById(id));
     }

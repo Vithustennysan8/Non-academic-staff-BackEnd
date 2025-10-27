@@ -21,12 +21,12 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @GetMapping(value = "/auth/user/department/getAll")
+    @GetMapping(value = "/user/department/getAll")
     public ResponseEntity<List<Department>> getAll() {
         return ResponseEntity.ok(departmentService.getAll());
     }
 
-    @GetMapping(value = "/auth/user/department/get")
+    @GetMapping(value = "/user/department/get")
     public ResponseEntity<List<Department>> getAll(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(departmentService.get(header));
     }

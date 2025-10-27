@@ -31,6 +31,17 @@ public class SecurityConfiguration {
                     auth
                         .requestMatchers("api/v1/auth/**").permitAll()
 
+                        .requestMatchers("api/v1/user/**").
+                            hasAnyRole(USER.name(), MANAGER.name(), ADMIN.name(), SUPER_ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user/**").hasAnyAuthority(USER.name(), ADMIN_READ.name(),
+                                    SUPER_ADMIN_READ.name(), MANAGER_READ.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/user/**").hasAnyAuthority(USER.name(), ADMIN_CREATE.name(),
+                                    SUPER_ADMIN_CREATE.name(), MANAGER_CREATE.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/user/**").hasAnyAuthority(USER.name(), ADMIN_UPDATE.name(),
+                                    SUPER_ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/user/**").hasAnyAuthority(USER.name(), ADMIN_DELETE.name(),
+                                    SUPER_ADMIN_DELETE.name(), MANAGER_DELETE.name())
+
                         .requestMatchers("api/v1/super_admin/**").hasRole(SUPER_ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "api/v1/super_admin/**").hasAuthority(SUPER_ADMIN_READ.name())
                         .requestMatchers(HttpMethod.POST, "api/v1/super_admin/**").hasAuthority(SUPER_ADMIN_CREATE.name())
@@ -56,8 +67,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/manager/**").hasAnyAuthority(ADMIN_UPDATE.name(),
                                     SUPER_ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/manager/**").hasAnyAuthority(ADMIN_DELETE.name(),
-                                    SUPER_ADMIN_DELETE.name(), MANAGER_DELETE.name())
-
+                                    SUPER_ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                         .anyRequest().authenticated();
                 });
         http

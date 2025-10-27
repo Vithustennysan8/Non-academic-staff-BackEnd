@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/api/v1/auth/normalLeaveForm")
+@RequestMapping(value = "/api/v1/user/normalLeaveForm")
 public class NormalLeaveFormController {
     @Autowired
     private NormalLeaveFormService normalLeaveFormService;
