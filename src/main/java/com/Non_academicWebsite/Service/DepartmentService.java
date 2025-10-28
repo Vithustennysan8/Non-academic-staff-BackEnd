@@ -11,21 +11,22 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.DepartmentRepo;
 import com.Non_academicWebsite.Repository.FacultyRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class DepartmentService {
 
-    @Autowired
-    private DepartmentRepo departmentRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private FacultyRepo facultyRepo;
+    private final DepartmentRepo departmentRepo;
+    private final ExtractUserService extractUserService;
+    private final FacultyRepo facultyRepo;
 
 
     public List<Department> getAll() {
@@ -63,8 +64,8 @@ public class DepartmentService {
                .departmentName(facOrDeptDTO.getName())
                .alias(facOrDeptDTO.getAlias())
                 .facultyId(faculty.getId())
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .isAvailable(true)
                .build();
         departmentRepo.save(newDepartment);
@@ -85,16 +86,18 @@ public class DepartmentService {
         Department department = departmentRepo.findById(departmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
 
-        if(departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias())){
+        if(!Objects.equals(department.getAlias(), facOrDeptDTO.getAlias()) &&
+                departmentRepo.existsByFacultyIdAndAlias(faculty.getId(), facOrDeptDTO.getAlias())){
             throw new ResourceExistsException("Alias already exists, try new");
         }
-        if(departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
+        if(!Objects.equals(department.getDepartmentName(), facOrDeptDTO.getName()) &&
+                departmentRepo.existsByFacultyIdAndDepartmentName(faculty.getId(), facOrDeptDTO.getName())){
             throw new ResourceExistsException("Department already exists");
         }
 
         department.setDepartmentName(facOrDeptDTO.getName());
         department.setAlias(facOrDeptDTO.getAlias());
-        department.setUpdatedAt(new Date());
+        department.setUpdatedAt(LocalDateTime.now());
         departmentRepo.save(department);
         return get(header);
     }

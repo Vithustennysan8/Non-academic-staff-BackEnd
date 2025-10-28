@@ -6,7 +6,7 @@ import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.Forms.NormalLeaveFormDTO;
 import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
 import com.Non_academicWebsite.Service.Forms.NormalLeaveFormService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +15,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/user/normalLeaveForm")
+@RequiredArgsConstructor
 public class NormalLeaveFormController {
-    @Autowired
-    private NormalLeaveFormService normalLeaveFormService;
+
+    private final NormalLeaveFormService normalLeaveFormService;
 
 
     @PostMapping(value = "/add")

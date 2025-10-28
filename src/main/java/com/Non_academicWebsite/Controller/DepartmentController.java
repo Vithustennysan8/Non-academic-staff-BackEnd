@@ -6,7 +6,7 @@ import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Service.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +16,17 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1")
+@RequiredArgsConstructor
 public class DepartmentController {
 
-    @Autowired
-    private DepartmentService departmentService;
+    private final DepartmentService departmentService;
 
     @GetMapping(value = "/auth/user/department/getAll")
     public ResponseEntity<List<Department>> getAll() {
         return ResponseEntity.ok(departmentService.getAll());
     }
 
-    @GetMapping(value = "/user/department/get")
+    @GetMapping(value = "/auth/user/department/get")
     public ResponseEntity<List<Department>> getAll(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(departmentService.get(header));
     }

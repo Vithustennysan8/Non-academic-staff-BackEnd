@@ -5,7 +5,7 @@ import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Service.Forms.DynamicFormUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "api/v1/")
+@RequiredArgsConstructor
 public class DynamicFormUserController {
 
-    @Autowired
-    private DynamicFormUserService dynamicFormUserService;
+    private final DynamicFormUserService dynamicFormUserService;
 
     @GetMapping(value = "/user/DynamicFormUser/getAll")
     public ResponseEntity<?> getAllFormApplied(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {

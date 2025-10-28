@@ -4,7 +4,7 @@ import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.NewsDTO;
 import com.Non_academicWebsite.Entity.News;
 import com.Non_academicWebsite.Service.NewsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/")
+@RequiredArgsConstructor
 public class NewsController {
-    @Autowired
-    private NewsService newsService;
+
+    private final NewsService newsService;
 
     // all users have an access
     @GetMapping(value = "user/news/get")

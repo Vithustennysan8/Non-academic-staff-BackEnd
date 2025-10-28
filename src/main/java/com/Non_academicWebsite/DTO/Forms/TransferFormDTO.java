@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -17,15 +17,15 @@ public class TransferFormDTO {
     private String designation;
     private String servicePeriodOfCurrent;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date currentJobStartDate;
+    private LocalDate currentJobStartDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date currentJobEndDate;
+    private LocalDate currentJobEndDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date previousJobStartDate;
+    private LocalDate previousJobStartDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date previousJobEndDate;
+    private LocalDate previousJobEndDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date leaveAt;
+    private LocalDate leaveAt;
     private int leaveDays;
 
 }

@@ -4,7 +4,7 @@ import com.Non_academicWebsite.CustomException.PartialFileUploadException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.Service.Forms.DynamicFormDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +16,10 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/user/dynamicFormDetail")
+@RequiredArgsConstructor
 public class DynamicFormDetailController {
 
-    @Autowired
-    private DynamicFormDetailService dynamicFormDetailService;
+    private final DynamicFormDetailService dynamicFormDetailService;
 
     @PostMapping("/add/{form}/{flow}")
     public ResponseEntity<?> addDynamicFormDetails(@RequestHeader("Authorization") String header,

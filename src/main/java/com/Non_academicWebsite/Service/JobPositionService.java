@@ -6,18 +6,19 @@ import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.JobPosition;
 import com.Non_academicWebsite.Repository.JobPositionRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class JobPositionService {
 
-    @Autowired
-    private JobPositionRepo jobPositionRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
+    private final JobPositionRepo jobPositionRepo;
 
 
     public List<JobPosition> get() {
@@ -40,12 +41,21 @@ public class JobPositionService {
         return get();
     }
 
-    public List<JobPosition> update(FacOrDeptDTO facOrDeptDTO, Integer jobPositionId) throws ResourceNotFoundException {
+    public List<JobPosition> update(FacOrDeptDTO jobPositionDto, Integer jobPositionId) throws ResourceNotFoundException, ResourceExistsException {
         JobPosition jobPosition = jobPositionRepo.findById(jobPositionId).orElseThrow(
                 () -> new ResourceNotFoundException("Job position not found"));
 
-        jobPosition.setJobPositionName(facOrDeptDTO.getName());
-        jobPosition.setAlias(facOrDeptDTO.getAlias());
+        if(!Objects.equals(jobPosition.getJobPositionName(), jobPositionDto.getName()) &&
+                jobPositionRepo.existsByJobPositionName(jobPositionDto.getName())){
+            throw new ResourceExistsException("Job position already exists");
+        }
+        if(!Objects.equals(jobPosition.getAlias(), jobPositionDto.getAlias()) &&
+                jobPositionRepo.existsByAlias(jobPositionDto.getAlias())){
+            throw new ResourceExistsException("Alias already exists, try different");
+        }
+
+        jobPosition.setJobPositionName(jobPositionDto.getName());
+        jobPosition.setAlias(jobPositionDto.getAlias());
         jobPositionRepo.save(jobPosition);
         return get();
     }

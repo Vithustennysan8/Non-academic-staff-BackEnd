@@ -2,9 +2,8 @@ package com.Non_academicWebsite.DTO;
 
 import com.Non_academicWebsite.Entity.Role;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,8 +13,7 @@ import java.util.Date;
 public class RegisterDTO {
     private String first_name;
     private String last_name;
-    @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date date_of_birth;
+    private LocalDate date_of_birth;
     private String gender;
     private String email;
     private String normalEmail;

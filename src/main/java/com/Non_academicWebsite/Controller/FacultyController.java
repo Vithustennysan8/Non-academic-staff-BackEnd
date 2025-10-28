@@ -6,7 +6,7 @@ import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Service.FacultyService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +16,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1/")
+@RequiredArgsConstructor
 public class FacultyController {
 
-    @Autowired
-    private FacultyService facultyService;
+    private final FacultyService facultyService;
 
     @GetMapping("/auth/user/faculty/getAll")
     public ResponseEntity<List<Faculty>> getFaculty(){
@@ -35,7 +35,8 @@ public class FacultyController {
     @PutMapping("/admin/faculty/update/{facultyId}")
     public ResponseEntity<List<Faculty>> updateFaculty(@RequestBody FacOrDeptDTO faculty,
                                               @PathVariable("facultyId") Integer facultyId,
-                                              @RequestHeader("Authorization") String header) throws ResourceNotFoundException {
+                                              @RequestHeader("Authorization") String header)
+            throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.ok(facultyService.updateFaculty(faculty, header, facultyId));
     }
 

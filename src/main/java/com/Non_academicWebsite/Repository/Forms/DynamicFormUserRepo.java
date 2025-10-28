@@ -23,4 +23,8 @@ public interface DynamicFormUserRepo extends JpaRepository<DynamicFormUser, Long
 
     @Query("SELECT d FROM DynamicFormUser d JOIN d.user u WHERE d.id = :formId AND u.faculty = :faculty")
     DynamicFormUser findByIdAndFaculty(@Param("formId") Long formId, @Param("faculty") String faculty);
+
+    List<DynamicFormUser> findByUserIdOrderByCreatedAtDesc(String id);
+
+    List<DynamicFormUser> findByUserIdOrderByIdDesc(String id);
 }

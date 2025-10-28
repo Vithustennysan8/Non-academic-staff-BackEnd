@@ -9,6 +9,7 @@ import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormUser;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormFileDetailRepo;
@@ -16,7 +17,9 @@ import com.Non_academicWebsite.Repository.Forms.DynamicFormUserRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,27 +30,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DynamicFormUserService {
 
-    @Autowired
-    private DynamicFormUserRepo dynamicFormUserRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private DynamicFormDetailRepo dynamicFormDetailRepo;
-    @Autowired
-    private DynamicFormFileDetailRepo dynamicFormFileDetailRepo;
-    @Autowired
-    private FormApproverRepo formApproverRepo;
-    @Autowired
-    private UserRepo userRepo;
-
+    private final DynamicFormUserRepo dynamicFormUserRepo;
+    private final ExtractUserService extractUserService;
+    private final DynamicFormDetailRepo dynamicFormDetailRepo;
+    private final DynamicFormFileDetailRepo dynamicFormFileDetailRepo;
+    private final FormApproverRepo formApproverRepo;
+    private final UserRepo userRepo;
+    private final MailService mailService;
+    @Value("${FrontEndURL}")
+    private String url;
 
     public Object getAllFormApplied(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-        List<DynamicFormUser> userAppliedList = dynamicFormUserRepo.findByUserId(user.getId());
+        List<DynamicFormUser> userAppliedList = dynamicFormUserRepo.findByUserIdOrderByIdDesc(user.getId());
         if (userAppliedList == null) {return Collections.emptyList();}
         userAppliedList.forEach(userApplied -> {
             List<FormApprover> formApprovers = formApproverRepo.findByFormId(userApplied.getId());
@@ -59,7 +59,6 @@ public class DynamicFormUserService {
             );
             dynamicFormUsers.add(detail);
         });
-
         Map<String, Object> allForms = generateOutput(dynamicFormUsers);
         return allForms.values().toArray();
     }
@@ -71,7 +70,7 @@ public class DynamicFormUserService {
     public Object getAllFormRequests(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        List<FormApprover> approvalForms = formApproverRepo.findByApprover(user.getJobType()) ;
+        List<FormApprover> approvalForms = formApproverRepo.findByApproverOrderByIdDesc(user.getJobType()) ;
 
         if(Objects.equals(user.getJobType(), "Head of the Department")){
             List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
@@ -186,17 +185,14 @@ public class DynamicFormUserService {
     public Object getTheFormModified(String header, Long approverId) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        FormApprover approvalForm = formApproverRepo.findById(approverId).orElse(null);
-
-        if (approvalForm == null){
-            throw new RuntimeException("Form Approver not found");
-        }
+        FormApprover formApprover = formApproverRepo.findById(approverId).orElseThrow( () ->
+                new ResourceNotFoundException("Form Approver not found"));
 
         if(Objects.equals(user.getJobType(), "Head of the Department")){
             List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-            List<FormApprover> formApprovers = formApproverRepo.findByFormId(approvalForm.getFormId());
+            List<FormApprover> formApprovers = formApproverRepo.findByFormId(formApprover.getFormId());
             Map<String, Object> dynamic = new HashMap<>();
-            DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(approvalForm.getFormId(),
+            DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(formApprover.getFormId(),
                     user.getFaculty(), user.getDepartment());
             if(dynamicFormUser != null){
                 dynamic.put("formDetails", dynamicFormUser);
@@ -213,9 +209,9 @@ public class DynamicFormUserService {
 
         }else if(Objects.equals(user.getJobType(), "Dean")){
             List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(approvalForm.getFormId());
+                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(formApprover.getFormId());
                     Map<String, Object> dynamic = new HashMap<>();
-                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFaculty(approvalForm.getFormId(),
+                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFaculty(formApprover.getFormId(),
                             user.getFaculty());
                     if (dynamicFormUser != null) {
                         dynamic.put("formDetails", dynamicFormUser);
@@ -230,9 +226,9 @@ public class DynamicFormUserService {
         }
 
         List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-                List<FormApprover> formApprovers = formApproverRepo.findByFormId(approvalForm.getFormId());
+                List<FormApprover> formApprovers = formApproverRepo.findByFormId(formApprover.getFormId());
                 Map<String, Object> dynamic = new HashMap<>();
-                DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(approvalForm.getFormId()).orElse(null);
+                DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(formApprover.getFormId()).orElse(null);
                 if (dynamicFormUser != null) {
                     dynamic.put("formDetails", dynamicFormUser);
                     dynamic.put("approverDetails", formApprovers.stream().sorted(
@@ -247,7 +243,7 @@ public class DynamicFormUserService {
     }
 
     public Map<String, Object> generateOutput(List<Map<String, Object>> list) {
-        Map<String, Object> allForms = new HashMap<>();
+        Map<String, Object> allForms = new LinkedHashMap<>();
 
         for(Map<String, Object> map : list){
             // create a new map to hold the form data and details
@@ -268,25 +264,33 @@ public class DynamicFormUserService {
             List<Map<String, String>> detail = (List<Map<String, String>>) form.get("formDetails");
             details.forEach(dynamicFormDetail ->
                     detail.add(Map.of(dynamicFormDetail.getTag(), dynamicFormDetail.getValue())));
-            allForms.put(dynamicFormUser.getCreatedAt().toString(), form);
+            allForms.put(dynamicFormUser.getId().toString(), form);
         }
         return allForms;
     }
 
-    public void acceptForm(Long formId) {
+    public void acceptForm(Long formId, String approverId) throws ResourceNotFoundException {
         DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(formId).orElseThrow(() ->
-                new NullPointerException("Form not found for id " + formId));
+                new ResourceNotFoundException("Form not found for id " + formId));
+        User approver = userRepo.findById(approverId).orElseThrow(() ->
+                new ResourceNotFoundException("Approver not found for id " + approverId));
 
         dynamicFormUser.setStatus("Accepted");
         dynamicFormUserRepo.save(dynamicFormUser);
+        mailService.sendMail(dynamicFormUser.getUser().getEmail(), url, dynamicFormUser.getUser().getFirst_name(),
+                dynamicFormUser.getDynamicForm().getFormType() , "Accepted", approver.getFirst_name());
     }
 
-    public void rejectForm(Long formId) {
+    public void rejectForm(Long formId, String approverId) throws ResourceNotFoundException {
         DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(formId).orElseThrow(() ->
-                new NullPointerException("Form not found for id " + formId));
+                new ResourceNotFoundException("Form not found for id " + formId));
+        User approver = userRepo.findById(approverId).orElseThrow(() ->
+                new ResourceNotFoundException("Approver not found for id " + approverId));
 
         dynamicFormUser.setStatus("Rejected");
         dynamicFormUserRepo.save(dynamicFormUser);
+        mailService.sendMail(dynamicFormUser.getUser().getEmail(), url, dynamicFormUser.getUser().getFirst_name(),
+                dynamicFormUser.getDynamicForm().getFormType() , "Rejected", approver.getFirst_name());
     }
 
     public DynamicFormFileDetail generatePdf(Long id) {
@@ -314,7 +318,7 @@ public class DynamicFormUserService {
             throw new FormUnderProcessException("Form under process, can't delete this form");
         }
 
-        formApproverRepo.deleteAllByFormId(dynamicFormUser.getDynamicForm().getId());
+        formApproverRepo.deleteAllByFormId(id);
         dynamicFormDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
         dynamicFormFileDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
         dynamicFormUserRepo.delete(dynamicFormUser);
@@ -337,7 +341,7 @@ public class DynamicFormUserService {
             throw new ResourceNotFoundException("Aprrover flow issue");
         }
 
-        formApproverRepo.deleteAllByFormId(dynamicFormUser.getDynamicForm().getId());
+        formApproverRepo.deleteAllByFormId(id);
         dynamicFormDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
         dynamicFormFileDetailRepo.deleteAllByDynamicFormUserId(dynamicFormUser.getId());
         dynamicFormUserRepo.delete(dynamicFormUser);

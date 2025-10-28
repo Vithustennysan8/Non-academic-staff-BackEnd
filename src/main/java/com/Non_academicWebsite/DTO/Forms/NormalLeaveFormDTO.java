@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class NormalLeaveFormDTO {
     private String upfNo;
     private String designation;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date firstAppointmentDate;
+    private LocalDate firstAppointmentDate;
     private Integer casualLeaveLastYear;
     private Integer vacationLeaveLastYear;
     private Integer sickLeaveLastYear;
@@ -28,7 +28,7 @@ public class NormalLeaveFormDTO {
     private Integer noOfLeaveDays;
     private String leaveType;
     @DateTimeFormat( pattern = "yyyy-MM-dd")
-    private Date leaveAppliedDate;
+    private LocalDate leaveAppliedDate;
     @Lob
     @Column(length = 512000)
     private String reason;

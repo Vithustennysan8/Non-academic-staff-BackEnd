@@ -4,17 +4,17 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.UserRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ExtractUserService {
 
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepo userRepo;
+    private final JwtService jwtService;
+    private final UserRepo userRepo;
 
 
     public User extractUserByAuthorizationHeader(String authorizationHeader) throws ResourceNotFoundException {

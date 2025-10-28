@@ -13,6 +13,7 @@ import com.Non_academicWebsite.Repository.Forms.DynamicFormRepo;
 import com.Non_academicWebsite.Repository.Forms.FormFieldRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.type.descriptor.java.IncomparableComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,18 +21,14 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DynamicFormService {
 
-    @Autowired
-    private DynamicFormRepo dynamicFormRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private FormFieldRepo formFieldRepo;
-    @Autowired
-    private FormOptionService formOptionService;
-    @Autowired
-    private UserRepo userRepo;
+    private final DynamicFormRepo dynamicFormRepo;
+    private final ExtractUserService extractUserService;
+    private final FormFieldRepo formFieldRepo;
+    private final FormOptionService formOptionService;
+    private final UserRepo userRepo;
 
 
     public Object createFormField(List<FormFieldDTO> formFieldDTOList, String header, String formType)

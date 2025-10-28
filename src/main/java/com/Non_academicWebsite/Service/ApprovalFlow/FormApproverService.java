@@ -7,22 +7,22 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import com.Non_academicWebsite.Service.Forms.DynamicFormUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FormApproverService {
 
-    @Autowired
-    private FormApproverRepo formApproverRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private DynamicFormUserService dynamicFormUserService;
+    private final FormApproverRepo formApproverRepo;
+    private final ExtractUserService extractUserService;
+    private final DynamicFormUserService dynamicFormUserService;
 
     public Object getApprover(Long formId, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
@@ -47,19 +47,17 @@ public class FormApproverService {
 
     public Object acceptForm(Long approverId, ApprovalDTO approvalDTO, String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
-        FormApprover formApp = formApproverRepo.findById(approverId).orElse(null);
+        FormApprover formApp = formApproverRepo.findById(approverId).orElseThrow(() ->
+                new ResourceNotFoundException("Approver not found"));
 
-        if(formApp == null){
-            throw new IllegalStateException("Approver not found");
-        }
         FormApprover lastApprover = formApproverRepo.findTopByFormIdOrderByApproverOrderDesc(formApp.getFormId());
         if(lastApprover.getApproverOrder() == formApp.getApproverOrder()){
-            dynamicFormUserService.acceptForm(formApp.getFormId());
+            dynamicFormUserService.acceptForm(formApp.getFormId(), user.getId());
         }
         formApp.setApproverId(user.getId());
         formApp.setApprovalDescription(approvalDTO.getDescription());
         formApp.setApproverStatus("Accepted");
-        formApp.setApprovalAt(new Date());
+        formApp.setApprovalAt(LocalDateTime.now());
         formApproverRepo.save(formApp);
 
         return dynamicFormUserService.getTheFormModified(header, approverId);
@@ -70,14 +68,14 @@ public class FormApproverService {
         FormApprover formApp = formApproverRepo.findById(approverId).orElse(null);
 
         if(formApp == null){
-            throw new IllegalStateException("Approver not found");
+            throw new ResourceNotFoundException("Approver not found");
         }
-        dynamicFormUserService.rejectForm(formApp.getFormId());
+        dynamicFormUserService.rejectForm(formApp.getFormId(), user.getId());
 
         formApp.setApproverId(user.getId());
         formApp.setApprovalDescription(approvalDTO.getDescription());
         formApp.setApproverStatus("Rejected");
-        formApp.setApprovalAt(new Date());
+        formApp.setApprovalAt(LocalDateTime.now());
         formApproverRepo.save(formApp);
 
         return dynamicFormUserService.getTheFormModified(header, approverId);

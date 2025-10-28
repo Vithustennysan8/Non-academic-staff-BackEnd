@@ -6,10 +6,9 @@ import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
 import com.Non_academicWebsite.DTO.SecurityDTO;
 import com.Non_academicWebsite.Entity.User;
-import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
 import com.Non_academicWebsite.Response.UserInfoResponse;
 import com.Non_academicWebsite.Service.StaffService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,15 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-
 @RestController
 @RequestMapping(value = "/api/v1/")
 @CrossOrigin
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private StaffService staffService;
-    @Autowired
-    private NormalLeaveFormRepo normalLeaveFormRepo;
+
+    private final StaffService staffService;
 
     @GetMapping("/user/get")
     public ResponseEntity<String> get() {
@@ -56,8 +53,7 @@ public class UserController {
                                            @ModelAttribute RegisterDTO registerDTO,
                                            @RequestParam(value = "image", required = false) MultipartFile image)
             throws IOException, ResourceNotFoundException {
-        User user = staffService.updateProfile(header, registerDTO, image);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(staffService.updateProfile(header, registerDTO, image));
     }
 
     @PutMapping(value = "/user/reset")

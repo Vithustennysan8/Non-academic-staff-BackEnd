@@ -8,23 +8,24 @@ import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.NewsRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class NewsService {
-    @Autowired
-    private NewsRepo newsRepo;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepo userRepo;
+
+    private final NewsRepo newsRepo;
+    private final JwtService jwtService;
+    private final UserRepo userRepo;
 
     public List<News> add(NewsDTO newsDTO, String header, MultipartFile image)
             throws IOException, ResourceNotFoundException {
@@ -35,8 +36,8 @@ public class NewsService {
         News news = News.builder()
                 .heading(newsDTO.getHeading())
                 .body(newsDTO.getBody())
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .filetype(image != null?image.getContentType():null)
                 .filename(image != null? image.getOriginalFilename():null)
                 .fileData(image != null? image.getBytes():null)
@@ -67,7 +68,7 @@ public class NewsService {
                 news.setFilename(images != null ? images.getOriginalFilename() : news.getFilename());
                 news.setFiletype(images!= null? images.getContentType() : news.getFiletype());
                 news.setFileData(images!= null? images.getBytes() : news.getFileData());
-                news.setUpdatedAt(new Date());
+                news.setUpdatedAt(LocalDateTime.now());
                 newsRepo.save(news);
             }
         }

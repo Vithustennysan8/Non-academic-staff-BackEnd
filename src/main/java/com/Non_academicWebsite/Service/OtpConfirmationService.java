@@ -4,25 +4,27 @@ import com.Non_academicWebsite.Entity.OtpConfirmationToken;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.OtpConfirmationRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class OtpConfirmationService {
-    @Autowired
-    private OtpConfirmationRepo otpConfirmationRepo;
-    @Autowired
-    private MailService mailService;
+
+    private final OtpConfirmationRepo otpConfirmationRepo;
+    private final MailService mailService;
 
     public void sendOtp(User user, String email) {
         Integer otp = generateOtp();
         OtpConfirmationToken otpToken = OtpConfirmationToken.builder()
                 .user(user)
-                .createdAt(new Date())
+                .createdAt(LocalDateTime.now())
                 .otp(otp)
-                .updatedAt(new Date())
+                .updatedAt(LocalDateTime.now())
                 .build();
         otpConfirmationRepo.save(otpToken);
         // Send OTP to email
@@ -35,10 +37,10 @@ public class OtpConfirmationService {
 
     public String confirmOtp(Integer otp) {
         OtpConfirmationToken otpToken = otpConfirmationRepo.findByOtp(otp);
-        if (otpToken == null || otpToken.getUpdatedAt().getTime() < new Date().getTime() - (60 * 1000 * 5)) {
+        if (otpToken == null || otpToken.getUpdatedAt().isBefore(LocalDateTime.now().minusMinutes(5))) {
             return "Invalid OTP or OTP expired";
         }
-        otpToken.setConfirmedAt(new Date());
+        otpToken.setConfirmedAt(LocalDateTime.now());
         otpConfirmationRepo.save(otpToken);
         return "OTP confirmed successfully";
     }

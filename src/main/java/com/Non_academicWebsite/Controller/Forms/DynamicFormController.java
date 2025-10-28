@@ -6,7 +6,7 @@ import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.Forms.FormFieldDTO;
 import com.Non_academicWebsite.Entity.Forms.DynamicForm;
 import com.Non_academicWebsite.Service.Forms.DynamicFormService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +16,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/")
+@RequiredArgsConstructor
 public class DynamicFormController {
 
-    @Autowired
-    private DynamicFormService dynamicFormService;
-
+    private final DynamicFormService dynamicFormService;
 
     @PostMapping(value = "/admin/dynamicForm/create/{formType}")
     public ResponseEntity<?> createForm(@RequestBody List<FormFieldDTO> formFieldDTOList,

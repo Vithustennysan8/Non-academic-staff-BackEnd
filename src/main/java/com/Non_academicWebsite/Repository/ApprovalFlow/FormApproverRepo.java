@@ -23,4 +23,6 @@ public interface FormApproverRepo extends JpaRepository<FormApprover, Long> {
     FormApprover findByFormIdAndApproverOrder(Long id, int i);
 
     void deleteAllByFormId(Long id);
+
+    List<FormApprover> findByApproverOrderByIdDesc(String jobType);
 }

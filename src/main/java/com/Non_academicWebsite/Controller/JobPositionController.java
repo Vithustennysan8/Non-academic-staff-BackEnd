@@ -5,7 +5,7 @@ import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.FacOrDeptDTO;
 import com.Non_academicWebsite.Entity.JobPosition;
 import com.Non_academicWebsite.Service.JobPositionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +15,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1/")
+@RequiredArgsConstructor
 public class JobPositionController {
 
-    @Autowired
-    private JobPositionService jobPositionService;
+    private final JobPositionService jobPositionService;
 
     @GetMapping("/auth/user/jobPosition/get")
     public ResponseEntity<List<JobPosition>> get(){
@@ -36,7 +36,7 @@ public class JobPositionController {
     public ResponseEntity<List<JobPosition>> update(@PathVariable("jobPositionId") Integer jobPositionId,
                                                  @RequestBody FacOrDeptDTO facOrDeptDTO,
                                                  @RequestHeader("Authorization") String header)
-            throws ResourceNotFoundException {
+            throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.ok(jobPositionService.update(facOrDeptDTO, jobPositionId));
     }
 

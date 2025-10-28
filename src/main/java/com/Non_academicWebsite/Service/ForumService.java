@@ -9,25 +9,22 @@ import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class ForumService {
 
-    @Autowired
-    private ForumRepo forumRepo;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private ExtractUserService extractUserService;
+    private final ForumRepo forumRepo;
+    private final ExtractUserService extractUserService;
 
     public Object addForum(String header, ForumDTO forumDTO) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
@@ -36,8 +33,8 @@ public class ForumService {
                 .userName(user.getFirst_name().concat(" " + user.getLast_name()))
                 .subject(forumDTO.getSubject())
                 .body(forumDTO.getBody())
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return forumRepo.save(forum);
@@ -86,7 +83,7 @@ public class ForumService {
                 forum.setUserName(user.getFirst_name().concat(" " + user.getLast_name()));
                 forum.setSubject(forumDTO.getSubject());
                 forum.setBody(forumDTO.getBody());
-                forum.setUpdatedAt(new Date());
+                forum.setUpdatedAt(LocalDateTime.now());
 
                 forumRepo.save(forum);
             }

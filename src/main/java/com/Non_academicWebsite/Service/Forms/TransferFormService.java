@@ -12,29 +12,30 @@ import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.TransferFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class TransferFormService {
-    @Autowired
-    private TransferFormRepo transferFormRepo;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private MailService mailService;
-    @Autowired
-    private ExtractUserService extractUserService;
-    private final String url = "http://localhost:5173/notifications";
+
+    private final TransferFormRepo transferFormRepo;
+    private final JwtService jwtService;
+    private final UserRepo userRepo;
+    private final MailService mailService;
+    private final ExtractUserService extractUserService;
+    @Value("${FrontEndURL}")
+    private String url;
 
     public TransferForm add(String header, TransferFormDTO transferFormDTO, MultipartFile file) throws IOException, ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
@@ -59,8 +60,8 @@ public class TransferFormService {
                 .naeStatus("pending")
                 .registrarApprovalStatus("pending")
                 .status("Pending")
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return transferFormRepo.save(transferForm);
@@ -122,14 +123,14 @@ public class TransferFormService {
                     transferForm.setHeadStatus("Accepted");
                     transferForm.setHead(approvalDTO.getUser());
                     transferForm.setHeadDescription(approvalDTO.getDescription());
-                    transferForm.setHeadReactedAt(new Date());
+                    transferForm.setHeadReactedAt(LocalDateTime.now());
                     return transferFormRepo.save(transferForm);
                 }
                 case "Dean" -> {
                     transferForm.setDeanStatus("Accepted");
                     transferForm.setDean(approvalDTO.getUser());
                     transferForm.setDeanDescription(approvalDTO.getDescription());
-                    transferForm.setDeanReactedAt(new Date());
+                    transferForm.setDeanReactedAt(LocalDateTime.now());
                     return transferFormRepo.save(transferForm);
                 }
                 case "Registrar" -> {
@@ -139,7 +140,7 @@ public class TransferFormService {
                         transferForm.setRegistrarApprovalStatus("Accepted");
                         transferForm.setRegistrarApproval(approvalDTO.getUser());
                         transferForm.setRegistrarApprovalDescription(approvalDTO.getDescription());
-                        transferForm.setRegistrarApprovalAt(new Date());
+                        transferForm.setRegistrarApprovalAt(LocalDateTime.now());
                         transferForm.setStatus("Accepted");
                         mailService.sendMail(transferForm.getUser().getEmail(), url, transferForm.getUser().getFirst_name(), transferForm.getFormType(), "Accepted", approver.getFirst_name());
                         return transferFormRepo.save(transferForm);
@@ -149,14 +150,14 @@ public class TransferFormService {
                     transferForm.setRegistrarStatus("Accepted");
                     transferForm.setRegistrar(approvalDTO.getUser());
                     transferForm.setRegistrarDescription(approvalDTO.getDescription());
-                    transferForm.setRegistrarReactedAt(new Date());
+                    transferForm.setRegistrarReactedAt(LocalDateTime.now());
                     return transferFormRepo.save(transferForm);
                 }
                 case "Non Academic Establishment Division" -> {
                     transferForm.setNaeStatus("Accepted");
                     transferForm.setNae(approvalDTO.getUser());
                     transferForm.setNaeDescription(approvalDTO.getDescription());
-                    transferForm.setNaeReactedAt(new Date());
+                    transferForm.setNaeReactedAt(LocalDateTime.now());
                     return transferFormRepo.save(transferForm);
                 }
             }
@@ -176,7 +177,7 @@ public class TransferFormService {
                     transferForm.setHeadStatus("Rejected");
                     transferForm.setDean(approvalDTO.getUser());
                     transferForm.setDeanDescription(approvalDTO.getDescription());
-                    transferForm.setHeadReactedAt(new Date());
+                    transferForm.setHeadReactedAt(LocalDateTime.now());
                     transferForm.setStatus("Rejected");
                     mailService.sendMail(transferForm.getUser().getEmail(), url, user.getFirst_name(), transferForm.getFormType() , "Rejected", approver.getFirst_name());
                     return transferFormRepo.save(transferForm);
@@ -185,7 +186,7 @@ public class TransferFormService {
                     transferForm.setDeanStatus("Rejected");
                     transferForm.setDean(approvalDTO.getUser());
                     transferForm.setDeanDescription(approvalDTO.getDescription());
-                    transferForm.setDeanReactedAt(new Date());
+                    transferForm.setDeanReactedAt(LocalDateTime.now());
                     transferForm.setStatus("Rejected");
                     mailService.sendMail(transferForm.getUser().getEmail(), url, user.getFirst_name(), transferForm.getFormType() , "Rejected", approver.getFirst_name());
                     return transferFormRepo.save(transferForm);
@@ -194,7 +195,7 @@ public class TransferFormService {
                     transferForm.setRegistrarStatus("Rejected");
                     transferForm.setRegistrar(approvalDTO.getUser());
                     transferForm.setRegistrarDescription(approvalDTO.getDescription());
-                    transferForm.setRegistrarReactedAt(new Date());
+                    transferForm.setRegistrarReactedAt(LocalDateTime.now());
                     transferForm.setStatus("Rejected");
                     mailService.sendMail(transferForm.getUser().getEmail(), url, user.getFirst_name(), transferForm.getFormType() , "Rejected", approver.getFirst_name());
                     return transferFormRepo.save(transferForm);
@@ -203,7 +204,7 @@ public class TransferFormService {
                     transferForm.setNaeStatus("Rejected");
                     transferForm.setNae(approvalDTO.getUser());
                     transferForm.setNaeDescription(approvalDTO.getDescription());
-                    transferForm.setNaeReactedAt(new Date());
+                    transferForm.setNaeReactedAt(LocalDateTime.now());
                     transferForm.setStatus("Rejected");
                     mailService.sendMail(transferForm.getUser().getEmail(), url, user.getFirst_name(), transferForm.getFormType() , "Rejected", approver.getFirst_name());
                     return transferFormRepo.save(transferForm);
@@ -212,7 +213,7 @@ public class TransferFormService {
                     transferForm.setRegistrarApprovalStatus("Rejected");
                     transferForm.setRegistrarApproval(approvalDTO.getUser());
                     transferForm.setRegistrarApprovalDescription(approvalDTO.getDescription());
-                    transferForm.setRegistrarApprovalAt(new Date());
+                    transferForm.setRegistrarApprovalAt(LocalDateTime.now());
                     transferForm.setStatus("Rejected");
                     mailService.sendMail(transferForm.getUser().getEmail(), url, user.getFirst_name(), transferForm.getFormType(), "Rejected", approver.getFirst_name());
                     return transferFormRepo.save(transferForm);

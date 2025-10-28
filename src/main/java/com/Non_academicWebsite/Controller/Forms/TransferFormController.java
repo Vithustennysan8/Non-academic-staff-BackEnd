@@ -5,7 +5,7 @@ import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.Forms.TransferFormDTO;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Service.Forms.TransferFormService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +15,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/user/transferForm")
+@RequiredArgsConstructor
 public class TransferFormController {
-    @Autowired
-    private TransferFormService transferFormService;
+    private final TransferFormService transferFormService;
+
     @PostMapping(value = "/add")
     public ResponseEntity<TransferForm> addForm(@RequestHeader("Authorization") String header,
                                                     @ModelAttribute TransferFormDTO transferFormDTO,

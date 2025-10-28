@@ -3,8 +3,9 @@ package com.Non_academicWebsite.Entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -20,8 +21,13 @@ public class Forum {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     private String userName;
-    private Date createdAt;
-    private Date updatedAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime updatedAt;
     private String subject;
     @Lob
     @Column(length = 512000)

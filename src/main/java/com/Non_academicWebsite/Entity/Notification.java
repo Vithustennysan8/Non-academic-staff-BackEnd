@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -38,7 +40,8 @@ public class Notification {
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
 
-    @CreatedDate
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

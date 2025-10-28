@@ -9,7 +9,7 @@ import com.Non_academicWebsite.Service.AdminService;
 import com.Non_academicWebsite.Service.AuthenticationService;
 import com.Non_academicWebsite.Service.Forms.*;
 import com.Non_academicWebsite.Service.RegisterConfirmationTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +19,14 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/admin")
+@RequiredArgsConstructor
 public class AdminController {
-    @Autowired
-    private NormalLeaveFormService normalLeaveFormService;
-    @Autowired
-    private TransferFormService transferFormService;
-    @Autowired
-    private AdminService adminService;
-    @Autowired
-    private RegisterConfirmationTokenService confirmationTokenService;
-    @Autowired
-    private AuthenticationService authenticationService;
+
+    private final NormalLeaveFormService normalLeaveFormService;
+    private final TransferFormService transferFormService;
+    private final AdminService adminService;
+    private final RegisterConfirmationTokenService confirmationTokenService;
+    private final AuthenticationService authenticationService;
 
 
     @GetMapping(value = "/get")

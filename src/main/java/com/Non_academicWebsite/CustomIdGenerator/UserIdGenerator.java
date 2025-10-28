@@ -7,23 +7,20 @@ import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.DepartmentService;
 import com.Non_academicWebsite.Service.FacultyService;
 import com.Non_academicWebsite.Service.JobPositionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
 @Component
+@RequiredArgsConstructor
 public class UserIdGenerator {
     // Generate user id based on the faculty, department, and position
-
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private FacultyService facultyService;
-    @Autowired
-    private DepartmentService departmentService;
-    @Autowired
-    private JobPositionService jobPositionService;
+    private final UserRepo userRepo;
+    private final FacultyService facultyService;
+    private final DepartmentService departmentService;
+    private final JobPositionService jobPositionService;
 
     private static final HashMap<String, String> faculties = new HashMap<>();
     private static final HashMap<String, String> departments = new HashMap<>();

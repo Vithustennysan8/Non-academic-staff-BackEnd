@@ -9,19 +9,21 @@ import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.FacultyRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class FacultyService {
-    
-    @Autowired
-    private FacultyRepo facultyRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
+
+    private final FacultyRepo facultyRepo;
+    private final ExtractUserService extractUserService;
 
     public List<Faculty> getFaculties() {
         return facultyRepo.findAll();
@@ -43,8 +45,8 @@ public class FacultyService {
                     .facultyName(faculty.getName())
                     .alias(faculty.getAlias())
                     .isAvailable(true)
-                    .createdAt(new Date())
-                    .updatedAt(new Date())
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
                     .build();
             facultyRepo.save(newFaculty);
             return facultyRepo.findAll();
@@ -52,15 +54,24 @@ public class FacultyService {
         throw new UnauthorizedAccessException("No permission to add faculty");
     }
 
-    public List<Faculty> updateFaculty(FacOrDeptDTO faculty, String header, Integer facultyId) throws ResourceNotFoundException {
+    public List<Faculty> updateFaculty(FacOrDeptDTO faculty, String header, Integer facultyId) throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         Faculty facultyToUpdate = facultyRepo.findById(facultyId).orElseThrow(
                 () -> new ResourceNotFoundException("Faculty not found"));
 
+        if(!Objects.equals(facultyToUpdate.getAlias(), faculty.getAlias()) &&
+                facultyRepo.existsByAlias(faculty.getAlias())){
+            throw new ResourceExistsException("Alias already exists, try new");
+        }
+        if(!Objects.equals(facultyToUpdate.getFacultyName(), faculty.getName()) &&
+                facultyRepo.existsByFacultyName(faculty.getName())){
+            throw new ResourceExistsException("Faculty already exists");
+        }
+
         facultyToUpdate.setFacultyName(faculty.getName());
         facultyToUpdate.setAlias(faculty.getAlias());
-        facultyToUpdate.setUpdatedAt(new Date());
+        facultyToUpdate.setUpdatedAt(LocalDateTime.now());
         facultyRepo.save(facultyToUpdate);
         return facultyRepo.findAll();
     }

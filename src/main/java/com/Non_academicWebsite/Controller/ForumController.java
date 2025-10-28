@@ -4,7 +4,7 @@ import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ForumDTO;
 import com.Non_academicWebsite.Entity.Forum;
 import com.Non_academicWebsite.Service.ForumService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +14,10 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "api/v1/user/forum")
+@RequiredArgsConstructor
 public class ForumController {
 
-    @Autowired
-    private ForumService forumService;
+    private final ForumService forumService;
 
     @PostMapping(value = "/add")
     public ResponseEntity<?> addForum(@RequestHeader("Authorization") String header,

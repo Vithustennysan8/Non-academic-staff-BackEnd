@@ -10,21 +10,20 @@ import com.Non_academicWebsite.Repository.ApprovalFlow.ApprovalFlowRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import com.Non_academicWebsite.Service.Forms.DynamicFormService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ApprovalFlowService {
 
-    @Autowired
-    private ApprovalFlowRepo approvalFlowRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private DynamicFormService dynamicFormService;
+    private final ApprovalFlowRepo approvalFlowRepo;
+    private final ExtractUserService extractUserService;
+    private final DynamicFormService dynamicFormService;
 
     public Object addNewApprovalFlow(ApprovalFlowDTO approvalFlowDTO, String header)
             throws ResourceExistsException, ResourceNotFoundException {
@@ -45,7 +44,7 @@ public class ApprovalFlowService {
                     .uniqueName(approvalFlowDTO.getUniqueName())
                     .department(user.getDepartment())
                     .updatedBy(user.getId())
-                    .updatedAt(new Date())
+                    .updatedAt(LocalDateTime.now())
                     .roleName(stage.getRoleName())
                     .sequence(stage.getSequence())
                     .build();

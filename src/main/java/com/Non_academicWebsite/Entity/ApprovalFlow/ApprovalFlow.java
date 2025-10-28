@@ -1,9 +1,11 @@
 package com.Non_academicWebsite.Entity.ApprovalFlow;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -29,5 +31,7 @@ public class ApprovalFlow {
     @Column(nullable = false)
     private String department;
     private String updatedBy;
-    private Date updatedAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime updatedAt;
 }

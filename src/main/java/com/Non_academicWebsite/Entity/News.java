@@ -1,12 +1,14 @@
 package com.Non_academicWebsite.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -21,8 +23,13 @@ public class News {
     @Lob
     @Column(length = 512000)
     private String body;
-    private Date createdAt;
-    private Date updatedAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

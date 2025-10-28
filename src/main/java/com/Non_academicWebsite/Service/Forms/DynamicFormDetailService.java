@@ -17,31 +17,26 @@ import com.Non_academicWebsite.Repository.Forms.DynamicFormDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormFileDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormUserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DynamicFormDetailService {
-    @Autowired
-    private DynamicFormDetailRepo dynamicFormDetailRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private DynamicFormService dynamicFormService;
-    @Autowired
-    private DynamicFormUserRepo dynamicFormUserRepo;
-    @Autowired
-    private DynamicFormUserService dynamicFormUserService;
-    @Autowired
-    private DynamicFormFileDetailRepo dynamicFormFileDetailRepo;
-    @Autowired
-    private ApprovalFlowRepo approvalFlowRepo;
-    @Autowired
-    private FormApproverRepo formApproverRepo;
+
+    private final DynamicFormDetailRepo dynamicFormDetailRepo;
+    private final ExtractUserService extractUserService;
+    private final DynamicFormService dynamicFormService;
+    private final DynamicFormUserRepo dynamicFormUserRepo;
+    private final DynamicFormFileDetailRepo dynamicFormFileDetailRepo;
+    private final ApprovalFlowRepo approvalFlowRepo;
+    private final FormApproverRepo formApproverRepo;
 
 
     public Object addDynamicFormDetails(String header, Map<String, String> parameters, List<MultipartFile> files,
@@ -58,14 +53,12 @@ public class DynamicFormDetailService {
                 .dynamicForm(dynamicForm)
                 .user(user)
                 .status("Pending")
-                .createdAt(new Date())
+                .createdAt(LocalDateTime.now())
                 .build();
         dynamicFormUserRepo.save(dynamicFormUser);
 
         List<ApprovalFlow> flows = approvalFlowRepo.findByUniqueNameAndDynamicFormAndDepartmentAndFaculty(flow,
                 dynamicForm.getFormType(), user.getDepartment(), user.getFaculty());
-
-        System.out.println(flows);
 
         flows.forEach(Flow -> {
             FormApprover formApprover = FormApprover.builder()

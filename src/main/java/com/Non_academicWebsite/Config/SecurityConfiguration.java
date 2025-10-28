@@ -1,5 +1,6 @@
 package com.Non_academicWebsite.Config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +18,10 @@ import static com.Non_academicWebsite.Entity.Role.*;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthFilter;
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

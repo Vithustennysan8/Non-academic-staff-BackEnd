@@ -9,22 +9,20 @@ import com.Non_academicWebsite.Entity.Forms.FormOption;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.FormFieldRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FormFieldService {
 
-    @Autowired
-    private FormFieldRepo formFieldRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private DynamicFormService dynamicFormService;
-    @Autowired
-    private FormOptionService formOptionService;
+    private final FormFieldRepo formFieldRepo;
+    private final ExtractUserService extractUserService;
+    private final DynamicFormService dynamicFormService;
+    private final FormOptionService formOptionService;
 
     public Object createFormField(List<FormFieldDTO> formFieldDTOList, String header, String formType)
             throws ResourceExistsException, ResourceNotFoundException {

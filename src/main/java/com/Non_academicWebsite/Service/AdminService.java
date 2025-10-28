@@ -11,29 +11,23 @@ import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private NormalLeaveFormRepo normalLeaveFormRepo;
-    @Autowired
-    private TransferFormRepo transferFormRepo;
-    @Autowired
-    private RegisterConfirmationTokenService confirmationTokenService;
-    @Autowired
-    private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
-    @Autowired
-    private ForumRepo forumRepo;
-    @Autowired
-    private ExtractUserService extractUserService;
+
+    private final UserRepo userRepo;
+    private final NormalLeaveFormRepo normalLeaveFormRepo;
+    private final TransferFormRepo transferFormRepo;
+    private final RegisterConfirmationTokenService confirmationTokenService;
+    private final RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
+    private final ForumRepo forumRepo;
+    private final ExtractUserService extractUserService;
 
 
     public List<Object> getAllLeaveFormRequests(String header) throws ResourceNotFoundException {
@@ -96,9 +90,9 @@ public class AdminService {
             case "Head of the Department" -> {
                 forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
             }
-            case "Dean" -> {
-                forms.addAll(normalLeaveFormRepo.findByFaculty(user.getFaculty()));
-            }
+//            case "Dean" -> {
+//                forms.addAll(normalLeaveFormRepo.findByFaculty(user.getFaculty()));
+//            }
             default -> {
                 forms.addAll(Collections.emptyList());
             }

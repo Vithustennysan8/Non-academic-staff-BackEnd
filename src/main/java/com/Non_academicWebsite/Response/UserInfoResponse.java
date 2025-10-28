@@ -1,14 +1,13 @@
 package com.Non_academicWebsite.Response;
 
-
-import com.Non_academicWebsite.Entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +19,7 @@ public class UserInfoResponse {
     private String first_name;
     private String last_name;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date date_of_birth;
+    private LocalDate date_of_birth;
     private String gender;
     private String email;
     private String normalEmail;
@@ -33,8 +32,8 @@ public class UserInfoResponse {
     private String job_type;
     private String department;
     private String faculty;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String image_name;
     private String image_type;
     private String image_data;

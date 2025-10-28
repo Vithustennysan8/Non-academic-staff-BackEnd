@@ -1,16 +1,14 @@
 package com.Non_academicWebsite.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -26,8 +24,11 @@ public class Department {
     private Integer facultyId;
     private boolean isAvailable = true;
     private Integer numberOfEmployees;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date createdAt;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date updatedAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime updatedAt;
 }

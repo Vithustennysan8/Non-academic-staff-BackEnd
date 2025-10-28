@@ -14,24 +14,24 @@ import com.Non_academicWebsite.Mail.MailService;
 import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class NormalLeaveFormService {
-    @Autowired
-    private NormalLeaveFormRepo normalLeaveFormRepo;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private MailService mailService;
-    @Autowired
-    private ExtractUserService extractUserService;
-    private final String url = "http://localhost:5173/notifications";
+
+    private final NormalLeaveFormRepo normalLeaveFormRepo;
+    private final UserRepo userRepo;
+    private final MailService mailService;
+    private final ExtractUserService extractUserService;
+    @Value("${FrontEndURL}")
+    private String url;
 
 
     public NormalLeaveForm add(String header, NormalLeaveFormDTO normalLeaveFormDTO)
@@ -61,8 +61,8 @@ public class NormalLeaveFormService {
                 .arrangement(normalLeaveFormDTO.getArrangement())
                 .addressDuringTheLeave(normalLeaveFormDTO.getAddressDuringTheLeave())
                 .user(user)
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .formType("Normal Leave Form")
                 .headStatus("pending")
                 .status("Pending")
@@ -125,7 +125,7 @@ public class NormalLeaveFormService {
                 normalLeaveForm.setHeadStatus("Accepted");
                 normalLeaveForm.setHead(approvalDTO.getUser());
                 normalLeaveForm.setHeadDescription(approvalDTO.getDescription());
-                normalLeaveForm.setHeadReactedAt(new Date());
+                normalLeaveForm.setHeadReactedAt(LocalDateTime.now());
                 normalLeaveForm.setStatus("Accepted");
                 mailService.sendMail(normalLeaveForm.getUser().getEmail(), url, normalLeaveForm.getUser().getFirst_name(), normalLeaveForm.getFormType() , "Accepted", approver.getFirst_name());
                 return normalLeaveFormRepo.save(normalLeaveForm);
@@ -145,7 +145,7 @@ public class NormalLeaveFormService {
                 normalLeaveForm.setHeadStatus("Rejected");
                 normalLeaveForm.setHead(approvalDTO.getUser());
                 normalLeaveForm.setHeadDescription(approvalDTO.getDescription());
-                normalLeaveForm.setHeadReactedAt(new Date());
+                normalLeaveForm.setHeadReactedAt(LocalDateTime.now());
                 normalLeaveForm.setStatus("Rejected");
                 mailService.sendMail(normalLeaveForm.getUser().getEmail(), url, normalLeaveForm.getUser().getFirst_name(), normalLeaveForm.getFormType(), "Rejected", approver.getFirst_name());
                 return normalLeaveFormRepo.save(normalLeaveForm);

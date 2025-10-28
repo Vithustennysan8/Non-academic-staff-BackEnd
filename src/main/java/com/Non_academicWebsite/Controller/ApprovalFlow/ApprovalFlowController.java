@@ -4,7 +4,7 @@ import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.DTO.ApprovalFlow.ApprovalFlowDTO;
 import com.Non_academicWebsite.Service.ApprovalFlow.ApprovalFlowService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "api/v1/")
 @CrossOrigin
+@RequiredArgsConstructor
 public class ApprovalFlowController {
 
-    @Autowired
-    private ApprovalFlowService approvalFlowService;
+    private final ApprovalFlowService approvalFlowService;
 
     // Add new approval flow for the newly added forms flow
     @PostMapping(value = "/admin/approvalFlow/add")

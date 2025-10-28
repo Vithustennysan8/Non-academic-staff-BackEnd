@@ -16,6 +16,7 @@ import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.AuthenticationResponse;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,31 +25,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserIdGenerator userIdGenerator;
-    @Autowired
-    private RegisterConfirmationTokenService confirmationTokenService;
-    @Autowired
-    private MailService mailService;
-    @Autowired
-    private FacultyService facultyService;
-    @Autowired
-    private ExtractUserService extractUserService;
+
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final UserIdGenerator userIdGenerator;
+    private final RegisterConfirmationTokenService confirmationTokenService;
+    private final MailService mailService;
+    private final FacultyService facultyService;
+    private final ExtractUserService extractUserService;
 
     @Transactional
     public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, ResourceExistsException, ResourceNotFoundException {
@@ -84,8 +76,8 @@ public class AuthenticationService {
                 .jobType(registerDTO.getJob_type())
                 .department(registerDTO.getDepartment())
                 .faculty(fac.getFacultyName())
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .image_type(image != null ? image.getContentType() : null)
                 .image_name(image != null ? image.getOriginalFilename() : null)
                 .image_data(image != null ? image.getBytes() : null)
@@ -157,5 +149,27 @@ public class AuthenticationService {
             return confirmationTokenService.getVerifyAdminRegisterRequests(header);
 
         return confirmationTokenService.getVerifyRequests(header);
+    }
+
+    public AuthenticationResponse refresh(Map<String, String> tokenObj) throws ResourceNotFoundException {
+        String token = tokenObj.get("token");
+        if(token == null){
+            throw new ResourceNotFoundException("Token not found");
+        }
+        if(jwtService.isTokenExpired(token)){
+            throw new ResourceNotFoundException("Token expired found");
+        }
+        String email = jwtService.extractUserEmail(token);
+        User user = userRepo.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("User not found with email " + email));
+
+        var jwtToken = jwtService.generateToken(user, user.getRole());
+        return AuthenticationResponse
+                .builder()
+                .token(jwtToken)
+                .user(user)
+                .message("refreshed")
+                .build();
+
     }
 }

@@ -10,7 +10,6 @@ import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.Non_academicWebsite.Entity.Incharge;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
-//import com.Non_academicWebsite.Repository.AttendanceRepo;
 import com.Non_academicWebsite.Repository.ForumRepo;
 import com.Non_academicWebsite.Repository.InchargeRepo;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
@@ -19,36 +18,28 @@ import com.Non_academicWebsite.Response.UserInfoResponse;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import com.Non_academicWebsite.Service.Forms.*;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class StaffService {
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
-    @Autowired
-    private ForumRepo forumRepo;
-    @Autowired
-    private NormalLeaveFormService normalLeaveFormService;
-    @Autowired
-    private TransferFormService transferFormService;
-    @Autowired
-    private OtpConfirmationService otpConfirmationService;
-    @Autowired
-    private ExtractUserService extractUserService;
-    @Autowired
-    private InchargeRepo inchargeRepo;
+
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final RegisterConfirmationTokenRepo registerConfirmationTokenRepo;
+    private final ForumRepo forumRepo;
+    private final NormalLeaveFormService normalLeaveFormService;
+    private final TransferFormService transferFormService;
+    private final OtpConfirmationService otpConfirmationService;
+    private final ExtractUserService extractUserService;
+    private final InchargeRepo inchargeRepo;
 
 
     public List<User> getUsersByDepartment(String header) throws ResourceNotFoundException {
@@ -113,6 +104,7 @@ public class StaffService {
         user.setLast_name(registerDTO.getLast_name());
         user.setDate_of_birth(registerDTO.getDate_of_birth());
         user.setGender(registerDTO.getGender());
+        user.setEmp_id(registerDTO.getEmp_id());
         user.setPhone_no(registerDTO.getPhone_no());
         user.setNormalEmail(registerDTO.getNormalEmail());
         user.setAddress(registerDTO.getAddress());
@@ -122,7 +114,7 @@ public class StaffService {
         user.setImage_name(image != null? image.getOriginalFilename() : user.getImage_name());
         user.setImage_type(image != null? image.getContentType(): user.getImage_type());
         user.setImage_data(image != null? image.getBytes(): user.getImage_data());
-        user.setUpdatedAt(new Date());
+        user.setUpdatedAt(LocalDateTime.now());
 
         return userRepo.save(user);
     }
@@ -212,13 +204,7 @@ public class StaffService {
         if (!userRepo.existsById(id)) {
             throw new ResourceNotFoundException("User not found");
         }
-        List<Object> forms = new ArrayList<>();
-        forms.addAll(normalLeaveFormService.getFormsOfUserById(id));
-//        forms.addAll(accidentLeaveFormService.getFormsOfUserById(id));
-//        forms.addAll(paternalLeaveFormService.getFormsOfUserById(id));
-//        forms.addAll(maternityLeaveFormService.getFormsOfUserById(id));
-//        forms.addAll(medicalLeaveFormService.getFormsOfUserById(id));
-        return forms;
+        return new ArrayList<>(normalLeaveFormService.getFormsOfUserById(id));
     }
 
     public List<User> getAllManagers(String header) throws ResourceNotFoundException {

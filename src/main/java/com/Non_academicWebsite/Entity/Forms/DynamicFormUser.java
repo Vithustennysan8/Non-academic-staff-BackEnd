@@ -1,14 +1,15 @@
 package com.Non_academicWebsite.Entity.Forms;
 
 import com.Non_academicWebsite.Entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -26,6 +27,7 @@ public class DynamicFormUser {
     @JoinColumn(nullable = false)
     private DynamicForm dynamicForm;
     private String status;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date createdAt;
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime createdAt;
 }
