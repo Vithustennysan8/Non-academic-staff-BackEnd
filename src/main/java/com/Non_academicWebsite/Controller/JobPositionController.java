@@ -26,23 +26,20 @@ public class JobPositionController {
     }
 
     @PostMapping("/admin/jobPosition/add")
-    public ResponseEntity<List<JobPosition>> add(@RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
-                                                 @RequestHeader("Authorization") String header)
+    public ResponseEntity<List<JobPosition>> add(@RequestBody FacOrDeptOrJobDTO facOrDeptDTO)
             throws ResourceExistsException {
         return ResponseEntity.status(HttpStatus.CREATED).body(jobPositionService.add(facOrDeptDTO));
     }
 
     @PutMapping("/admin/jobPosition/update/{jobPositionId}")
     public ResponseEntity<List<JobPosition>> update(@PathVariable("jobPositionId") Integer jobPositionId,
-                                                 @RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
-                                                 @RequestHeader("Authorization") String header)
+                                                 @RequestBody FacOrDeptOrJobDTO facOrDeptDTO)
             throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.ok(jobPositionService.update(facOrDeptDTO, jobPositionId));
     }
 
     @DeleteMapping("/admin/jobPosition/delete/{jobPositionId}")
-    public ResponseEntity<List<JobPosition>> delete(@PathVariable("jobPositionId") Integer jobPositionId,
-                                                 @RequestHeader("Authorization") String header)
+    public ResponseEntity<List<JobPosition>> delete(@PathVariable("jobPositionId") Integer jobPositionId)
             throws ResourceNotFoundException {
         return ResponseEntity.ok(jobPositionService.delete(jobPositionId));
     }

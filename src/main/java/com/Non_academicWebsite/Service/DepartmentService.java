@@ -12,11 +12,9 @@ import com.Non_academicWebsite.Repository.DepartmentRepo;
 import com.Non_academicWebsite.Repository.FacultyRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 

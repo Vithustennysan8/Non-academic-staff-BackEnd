@@ -1,15 +1,12 @@
 package com.Non_academicWebsite.Service;
 
-import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.RegisterConfirmationTokenRepo;
-import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

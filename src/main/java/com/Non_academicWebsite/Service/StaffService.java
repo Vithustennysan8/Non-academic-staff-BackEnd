@@ -1,6 +1,5 @@
 package com.Non_academicWebsite.Service;
 
-import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.DTO.ForgotPasswordDTO;
@@ -179,7 +178,7 @@ public class StaffService {
                 orElseThrow(()-> new ResourceNotFoundException("User is not found!!!"));
 
         String status = otpConfirmationService.confirmOtp(otp);
-        if(status == "OTP confirmed successfully"){
+        if(Objects.equals(status, "OTP confirmed successfully")){
             user.setVerified(true);
             userRepo.save(user);
             return "success";

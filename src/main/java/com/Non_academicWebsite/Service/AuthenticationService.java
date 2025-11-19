@@ -15,7 +15,6 @@ import com.Non_academicWebsite.Response.AuthenticationResponse;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
