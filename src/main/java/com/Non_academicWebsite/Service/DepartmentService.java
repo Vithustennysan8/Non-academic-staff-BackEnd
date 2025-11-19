@@ -3,7 +3,7 @@ package com.Non_academicWebsite.Service;
 import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
-import com.Non_academicWebsite.DTO.FacOrDeptDTO;
+import com.Non_academicWebsite.DTO.FacOrDeptOrJobDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Entity.Faculty;
 import com.Non_academicWebsite.Entity.Role;
@@ -43,7 +43,7 @@ public class DepartmentService {
         return departmentRepo.findAllByFacultyId(faculty.getId());
     }
 
-    public List<Department> add(FacOrDeptDTO facOrDeptDTO, String header)
+    public List<Department> add(FacOrDeptOrJobDTO facOrDeptDTO, String header)
             throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
@@ -72,7 +72,7 @@ public class DepartmentService {
         return get(header);
     }
 
-    public List<Department> update(FacOrDeptDTO facOrDeptDTO, String header, Integer departmentId)
+    public List<Department> update(FacOrDeptOrJobDTO facOrDeptDTO, String header, Integer departmentId)
             throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 

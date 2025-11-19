@@ -7,6 +7,7 @@ import com.Non_academicWebsite.Entity.ApprovalFlow.FormApprover;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormFileDetail;
 import com.Non_academicWebsite.Entity.Forms.DynamicFormUser;
+import com.Non_academicWebsite.Entity.JobPosition;
 import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Mail.MailService;
@@ -18,16 +19,13 @@ import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.Non_academicWebsite.Entity.JobScope.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +38,7 @@ public class DynamicFormUserService {
     private final FormApproverRepo formApproverRepo;
     private final UserRepo userRepo;
     private final MailService mailService;
+    private final JobPositionRepository jobPositionRepository;
     @Value("${FrontEndURL}")
     private String url;
 
@@ -68,179 +67,114 @@ public class DynamicFormUserService {
     }
 
     public Object getAllFormRequests(String header) throws ResourceNotFoundException {
+
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
-        List<FormApprover> approvalForms = formApproverRepo.findByApproverOrderByIdDesc(user.getJobType()) ;
-
-        if(Objects.equals(user.getJobType(), "Head of the Department")){
-            List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-            approvalForms.forEach(approval -> {
-                if(approval.getApproverOrder() > 1 && formApproverRepo.existsByFormIdAndApproverOrderAndApproverStatus
-                        (approval.getFormId(), approval.getApproverOrder()-1, "Accepted")){
-
-                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(approval.getFormId());
-                    Map<String, Object> dynamic = new HashMap<>();
-                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(approval.getFormId(),
-                            user.getFaculty(), user.getDepartment());
-                    if(dynamicFormUser != null){
-                        dynamic.put("formDetails", dynamicFormUser);
-                        dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                Comparator.comparingInt(FormApprover::getApproverOrder)
-                                ).collect(Collectors.toList())
-                        );
-                        dynamicFormUsers.add(dynamic);
-                    }
-                }else if(approval.getApproverOrder() == 1){
-                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(approval.getFormId());
-                    Map<String, Object> dynamic = new HashMap<>();
-                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(approval.getFormId(),
-                            user.getFaculty(), user.getDepartment());
-                    if(dynamicFormUser != null){
-                        dynamic.put("formDetails", dynamicFormUser);
-                        dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                        Comparator.comparingInt(FormApprover::getApproverOrder)
-                                ).collect(Collectors.toList())
-                        );
-                        dynamicFormUsers.add(dynamic);
-                    }
-                }
-            });
-            if(dynamicFormUsers.isEmpty()){return Collections.emptyList();}
-            Map<String, Object> allForms = generateOutput(dynamicFormUsers);
-            return allForms.values().toArray();
-
-        }else if(Objects.equals(user.getJobType(), "Dean")){
-            List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-            approvalForms.forEach(approval -> {
-                if(approval.getApproverOrder() > 1 && formApproverRepo.existsByFormIdAndApproverOrderAndApproverStatus
-                            (approval.getFormId(), approval.getApproverOrder()-1, "Accepted")) {
-
-                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(approval.getFormId());
-                    Map<String, Object> dynamic = new HashMap<>();
-                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFaculty(approval.getFormId(),
-                            user.getFaculty());
-                    if (dynamicFormUser != null) {
-                        dynamic.put("formDetails", dynamicFormUser);
-                        dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                Comparator.comparingInt(FormApprover::getApproverOrder)).collect(Collectors.toList())
-                        );
-                        dynamicFormUsers.add(dynamic);
-                    }
-                }else if(approval.getApproverOrder() == 1){
-                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(approval.getFormId());
-                    Map<String, Object> dynamic = new HashMap<>();
-                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(approval.getFormId(),
-                            user.getFaculty(), user.getDepartment());
-                    if(dynamicFormUser != null){
-                        dynamic.put("formDetails", dynamicFormUser);
-                        dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                        Comparator.comparingInt(FormApprover::getApproverOrder)
-                                ).collect(Collectors.toList())
-                        );
-                        dynamicFormUsers.add(dynamic);
-                    }
-                }
-            });
-            if(dynamicFormUsers.isEmpty()){return Collections.emptyList();}
-            Map<String, Object> allForms = generateOutput(dynamicFormUsers);
-            return allForms.values().toArray();
-        }
+        // Fetch all approver entries that belong to this job type
+        List<FormApprover> approvalForms = formApproverRepo.findByApproverOrderByIdDesc(user.getJobType());
+        JobPosition jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
 
         List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-        approvalForms.forEach(approval -> {
-            if(approval.getApproverOrder() > 1 && formApproverRepo.existsByFormIdAndApproverOrderAndApproverStatus
-                    (approval.getFormId(), approval.getApproverOrder()-1, "Accepted")) {
-                List<FormApprover> formApprovers = formApproverRepo.findByFormId(approval.getFormId());
+
+        for (FormApprover approval : approvalForms) {
+
+            // Check if it is NOW this approver's turn
+            if (!isMyTurn(approval)) continue;
+
+            // Find form based on scope (department-level or faculty-level)
+            DynamicFormUser formUser = findFormForUserScope(approval.getFormId(), user, jobPosition);
+
+            if (formUser != null) {
                 Map<String, Object> dynamic = new HashMap<>();
-                DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(approval.getFormId()).orElse(null);
-                if (dynamicFormUser != null) {
-                    dynamic.put("formDetails", dynamicFormUser);
-                    dynamic.put("approverDetails", formApprovers.stream().sorted(
-                            Comparator.comparingInt(FormApprover::getApproverOrder)
-                    ).collect(Collectors.toList()
-                    ));
-                    dynamicFormUsers.add(dynamic);
-                }
-            }else if(approval.getApproverOrder() == 1){
-            List<FormApprover> formApprovers = formApproverRepo.findByFormId(approval.getFormId());
-            Map<String, Object> dynamic = new HashMap<>();
-            DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(approval.getFormId(),
-                    user.getFaculty(), user.getDepartment());
-            if(dynamicFormUser != null){
-                dynamic.put("formDetails", dynamicFormUser);
-                dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                Comparator.comparingInt(FormApprover::getApproverOrder)
-                        ).collect(Collectors.toList())
-                );
+                List<FormApprover> formApprovers =
+                        formApproverRepo.findByFormId(approval.getFormId());
+
+                dynamic.put("formDetails", formUser);
+                dynamic.put("approverDetails",
+                        formApprovers.stream()
+                                .sorted(Comparator.comparingInt(FormApprover::getApproverOrder))
+                                .collect(Collectors.toList()));
+
                 dynamicFormUsers.add(dynamic);
             }
-            }
-        });
-        if(dynamicFormUsers.isEmpty()){return Collections.emptyList();}
+        }
+
+        if (dynamicFormUsers.isEmpty()) return Collections.emptyList();
+
         Map<String, Object> allForms = generateOutput(dynamicFormUsers);
         return allForms.values().toArray();
+    }
 
+    private boolean isMyTurn(FormApprover approval) {
+        if (approval.getApproverOrder() == 1) return true;
+
+        return formApproverRepo.existsByFormIdAndApproverOrderAndApproverStatus(
+                approval.getFormId(),
+                approval.getApproverOrder() - 1,
+                "Accepted"
+        );
+    }
+
+    private DynamicFormUser findFormForUserScope(Long formId, User user, JobPosition job) {
+
+        switch (job.getJobScope()) {
+
+            case DEPARTMENT_SCOPE:
+                return dynamicFormUserRepo.findByIdAndFacultyAndDepartment(
+                        formId,
+                        user.getFaculty(),
+                        user.getDepartment()
+                );
+
+            case FACULTY_SCOPE:
+                return dynamicFormUserRepo.findByIdAndFaculty(
+                        formId,
+                        user.getFaculty()
+                );
+
+            case GLOBAL_SCOPE:
+                return dynamicFormUserRepo.findById(formId).orElse(null);
+
+            default:
+                return null;
+        }
     }
 
     public Object getTheFormModified(String header, Long approverId) throws ResourceNotFoundException {
+
         User user = extractUserService.extractUserByAuthorizationHeader(header);
+        JobPosition jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
 
-        FormApprover formApprover = formApproverRepo.findById(approverId).orElseThrow( () ->
-                new ResourceNotFoundException("Form Approver not found"));
+        FormApprover formApprover = formApproverRepo.findById(approverId).orElseThrow(
+                () -> new ResourceNotFoundException("Form Approver not found")
+        );
 
-        if(Objects.equals(user.getJobType(), "Head of the Department")){
-            List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-            List<FormApprover> formApprovers = formApproverRepo.findByFormId(formApprover.getFormId());
-            Map<String, Object> dynamic = new HashMap<>();
-            DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFacultyAndDepartment(formApprover.getFormId(),
-                    user.getFaculty(), user.getDepartment());
-            if(dynamicFormUser != null){
-                dynamic.put("formDetails", dynamicFormUser);
-                dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                Comparator.comparingInt(FormApprover::getApproverOrder)
-                        ).collect(Collectors.toList())
-                );
-                dynamicFormUsers.add(dynamic);
-            }
+        Long formId = formApprover.getFormId();
 
-            if(dynamicFormUsers.isEmpty()){return Collections.emptyList();}
-            Map<String, Object> allForms = generateOutput(dynamicFormUsers);
-            return allForms.values().toArray();
+        // Fetch the form belonging to the user based on role scope
+        DynamicFormUser formUser = findFormForUserScope(formId, user, jobPosition);
 
-        }else if(Objects.equals(user.getJobType(), "Dean")){
-            List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-                    List<FormApprover> formApprovers = formApproverRepo.findByFormId(formApprover.getFormId());
-                    Map<String, Object> dynamic = new HashMap<>();
-                    DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findByIdAndFaculty(formApprover.getFormId(),
-                            user.getFaculty());
-                    if (dynamicFormUser != null) {
-                        dynamic.put("formDetails", dynamicFormUser);
-                        dynamic.put("approverDetails", formApprovers.stream().sorted(
-                                Comparator.comparingInt(FormApprover::getApproverOrder)).collect(Collectors.toList())
-                        );
-                        dynamicFormUsers.add(dynamic);
-                    }
-            if(dynamicFormUsers.isEmpty()){return Collections.emptyList();}
-            Map<String, Object> allForms = generateOutput(dynamicFormUsers);
-            return allForms.values().toArray();
+        if (formUser == null) {
+            return Collections.emptyList();
         }
 
-        List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
-                List<FormApprover> formApprovers = formApproverRepo.findByFormId(formApprover.getFormId());
-                Map<String, Object> dynamic = new HashMap<>();
-                DynamicFormUser dynamicFormUser = dynamicFormUserRepo.findById(formApprover.getFormId()).orElse(null);
-                if (dynamicFormUser != null) {
-                    dynamic.put("formDetails", dynamicFormUser);
-                    dynamic.put("approverDetails", formApprovers.stream().sorted(
-                            Comparator.comparingInt(FormApprover::getApproverOrder)
-                    ).collect(Collectors.toList()
-                    ));
-                    dynamicFormUsers.add(dynamic);
-                }
-        if(dynamicFormUsers.isEmpty()){return Collections.emptyList();}
-        Map<String, Object> allForms = generateOutput(dynamicFormUsers);
-        return allForms.values().toArray();
+        // Get approver chain
+        List<FormApprover> formApprovers = formApproverRepo
+                .findByFormId(formId)
+                .stream()
+                .sorted(Comparator.comparingInt(FormApprover::getApproverOrder))
+                .collect(Collectors.toList());
+
+        // Build output
+        Map<String, Object> dynamic = new HashMap<>();
+        dynamic.put("formDetails", formUser);
+        dynamic.put("approverDetails", formApprovers);
+
+        Map<String, Object> result = generateOutput(Collections.singletonList(dynamic));
+
+        return result.values().toArray();
     }
+
 
     public Map<String, Object> generateOutput(List<Map<String, Object>> list) {
         Map<String, Object> allForms = new LinkedHashMap<>();

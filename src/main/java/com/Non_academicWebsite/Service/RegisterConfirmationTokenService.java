@@ -45,7 +45,7 @@ public class RegisterConfirmationTokenService {
 
     public List<RegisterConfirmationToken> getVerifyRequests(String header) throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
-        if(user == null || user.getRole() != Role.ADMIN) {
+        if(user.getRole() != Role.ADMIN) {
             return Collections.emptyList();
         }
         String prefix = user.getId().substring(0, user.getId().length() - 7);
@@ -55,7 +55,7 @@ public class RegisterConfirmationTokenService {
     public List<RegisterConfirmationToken> getVerifyAdminRegisterRequests(String header)
             throws ResourceNotFoundException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
-        if(user == null || user.getRole() != Role.SUPER_ADMIN) {
+        if(user.getRole() != Role.SUPER_ADMIN) {
             return Collections.emptyList();
         }
         List<RegisterConfirmationToken> byRoleAndVerificationStatus = new ArrayList<>();

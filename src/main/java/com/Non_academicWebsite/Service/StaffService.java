@@ -85,6 +85,7 @@ public class StaffService {
                 .ic_no(user.getIc_no())
                 .emp_id(user.getEmp_id())
                 .job_type(user.getJobType())
+                .jobScope(user.getJobScope().toString())
                 .department(user.getDepartment())
                 .faculty(user.getFaculty())
                 .image_type(user.getImage_type())

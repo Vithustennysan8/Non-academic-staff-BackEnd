@@ -1,6 +1,10 @@
 package com.Non_academicWebsite.Entity;
 
+import com.Non_academicWebsite.Entity.Forms.DynamicFormUser;
+import com.Non_academicWebsite.Entity.Forms.NormalLeaveForm;
+import com.Non_academicWebsite.Entity.Forms.TransferForm;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,6 +15,7 @@ import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Setter
 @Getter
@@ -32,7 +37,6 @@ public class User implements UserDetails {
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@gs\\.pdn\\.ac\\.lk$", message = "Email must be from the gs.pdn.ac.lk domain")
     private String email;
     private String normalEmail;
-    private String app_password;
     private Long phone_no;
     @Column(nullable = false)
     private String password;
@@ -42,6 +46,8 @@ public class User implements UserDetails {
     private String ic_no;
     private String emp_id;
     private String jobType;
+    @Enumerated(EnumType.STRING)
+    private JobScope jobScope;
     private String department;
     private String faculty;
     @CreationTimestamp
@@ -61,6 +67,31 @@ public class User implements UserDetails {
     private byte[] image_data;
     private boolean verified;
     private boolean rejected;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<RegisterConfirmationToken> registerConfirmationTokens;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<DynamicFormUser> dynamicFormUsers;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Forum> forums;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<News> news;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<NormalLeaveForm> normalLeaveForms;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Notification> notifications;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<OtpConfirmationToken> otpConfirmationTokens;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<TransferForm> transferForms;
 
 
     @Override

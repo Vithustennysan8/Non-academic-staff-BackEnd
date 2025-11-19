@@ -2,7 +2,7 @@ package com.Non_academicWebsite.Controller;
 
 import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
-import com.Non_academicWebsite.DTO.FacOrDeptDTO;
+import com.Non_academicWebsite.DTO.FacOrDeptOrJobDTO;
 import com.Non_academicWebsite.Entity.JobPosition;
 import com.Non_academicWebsite.Service.JobPositionService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class JobPositionController {
     }
 
     @PostMapping("/admin/jobPosition/add")
-    public ResponseEntity<List<JobPosition>> add(@RequestBody FacOrDeptDTO facOrDeptDTO,
+    public ResponseEntity<List<JobPosition>> add(@RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
                                                  @RequestHeader("Authorization") String header)
             throws ResourceExistsException {
         return ResponseEntity.status(HttpStatus.CREATED).body(jobPositionService.add(facOrDeptDTO));
@@ -34,7 +34,7 @@ public class JobPositionController {
 
     @PutMapping("/admin/jobPosition/update/{jobPositionId}")
     public ResponseEntity<List<JobPosition>> update(@PathVariable("jobPositionId") Integer jobPositionId,
-                                                 @RequestBody FacOrDeptDTO facOrDeptDTO,
+                                                 @RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
                                                  @RequestHeader("Authorization") String header)
             throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.ok(jobPositionService.update(facOrDeptDTO, jobPositionId));

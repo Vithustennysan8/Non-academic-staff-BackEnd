@@ -30,6 +30,7 @@ public class UserInfoResponse {
     private String ic_no;
     private String emp_id;
     private String job_type;
+    private String jobScope;
     private String department;
     private String faculty;
     private LocalDateTime createdAt;

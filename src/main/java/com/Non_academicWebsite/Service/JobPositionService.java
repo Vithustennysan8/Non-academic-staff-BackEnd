@@ -2,15 +2,12 @@ package com.Non_academicWebsite.Service;
 
 import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
-import com.Non_academicWebsite.DTO.FacOrDeptDTO;
+import com.Non_academicWebsite.DTO.FacOrDeptOrJobDTO;
 import com.Non_academicWebsite.Entity.JobPosition;
 import com.Non_academicWebsite.Repository.JobPositionRepo;
-import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +22,7 @@ public class JobPositionService {
         return jobPositionRepo.findAll();
     }
 
-    public List<JobPosition> add(FacOrDeptDTO jobPositionDto) throws ResourceExistsException {
+    public List<JobPosition> add(FacOrDeptOrJobDTO jobPositionDto) throws ResourceExistsException {
 
         if(jobPositionRepo.existsByJobPositionName(jobPositionDto.getName())){
             throw new ResourceExistsException("Job position already exists");
@@ -36,12 +33,13 @@ public class JobPositionService {
         JobPosition newJobPosition = JobPosition.builder()
                .jobPositionName(jobPositionDto.getName())
                .alias(jobPositionDto.getAlias())
+                .jobScope(jobPositionDto.getScope())
                .build();
         jobPositionRepo.save(newJobPosition);
         return get();
     }
 
-    public List<JobPosition> update(FacOrDeptDTO jobPositionDto, Integer jobPositionId) throws ResourceNotFoundException, ResourceExistsException {
+    public List<JobPosition> update(FacOrDeptOrJobDTO jobPositionDto, Integer jobPositionId) throws ResourceNotFoundException, ResourceExistsException {
         JobPosition jobPosition = jobPositionRepo.findById(jobPositionId).orElseThrow(
                 () -> new ResourceNotFoundException("Job position not found"));
 
@@ -56,6 +54,7 @@ public class JobPositionService {
 
         jobPosition.setJobPositionName(jobPositionDto.getName());
         jobPosition.setAlias(jobPositionDto.getAlias());
+        jobPosition.setJobScope(jobPositionDto.getScope());
         jobPositionRepo.save(jobPosition);
         return get();
     }

@@ -7,11 +7,9 @@ import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
 import com.Non_academicWebsite.CustomIdGenerator.UserIdGenerator;
 import com.Non_academicWebsite.DTO.LoginDTO;
 import com.Non_academicWebsite.DTO.RegisterDTO;
-import com.Non_academicWebsite.Entity.Faculty;
-import com.Non_academicWebsite.Entity.RegisterConfirmationToken;
-import com.Non_academicWebsite.Entity.Role;
-import com.Non_academicWebsite.Entity.User;
+import com.Non_academicWebsite.Entity.*;
 import com.Non_academicWebsite.Mail.MailService;
+import com.Non_academicWebsite.Repository.JobPositionRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Response.AuthenticationResponse;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
@@ -41,6 +39,7 @@ public class AuthenticationService {
     private final MailService mailService;
     private final FacultyService facultyService;
     private final ExtractUserService extractUserService;
+    private final JobPositionRepo jobPositionRepo;
 
     @Transactional
     public Boolean registerStaff(RegisterDTO registerDTO, MultipartFile image) throws IOException, ResourceExistsException, ResourceNotFoundException {
@@ -50,13 +49,10 @@ public class AuthenticationService {
         String customId = userIdGenerator.generateCustomUserID(registerDTO.getFacultyId(), registerDTO.getDepartment(), registerDTO.getJob_type());
         Faculty fac = facultyService.getFac(registerDTO.getFacultyId());
 
-//        Role role = null;
-//        switch (registerDTO.getRole()){
-//            case USER -> role = Role.USER;
-//            case MANAGER -> role = Role.MANAGER;
-//            case ADMIN -> role = Role.ADMIN;
-//            case SUPER_ADMIN -> role = Role.SUPER_ADMIN;
-//        }
+        JobPosition jobPosition = jobPositionRepo.findByJobPositionName(registerDTO.getJob_type()).orElse(null);
+        if (jobPosition == null) {
+            throw new ResourceNotFoundException("Job position not found");
+        }
 
         User user = User.builder()
                 .id(customId)
@@ -65,7 +61,6 @@ public class AuthenticationService {
                 .date_of_birth(registerDTO.getDate_of_birth())
                 .gender(registerDTO.getGender())
                 .email(registerDTO.getEmail())
-                .app_password(registerDTO.getApp_password())
                 .phone_no(registerDTO.getPhone_no())
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .address(registerDTO.getAddress())
@@ -74,6 +69,7 @@ public class AuthenticationService {
                 .ic_no(registerDTO.getIc_no())
                 .emp_id(registerDTO.getEmp_id())
                 .jobType(registerDTO.getJob_type())
+                .jobScope(jobPosition.getJobScope())
                 .department(registerDTO.getDepartment())
                 .faculty(fac.getFacultyName())
                 .createdAt(LocalDateTime.now())
@@ -138,8 +134,12 @@ public class AuthenticationService {
                 requestedUser.setVerified(true);
                 userRepo.save(requestedUser);
 //              // TODO: change the url to the frontEnd url
-                mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser,
-                        user.getFirst_name()+" "+user.getLast_name());
+                try{
+                    mailService.sendMailForRegister(requestedUser.getEmail(), "http://localhost:5173/login", requestedUser,
+                            user.getFirst_name()+" "+user.getLast_name());
+                }catch (Exception ex){
+                    System.out.println(ex.getMessage());
+                }
             }else {
                 return Collections.emptyList();
             }

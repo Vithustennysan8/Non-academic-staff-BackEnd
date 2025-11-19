@@ -3,7 +3,7 @@ package com.Non_academicWebsite.Controller;
 import com.Non_academicWebsite.CustomException.ResourceExistsException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
-import com.Non_academicWebsite.DTO.FacOrDeptDTO;
+import com.Non_academicWebsite.DTO.FacOrDeptOrJobDTO;
 import com.Non_academicWebsite.Entity.Department;
 import com.Non_academicWebsite.Service.DepartmentService;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +32,14 @@ public class DepartmentController {
     }
 
     @PostMapping(value = "/admin/department/add")
-    public ResponseEntity<List<Department>> add(@RequestBody FacOrDeptDTO facOrDeptDTO,
+    public ResponseEntity<List<Department>> add(@RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
                                                 @RequestHeader("Authorization") String header) throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.status(HttpStatus.CREATED).body(departmentService.add(facOrDeptDTO, header));
     }
 
     @PutMapping(value = "/admin/department/update/{departmentId}")
     public ResponseEntity<List<Department>> update(@PathVariable("departmentId") Integer departmentId,
-                                                @RequestBody FacOrDeptDTO facOrDeptDTO,
+                                                @RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
                                                 @RequestHeader("Authorization") String header) throws ResourceNotFoundException, ResourceExistsException {
         return ResponseEntity.ok(departmentService.update(facOrDeptDTO, header, departmentId));
     }
