@@ -10,7 +10,7 @@ import java.util.List;
 @EnableJpaRepositories
 @Repository
 public interface DepartmentRepo extends JpaRepository<Department, Integer> {
-    List<Department> findAllByFacultyId(Integer faculty);
+    List<Department> findAllByFacultyId(Integer facultyId);
     boolean existsByFacultyIdAndAlias(Integer id, String alias);
 
     boolean existsByFacultyIdAndDepartmentName(Integer id, String name);

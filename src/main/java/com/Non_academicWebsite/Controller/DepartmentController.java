@@ -31,6 +31,12 @@ public class DepartmentController {
         return ResponseEntity.ok(departmentService.get(header));
     }
 
+    @GetMapping(value = "/auth/user/department/getByFaculty")
+    public ResponseEntity<List<Department>> getAll(@RequestHeader("Authorization") String header,
+                                                   @RequestParam("faculty") String faculty) throws ResourceNotFoundException {
+        return ResponseEntity.ok(departmentService.getByFaculty(header, faculty));
+    }
+
     @PostMapping(value = "/admin/department/add")
     public ResponseEntity<List<Department>> add(@RequestBody FacOrDeptOrJobDTO facOrDeptDTO,
                                                 @RequestHeader("Authorization") String header) throws ResourceNotFoundException, ResourceExistsException {

@@ -41,6 +41,17 @@ public class DepartmentService {
         return departmentRepo.findAllByFacultyId(faculty.getId());
     }
 
+    public List<Department> getByFaculty(String header, String faculty) throws ResourceNotFoundException {
+        User user = extractUserService.extractUserByAuthorizationHeader(header);
+
+        if(!facultyRepo.existsByFacultyName(faculty)){
+            throw new ResourceNotFoundException("Faculty not found");
+        }
+        Faculty facultyEntity = facultyRepo.findByFacultyName(faculty);
+
+        return departmentRepo.findAllByFacultyId(facultyEntity.getId());
+    }
+
     public List<Department> add(FacOrDeptOrJobDTO facOrDeptDTO, String header)
             throws ResourceNotFoundException, ResourceExistsException {
         User user = extractUserService.extractUserByAuthorizationHeader(header);

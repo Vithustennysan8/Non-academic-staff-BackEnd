@@ -15,6 +15,7 @@ import com.Non_academicWebsite.Repository.ApprovalFlow.FormApproverRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormFileDetailRepo;
 import com.Non_academicWebsite.Repository.Forms.DynamicFormUserRepo;
+import com.Non_academicWebsite.Repository.JobPositionRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import jakarta.transaction.Transactional;
@@ -36,7 +37,7 @@ public class DynamicFormUserService {
     private final FormApproverRepo formApproverRepo;
     private final UserRepo userRepo;
     private final MailService mailService;
-    private final JobPositionRepository jobPositionRepository;
+    private final JobPositionRepo jobPositionRepository;
     @Value("${FrontEndURL}")
     private String url;
 
@@ -70,8 +71,8 @@ public class DynamicFormUserService {
 
         // Fetch all approver entries that belong to this job type
         List<FormApprover> approvalForms = formApproverRepo.findByApproverOrderByIdDesc(user.getJobType());
-        JobPosition jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
-
+        Optional<JobPosition> jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
+        System.out.println(jobPosition.get());
         List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
 
         for (FormApprover approval : approvalForms) {
@@ -80,7 +81,7 @@ public class DynamicFormUserService {
             if (!isMyTurn(approval)) continue;
 
             // Find form based on scope (department-level or faculty-level)
-            DynamicFormUser formUser = findFormForUserScope(approval.getFormId(), user, jobPosition);
+            DynamicFormUser formUser = findFormForUserScope(approval.getFormId(), user, jobPosition.get());
 
             if (formUser != null) {
                 Map<String, Object> dynamic = new HashMap<>();
@@ -141,7 +142,7 @@ public class DynamicFormUserService {
     public Object getTheFormModified(String header, Long approverId) throws ResourceNotFoundException {
 
         User user = extractUserService.extractUserByAuthorizationHeader(header);
-        JobPosition jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
+        Optional<JobPosition> jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
 
         FormApprover formApprover = formApproverRepo.findById(approverId).orElseThrow(
                 () -> new ResourceNotFoundException("Form Approver not found")
@@ -150,7 +151,7 @@ public class DynamicFormUserService {
         Long formId = formApprover.getFormId();
 
         // Fetch the form belonging to the user based on role scope
-        DynamicFormUser formUser = findFormForUserScope(formId, user, jobPosition);
+        DynamicFormUser formUser = findFormForUserScope(formId, user, jobPosition.get());
 
         if (formUser == null) {
             return Collections.emptyList();
@@ -270,7 +271,7 @@ public class DynamicFormUserService {
 
         FormApprover formApprover = formApproverRepo.findByFormIdAndApproverOrder(dynamicFormUser.getId(), 1);
         if(formApprover == null){
-            throw new ResourceNotFoundException("Aprrover flow issue");
+            throw new ResourceNotFoundException("Approver flow issue");
         }
 
         formApproverRepo.deleteAllByFormId(id);

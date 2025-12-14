@@ -28,7 +28,7 @@ public class UserIdGenerator {
 
     static {
         faculties.put("Faculty of Agriculture", "AG");
-        faculties.put("Faculty of Allied Health Sciences", "AH");
+        faculties.put("Faculty of Allied Health Sciences", "AHS");
         faculties.put("Faculty of Arts", "AR");
         faculties.put("Faculty of Dental Sciences", "DS");
         faculties.put("Faculty of Engineering", "EN");
