@@ -11,12 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/superadmin")
+@RequestMapping("/api/v1/super_admin")
 @CrossOrigin
 @RequiredArgsConstructor
 public class SuperAdminController {
 
     private final SuperAdminService superAdminService;
+
+    @GetMapping("/greet")
+    public ResponseEntity<String> greet(){
+        return ResponseEntity.ok("This is the super admin page");
+    }
 
     // used to retrieve the admin and user register requests for super_admin to approve
     @GetMapping(value = "/verifyAdminRegisterRequests")
