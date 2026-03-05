@@ -22,9 +22,15 @@ public class NormalLeaveFormDTO {
     private Integer casualLeaveLastYear;
     private Integer vacationLeaveLastYear;
     private Integer sickLeaveLastYear;
+    private Integer dutyLastYear;
+    private Integer halfPayLastYear;
+    private Integer noPayLastYear;
     private Integer casualLeaveThisYear;
     private Integer vacationLeaveThisYear;
     private Integer sickLeaveThisYear;
+    private Integer dutyThisYear;
+    private Integer halfPayThisYear;
+    private Integer noPayThisYear;
     private Integer noOfLeaveDays;
     private String leaveType;
     @DateTimeFormat( pattern = "yyyy-MM-dd")

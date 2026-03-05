@@ -29,9 +29,15 @@ public class NormalLeaveForm implements Forms{
     private Integer casualLeaveLastYear;
     private Integer vacationLeaveLastYear;
     private Integer sickLeaveLastYear;
+    private Integer dutyLastYear;
+    private Integer halfPayLastYear;
+    private Integer noPayLastYear;
     private Integer casualLeaveThisYear;
     private Integer vacationLeaveThisYear;
     private Integer sickLeaveThisYear;
+    private Integer dutyThisYear;
+    private Integer halfPayThisYear;
+    private Integer noPayThisYear;
     @ManyToOne
     @JoinColumn(nullable = false, name = "user_id")
     private User user;

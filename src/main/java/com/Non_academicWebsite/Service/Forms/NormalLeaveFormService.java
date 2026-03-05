@@ -1,6 +1,5 @@
 package com.Non_academicWebsite.Service.Forms;
 
-import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.FormUnderProcessException;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.CustomException.UnauthorizedAccessException;
@@ -15,7 +14,6 @@ import com.Non_academicWebsite.Repository.Forms.NormalLeaveFormRepo;
 import com.Non_academicWebsite.Repository.UserRepo;
 import com.Non_academicWebsite.Service.ExtractUser.ExtractUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +47,15 @@ public class NormalLeaveFormService {
                 .casualLeaveLastYear(normalLeaveFormDTO.getCasualLeaveLastYear())
                 .sickLeaveLastYear(normalLeaveFormDTO.getSickLeaveLastYear())
                 .vacationLeaveLastYear(normalLeaveFormDTO.getVacationLeaveLastYear())
+                .dutyLastYear(normalLeaveFormDTO.getDutyLastYear())
+                .halfPayLastYear(normalLeaveFormDTO.getHalfPayLastYear())
+                .noPayLastYear(normalLeaveFormDTO.getNoPayLastYear())
                 .casualLeaveThisYear(normalLeaveFormDTO.getCasualLeaveThisYear())
                 .sickLeaveThisYear(normalLeaveFormDTO.getSickLeaveThisYear())
                 .vacationLeaveThisYear(normalLeaveFormDTO.getVacationLeaveThisYear())
+                .dutyThisYear(normalLeaveFormDTO.getDutyThisYear())
+                .halfPayThisYear(normalLeaveFormDTO.getHalfPayThisYear())
+                .noPayThisYear(normalLeaveFormDTO.getNoPayThisYear())
                 .addressDuringTheLeave(normalLeaveFormDTO.getAddressDuringTheLeave())
                 .noOfLeaveDays(normalLeaveFormDTO.getNoOfLeaveDays())
                 .leaveType(normalLeaveFormDTO.getLeaveType())
@@ -156,7 +160,7 @@ public class NormalLeaveFormService {
 
     public String deleteForm(String userId) {
         if(!normalLeaveFormRepo.existsByUserId(userId)){
-            return "There is no form found with this user id. Please check the user id again. Returning null...";
+            return "There is no form found with this user id!";
         }
         normalLeaveFormRepo.deleteByUserId(userId);
         return "delete success";
@@ -171,7 +175,8 @@ public class NormalLeaveFormService {
             throw new NullPointerException("User not found");
         } else if (normalLeaveForm == null) {
             throw new NullPointerException("Form not found");
-        }else if (Objects.equals(user.getId(), normalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")){
+        }else if (Objects.equals(user.getId(), normalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")
+        || Objects.equals(user.getRole().toString(), "ADMIN")){
             if(Objects.equals(normalLeaveForm.getHeadStatus(), "pending")){
                 normalLeaveFormRepo.deleteById(id);
                 return "Form deleted Successfully";
