@@ -68,7 +68,7 @@ public class NormalLeaveFormService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .formType("Normal Leave Form")
-                .headStatus("pending")
+                .headStatus("Pending")
                 .status("Pending")
                 .build();
 
@@ -175,13 +175,15 @@ public class NormalLeaveFormService {
             throw new NullPointerException("User not found");
         } else if (normalLeaveForm == null) {
             throw new NullPointerException("Form not found");
-        }else if (Objects.equals(user.getId(), normalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "SUPER_ADMIN")
-        || Objects.equals(user.getRole().toString(), "ADMIN")){
-            if(Objects.equals(normalLeaveForm.getHeadStatus(), "pending")){
+        }else if (Objects.equals(user.getId(), normalLeaveForm.getUser().getId()) || Objects.equals(user.getRole().toString(), "ADMIN")){
+            if(Objects.equals(normalLeaveForm.getHeadStatus(), "Pending")){
                 normalLeaveFormRepo.deleteById(id);
                 return "Form deleted Successfully";
             }
             throw new FormUnderProcessException("Form is under process, Can't delete!!!");
+        } else if (Objects.equals(user.getRole().toString(), "SUPER_ADMIN")) {
+                normalLeaveFormRepo.deleteById(id);
+                return "Form deleted Successfully";
         }
         return "Form deleted rejected";
     }
@@ -196,6 +198,6 @@ public class NormalLeaveFormService {
         if(user == null) {
             return Collections.emptyList();
         }
-        return normalLeaveFormRepo.findByUserIdAndStatus(user.getId(), "pending");
+        return normalLeaveFormRepo.findByUserIdAndStatus(user.getId(), "Pending");
     }
 }

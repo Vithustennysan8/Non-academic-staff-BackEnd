@@ -85,7 +85,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllTransferFormRequests(header));
     }
 
-    @GetMapping(value = "leaveForms/getAllForms")
+    @GetMapping(value = "leaveForms/getAll")
     public ResponseEntity<?> getAllLeaveForm(@RequestHeader("Authorization") String header) throws ResourceNotFoundException {
         return ResponseEntity.ok(adminService.getAllLeaveForms(header));
     }

@@ -4,6 +4,7 @@ import com.Non_academicWebsite.Config.JwtService;
 import com.Non_academicWebsite.CustomException.ResourceNotFoundException;
 import com.Non_academicWebsite.Entity.Forms.Forms;
 import com.Non_academicWebsite.Entity.Forms.TransferForm;
+import com.Non_academicWebsite.Entity.Role;
 import com.Non_academicWebsite.Entity.User;
 import com.Non_academicWebsite.Repository.Forms.*;
 import com.Non_academicWebsite.Repository.ForumRepo;
@@ -86,16 +87,12 @@ public class AdminService {
         String prefix = extractUserService.getTheIdPrefixByUser(user);
 
         List<Forms> forms = new ArrayList<>();
-        switch (user.getJobType()) {
-            case "Head of the Department" -> {
-                forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
-            }
-//            case "Dean" -> {
-//                forms.addAll(normalLeaveFormRepo.findByFaculty(user.getFaculty()));
-//            }
-            default -> {
-                forms.addAll(Collections.emptyList());
-            }
+        if (user.getJobType().equals("Head of the Department")) {
+            forms.addAll(normalLeaveFormRepo.findByUserIdStartingWith(prefix));
+        } else if(user.getRole() == Role.SUPER_ADMIN || user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER){
+            forms.addAll(normalLeaveFormRepo.findAll());
+        } else {
+            forms.addAll(Collections.emptyList());
         }
         return forms;
     }
@@ -130,6 +127,8 @@ public class AdminService {
         List<Object> forms = new ArrayList<>();
         if (user.getJobType().equals("Head of the Department")) {
             forms.addAll(normalLeaveFormRepo.findByUserIdStartingWithAndHeadStatus(prefix, "pending"));
+        } else if(user.getRole() == Role.SUPER_ADMIN || user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER){
+            forms.addAll(normalLeaveFormRepo.findAll());
         } else {
             forms.addAll(Collections.emptyList());
         }

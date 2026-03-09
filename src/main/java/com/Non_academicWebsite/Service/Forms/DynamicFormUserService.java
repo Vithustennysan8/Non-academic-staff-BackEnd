@@ -70,9 +70,14 @@ public class DynamicFormUserService {
         User user = extractUserService.extractUserByAuthorizationHeader(header);
 
         // Fetch all approver entries that belong to this job type
-        List<FormApprover> approvalForms = formApproverRepo.findByApproverOrderByIdDesc(user.getJobType());
+        List<FormApprover> approvalForms = Collections.emptyList();
+        if(user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER){
+            approvalForms = formApproverRepo.findByApproverOrderByIdDesc(user.getJobType());
+        } else if (user.getRole() == Role.SUPER_ADMIN) {
+            approvalForms = formApproverRepo.findAll();
+        }
         Optional<JobPosition> jobPosition = jobPositionRepository.findByJobPositionName(user.getJobType());
-        System.out.println(jobPosition.get());
+
         List<Map<String, Object>> dynamicFormUsers = new ArrayList<>();
 
         for (FormApprover approval : approvalForms) {
